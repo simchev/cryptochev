@@ -35,28 +35,25 @@ func (c *Column) GetText() string { return c.Data.Text }
 func (c *Column) Encrypt() { c.Data.Text = encryptColumn(c.Data.Text, string(*c.Data.Key)) }
 func (c *Column) Decrypt() { c.Data.Text = decryptColumn(c.Data.Text, string(*c.Data.Key)) }
 
-func sortKey(key string) ([]int, map[int]rune) {
+func getSortedKeyIndices(key string) []int {
 	rKey := []rune(key)
 	rKeyIndices := make([]int, len(key))
-	keyMap := make(map[int]rune)
-
 	for i := 0; i < len(rKey); i++ {
-		keyMap[i] = rKey[i]
 		rKeyIndices[i] = i;
 	}
 
 	sort.SliceStable(rKeyIndices, func(i, j int) bool {
-		return keyMap[rKeyIndices[i]] < keyMap[rKeyIndices[j]]
+		return rKey[rKeyIndices[i]] < rKey[rKeyIndices[j]]
 	})
 
-	return rKeyIndices, keyMap
+	return rKeyIndices
 }
 
 func encryptColumn(s string, key string) string {
 	keySize := len(key)
 	rs := []rune(s)
 	result := make([]rune, 0, len(s))
-	rKeyIndices, _ := sortKey(key)
+	rKeyIndices := getSortedKeyIndices(key)
 
 	rows := int(math.Ceil(float64(len(s)) / float64(keySize)))
 	for _, i := range rKeyIndices {
@@ -75,7 +72,7 @@ func decryptColumn(s string, key string) string {
 	keySize := len(key)
 	rs := []rune(s)
 	result := make([]rune, len(s))
-	rKeyIndices, _ := sortKey(key)
+	rKeyIndices := getSortedKeyIndices(key)
 
 	rows := int(math.Ceil(float64(len(s)) / float64(keySize)))
 	sIndex := 0
@@ -398,13 +395,14 @@ func encryptMyszkowski(s string, key string) string {
 	keySize := len(key)
 	rs := []rune(s)
 	result := make([]rune, 0, len(s))
-	rKeyIndices, keyMap := sortKey(key)
+	rKey := []rune(key)
+	rKeyIndices := getSortedKeyIndices(key)
 
 	rows := int(math.Ceil(float64(len(s)) / float64(keySize)))
 	for i := 0; i < len(rKeyIndices); i++ { 
 		equivalent := 0
 		for j := 1; i + j < len(rKeyIndices); j++ {
-			if keyMap[rKeyIndices[i + j]] == keyMap[rKeyIndices[i]] {
+			if rKey[rKeyIndices[i + j]] == rKey[rKeyIndices[i]] {
 				equivalent++
 			} else {
 				break
@@ -430,14 +428,15 @@ func decryptMyszkowski(s string, key string) string {
 	keySize := len(key)
 	rs := []rune(s)
 	result := make([]rune, len(s))
-	rKeyIndices, keyMap := sortKey(key)
+	rKey := []rune(key)
+	rKeyIndices := getSortedKeyIndices(key)
 
 	rows := int(math.Ceil(float64(len(s)) / float64(keySize)))
 	sIndex := 0
 	for i := 0; i < len(rKeyIndices); i++ { 
 		equivalent := 0
 		for j := 1; i + j < len(rKeyIndices); j++ {
-			if keyMap[rKeyIndices[i + j]] == keyMap[rKeyIndices[i]] {
+			if rKey[rKeyIndices[i + j]] == rKey[rKeyIndices[i]] {
 				equivalent++
 			} else {
 				break
@@ -562,6 +561,10 @@ func decryptElastic(s string) string {
 	return string(result)
 }
 
+func getSortedKeyPositions(key string) {
+	
+}
+
 // ----- COLUMN DISRUPTED LINE -----
 /*type KeyColumnDisruptedLine string
 type ColumnDisruptedLine struct {
@@ -596,4 +599,30 @@ func encryptColumnDisruptedCount(s string, key string) string {
 
 func decryptColumnDisruptedCount(s string, key string) string {
 
+}*/
+
+/*func encryptColumnDisruptedCount(s string, key string, dkey string) string {
+	keySize := len(key)
+	rs := []rune(s)
+	result := make([]rune, len(s))
+	rKeyIndices, _ := getSortedKeyIndices(key)
+	counts := make([]int, len(dkey))
+	rDkeyIndices, dKeyMap := sortKey(dkey)
+	extraSpaces := 0
+
+	for _, i := rDkeyIndices {
+
+	}
+
+	rows := int(math.Ceil(float64(len(s)) / float64(keySize)))
+	for _, i := range rKeyIndices {
+		for j := 0; j < rows; j++ {
+			index := i + j * keySize
+			if index < len(s) {
+				result = append(result, rs[index])
+			}
+		}
+	}
+
+	return string(result)
 }*/
