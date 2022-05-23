@@ -24,5 +24,6 @@ type CipherClassicalKey interface {
 		KeyMyszkowski |
 		KeyCaesar |
 		KeyMagnet |
-		KeyElastic
+		KeyElastic |
+		KeyReverse
 }

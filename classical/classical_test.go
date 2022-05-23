@@ -75,6 +75,16 @@ func TestROT13(t *testing.T) {
 
 // ----- TRANSPOSITION -----
 
+func TestReverse(t *testing.T) {
+	expects := [...]string{"ECNOTAEELFDEREVOCSIDERAEW", "MA0021TAKCATTAEW", "EMEESTNACUOY", "AIDNIYORTSEDINATSIKAPEVOLEW", "ETETECSIAMAJIAREILBUOJ"}
+
+	for i, test := range tests {
+		key := KeyReverse{}
+		c := Reverse{Data: &CipherClassicalData[KeyReverse]{Text: test, Key: &key}}
+		testCipher(t, &c, expects[i], test)
+	}
+}
+
 func TestColumn(t *testing.T) {
 	keys := [...]string{"CARGO", "ZEBRAS", "SPECIALUNITONE", "VERYBIGSECRET", "LEGRANDMANITOU"}
 	expects := [...]string{"EIELOWDVFTRCEECEODAEASREN", "T1AAAEK0TTMA2WC0", "NCUAETEEOYMS", "VSIIEIKYTDPRETLDSNAOAIWNAOE", "LTAETOSUCJJIREIEIMBEAA"}

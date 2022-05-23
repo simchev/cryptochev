@@ -5,6 +5,26 @@ import (
 	"sort"
 )
 
+// ----- REVERSE -----
+type KeyReverse struct {}
+type Reverse struct {
+	Data *CipherClassicalData[KeyReverse]
+}
+
+func (c *Reverse) GetText() string { return c.Data.Text }
+func (c *Reverse) Encrypt() { c.Data.Text = reverse(c.Data.Text) }
+func (c *Reverse) Decrypt() { c.Data.Text = reverse(c.Data.Text) }
+
+func reverse(s string) string {
+	rs := []rune(s)
+
+	for i, j := 0, len(rs) - 1; i < j; i, j = i + 1, j - 1 {
+		rs[i], rs[j] = rs[j], rs[i]
+	}
+
+	return string(rs)
+}
+
 // ----- COLUMN -----
 type KeyColumn string
 type Column struct {

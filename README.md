@@ -1,3 +1,3 @@
 # Cryptochev
 
-Cryptographic module in Golang.
+Cryptographic module in Go.
