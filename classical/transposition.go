@@ -561,8 +561,28 @@ func decryptElastic(s string) string {
 	return string(result)
 }
 
-func getSortedKeyPositions(key string) {
-	
+func getSortedKeyPositions(key string) []int {
+	rKey := []rune(key)
+	rKeyPositions := make([]int, len(key))
+	rKeyIndices := make([]int, len(key))
+	for i := 0; i < len(rKey); i++ {
+		rKeyIndices[i] = i;
+	}
+
+	sort.SliceStable(rKeyIndices, func(i, j int) bool {
+		return rKey[rKeyIndices[i]] < rKey[rKeyIndices[j]]
+	})
+
+	for i := range rKeyPositions {
+		for j := range rKeyIndices {
+			if rKeyIndices[j] == i {
+				rKeyPositions[i] = j
+				break
+			}
+		}
+	}
+
+	return rKeyPositions
 }
 
 // ----- COLUMN DISRUPTED LINE -----
@@ -582,47 +602,83 @@ func encryptColumnDisruptedLine(s string, key string) string {
 func decryptColumnDisruptedLine(s string, key string) string {
 
 }
-
+*/
 // ----- COLUMN DISRUPTED COUNT -----
-type KeyColumnDisruptedCount string
+type KeyColumnDisruptedCount struct {
+	CKey string
+	DKey string
+}
+
 type ColumnDisruptedCount struct {
 	Data *CipherClassicalData[KeyColumnDisruptedCount]
 }
 
 func (c *ColumnDisruptedCount) GetText() string { return c.Data.Text }
-func (c *ColumnDisruptedCount) Encrypt() { c.Data.Text = encryptColumnDisruptedCount(c.Data.Text, string(*c.Data.Key)) }
-func (c *ColumnDisruptedCount) Decrypt() { c.Data.Text = decryptColumnDisruptedCount(c.Data.Text, string(*c.Data.Key)) }
+func (c *ColumnDisruptedCount) Encrypt() { c.Data.Text = encryptColumnDisruptedCount(c.Data.Text, c.Data.Key.CKey, c.Data.Key.DKey) }
+func (c *ColumnDisruptedCount) Decrypt() { c.Data.Text = decryptColumnDisruptedCount(c.Data.Text, c.Data.Key.CKey, c.Data.Key.DKey) }
 
-func encryptColumnDisruptedCount(s string, key string) string {
-
-}
-
-func decryptColumnDisruptedCount(s string, key string) string {
-
-}*/
-
-/*func encryptColumnDisruptedCount(s string, key string, dkey string) string {
+func encryptColumnDisruptedCount(s string, key string, dkey string) string {
 	keySize := len(key)
 	rs := []rune(s)
-	result := make([]rune, len(s))
-	rKeyIndices, _ := getSortedKeyIndices(key)
-	counts := make([]int, len(dkey))
-	rDkeyIndices, dKeyMap := sortKey(dkey)
-	extraSpaces := 0
+	result := make([]rune, 0, len(s))
+	rKeyIndices := getSortedKeyIndices(key)
+	rKeyPositions := getSortedKeyPositions(dkey)
+	gaps := 0
+	gapIndex := 0
 
-	for _, i := rDkeyIndices {
-
+	for gapIndex < len(s) + gaps {
+		for _, p := range rKeyPositions {
+			gapIndex += p
+			if gapIndex < len(s) + gaps {
+				gaps++
+				gapIndex++
+			} else {
+				break
+			}
+		}
 	}
 
-	rows := int(math.Ceil(float64(len(s)) / float64(keySize)))
+	rows := int(math.Ceil(float64(len(s) + gaps) / float64(keySize)))
+	grid := make([][]rune, rows)
+	for i := range grid {
+		grid[i] = make([]rune, keySize)
+	}
+
+	gapCount := 0
+	posIndex := 0
+	nextGap := rKeyPositions[0]
+
+	for i := 0; i < rows; i++ {
+		for j := 0; j < keySize; j++ {
+			index := j + i * keySize
+			if index == nextGap {
+				posIndex++
+				if posIndex >= len(rKeyPositions) {
+					posIndex = 0
+				}
+				nextGap += rKeyPositions[posIndex] + 1
+				gapCount++
+			} else if index - gapCount < len(s) {
+				grid[i][j] = rs[index - gapCount]
+			} else {
+				break
+			}
+		}
+	}
+
 	for _, i := range rKeyIndices {
 		for j := 0; j < rows; j++ {
-			index := i + j * keySize
-			if index < len(s) {
-				result = append(result, rs[index])
+			if grid[j][i] != 0 {
+				result = append(result, grid[j][i])
 			}
 		}
 	}
 
 	return string(result)
-}*/
+}
+
+func decryptColumnDisruptedCount(s string, key string, dkey string) string {
+	return ""
+}
+
+

@@ -7,9 +7,10 @@ import (
 
 func main() {
 	s := "WEAREDISCOVEREDFLEEATONCE"
-	keycode := "TOMATO"
-	key := classical.KeyColumn(keycode)
-	c := classical.Column{Data: &classical.CipherClassicalData[classical.KeyColumn]{Text: s, Key: &key}}
+	key1 := "CRYPTO"
+	key2 := "SECRET"
+	key := classical.KeyColumnDisruptedCount{CKey: key1, DKey: key2}
+	c := classical.ColumnDisruptedCount{Data: &classical.CipherClassicalData[classical.KeyColumnDisruptedCount]{Text: s, Key: &key}}
 
 	fmt.Println(classical.ToSpaced(c.Data.Text, 5))
 	c.Encrypt()

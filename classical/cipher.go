@@ -25,5 +25,6 @@ type CipherClassicalKey interface {
 		KeyCaesar |
 		KeyMagnet |
 		KeyElastic |
-		KeyReverse
+		KeyReverse |
+		KeyColumnDisruptedCount
 }
