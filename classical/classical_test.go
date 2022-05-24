@@ -225,10 +225,14 @@ func TestElastic(t *testing.T) {
 	}
 }
 
+func TestColumnDisruptedLine(t *testing.T) {
+
+}
+
 func TestColumnDisruptedCount(t *testing.T) {
-	keys := [...]string{"CRYPTO"}
-	dkeys := [...]string{"SECRET"}
-	expects := [...]string{"WCEEOERETRIVFCEODNSELEADA"}
+	keys := [...]string{"CRYPTO", "KATANA", "TOKYO", "BAMBOO", "FOREST"}
+	dkeys := [...]string{"SECRET", "DISTURB", "SHRINE", "GRASS", "MOUNTAIN"}
+	expects := [...]string{"WCEEOERETRIVFCEODNSELEADA", "A1MATA0WTTAK0EC2", "UONEASEYECTM", "VIEDWOKAONLSNTIEESYIPIRAATD", "URAEJIJSTOEACEMBATLIIE"}
 
 	for i := 0; i < len(keys); i++ {
 		key := KeyColumnDisruptedCount{CKey: keys[i], DKey: dkeys[i]}
