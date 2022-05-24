@@ -225,6 +225,18 @@ func TestElastic(t *testing.T) {
 	}
 }
 
+func TestColumnDisruptedCount(t *testing.T) {
+	keys := [...]string{"CRYPTO"}
+	dkeys := [...]string{"SECRET"}
+	expects := [...]string{"WCEEOERETRIVFCEODNSELEADA"}
+
+	for i := 0; i < len(keys); i++ {
+		key := KeyColumnDisruptedCount{CKey: keys[i], DKey: dkeys[i]}
+		c := ColumnDisruptedCount{Data: &CipherClassicalData[KeyColumnDisruptedCount]{Text: tests[i], Key: &key}}
+		testCipher(t, &c, expects[i], tests[i])
+	}
+}
+
 // ----- POLYBIUS -----
 
 func TestPolybius(t *testing.T) {

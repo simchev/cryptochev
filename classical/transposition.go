@@ -1,6 +1,7 @@
 package classical
 
 import (
+	"cryptochev/utils"
 	"math"
 	"sort"
 )
@@ -100,7 +101,7 @@ func (c *Zigzag) Encrypt() { c.Data.Text = encryptZigzag(c.Data.Text, c.Data.Key
 func (c *Zigzag) Decrypt() { c.Data.Text = decryptZigzag(c.Data.Text, c.Data.Key) }
 
 func encryptZigzag(s string, key *KeyZigzag) string {
-	if *key <= 1 {
+	if *key < 2 {
 		return s
 	}
 
@@ -135,7 +136,7 @@ func encryptZigzag(s string, key *KeyZigzag) string {
 }
 
 func decryptZigzag(s string, key *KeyZigzag) string {
-	if *key <= 1 {
+	if *key < 2 {
 		return s
 	}
 
@@ -180,7 +181,7 @@ func (c *Scytale) Encrypt() { c.Data.Text = encryptScytale(c.Data.Text, c.Data.K
 func (c *Scytale) Decrypt() { c.Data.Text = decryptScytale(c.Data.Text, c.Data.Key) }
 
 func encryptScytale(s string, key *KeyScytale) string {
-	if *key <= 1 {
+	if *key < 2 {
 		return s
 	}
 
@@ -202,7 +203,7 @@ func encryptScytale(s string, key *KeyScytale) string {
 }
 
 func decryptScytale(s string, key *KeyScytale) string {
-	if *key <= 1 {
+	if *key < 2 {
 		return s
 	}
 
@@ -618,20 +619,24 @@ func (c *ColumnDisruptedCount) Encrypt() { c.Data.Text = encryptColumnDisruptedC
 func (c *ColumnDisruptedCount) Decrypt() { c.Data.Text = decryptColumnDisruptedCount(c.Data.Text, c.Data.Key.CKey, c.Data.Key.DKey) }
 
 func encryptColumnDisruptedCount(s string, key string, dkey string) string {
+	if len(dkey) < 2 {
+		return s
+	}
+
 	keySize := len(key)
 	rs := []rune(s)
 	result := make([]rune, 0, len(s))
 	rKeyIndices := getSortedKeyIndices(key)
 	rKeyPositions := getSortedKeyPositions(dkey)
 	gaps := 0
-	gapIndex := 0
+	gapPos := 0
 
-	for gapIndex < len(s) + gaps {
+	for gapPos < len(s) + gaps {
 		for _, p := range rKeyPositions {
-			gapIndex += p
-			if gapIndex < len(s) + gaps {
+			gapPos += p
+			if gapPos < len(s) + gaps {
 				gaps++
-				gapIndex++
+				gapPos++
 			} else {
 				break
 			}
@@ -639,14 +644,13 @@ func encryptColumnDisruptedCount(s string, key string, dkey string) string {
 	}
 
 	rows := int(math.Ceil(float64(len(s) + gaps) / float64(keySize)))
+	gapCount := 0
+	posIndex := 0
+	nextGap := rKeyPositions[0]
 	grid := make([][]rune, rows)
 	for i := range grid {
 		grid[i] = make([]rune, keySize)
 	}
-
-	gapCount := 0
-	posIndex := 0
-	nextGap := rKeyPositions[0]
 
 	for i := 0; i < rows; i++ {
 		for j := 0; j < keySize; j++ {
@@ -678,7 +682,56 @@ func encryptColumnDisruptedCount(s string, key string, dkey string) string {
 }
 
 func decryptColumnDisruptedCount(s string, key string, dkey string) string {
-	return ""
+	if len(dkey) < 2 {
+		return s
+	}
+
+	keySize := len(key)
+	rs := []rune(s)
+	result := make([]rune, 0, len(s))
+	rKeyIndices := getSortedKeyIndices(key)
+	rKeyPositions := getSortedKeyPositions(dkey)
+	gaps := 0
+	gapPos := 0
+	gapIndices := make([]int, 0, len(s) * 3)
+
+	for gapPos < len(s) + gaps {
+		for _, p := range rKeyPositions {
+			gapPos += p
+			if gapPos < len(s) + gaps {
+				gapIndices = append(gapIndices, gapPos)
+				gaps++
+				gapPos++
+			} else {
+				break
+			}
+		}
+	}
+
+	rows := int(math.Ceil(float64(len(s) + gaps) / float64(keySize)))
+	sIndex := 0
+	grid := make([][]rune, rows)
+	for i := range grid {
+		grid[i] = make([]rune, keySize)
+	}
+
+	for _, i := range rKeyIndices {
+		for j := 0; j < rows; j++ {
+			index := i + j * keySize
+			if !utils.Contains(gapIndices, index) && index < len(s) + gaps && sIndex < len(s) {
+				grid[j][i] = rs[sIndex]
+				sIndex++
+			}
+		}
+	}
+
+	for i := 0; i < rows; i++ {
+		for j := 0; j < keySize; j++ {
+			if grid[i][j] != 0 {
+				result = append(result, grid[i][j])
+			}
+		}
+	}
+
+	return string(result)
 }
-
-
