@@ -87,17 +87,16 @@ func cryptVigenere(s string, alphabet string, key string, encrypt bool) string {
 		key = alphabet
 	}
 
-	rs := []rune(s)
 	result := make([]rune, len(s))
-	amap := buildAlphabetMap(alphabet)
+	amap := buildIndexMap(alphabet)
 	ra := []rune(alphabet)
 	rk := []rune(key)
 	
-	for i := range rs {
+	for i, r := range s {
 		if encrypt {
-			result[i] = ra[(amap[rs[i]] + amap[rk[i % len(rk)]]) % len(alphabet)]
+			result[i] = ra[(amap[r] + amap[rk[i % len(rk)]]) % len(alphabet)]
 		} else {
-			result[i] = ra[(amap[rs[i]] - amap[rk[i % len(rk)]] + len(alphabet)) % len(alphabet)]
+			result[i] = ra[(amap[r] - amap[rk[i % len(rk)]] + len(alphabet)) % len(alphabet)]
 		}
 	}
 

@@ -1,13 +1,8 @@
 package classical
 
-import (
-	"strings"
-)
-
-// ----- POLYBIUS -----
 type KeyPolybius struct {
 	Alphabet string
-	Header string
+	Header   string
 }
 
 type Polybius struct {
@@ -15,40 +10,42 @@ type Polybius struct {
 }
 
 func (c *Polybius) GetText() string { return c.Data.Text }
-func (c *Polybius) Encrypt() { c.Data.Text = encryptPolybius(c.Data.Text, c.Data.Key) }
-func (c *Polybius) Decrypt() { c.Data.Text = decryptPolybius(c.Data.Text, c.Data.Key) }
+func (c *Polybius) Encrypt() {
+	c.Data.Text = encryptPolybius(c.Data.Text, c.Data.Key.Alphabet, c.Data.Key.Header)
+}
+func (c *Polybius) Decrypt() {
+	c.Data.Text = decryptPolybius(c.Data.Text, c.Data.Key.Alphabet, c.Data.Key.Header)
+}
 
-func encryptPolybius(s string, key *KeyPolybius) string {
-	size := len(key.Header)
-	rheader := []rune(key.Header)
-	result := make([]rune, len(s) * 2)
+func encryptPolybius(s string, alphabet string, header string) string {
+	rheader := []rune(header)
+	amap := buildIndexMap(alphabet)
+	result := make([]rune, len(s)*2)
 
 	for i, r := range s {
-		rindex := strings.IndexRune(key.Alphabet, r)
-		result[i * 2] = rheader[rindex / size]
-		result[i * 2 + 1] = rheader[rindex % size]
+		result[i*2] = rheader[amap[r]/len(header)]
+		result[i*2+1] = rheader[amap[r]%len(header)]
 	}
 
 	return string(result)
 }
 
-func decryptPolybius(s string, key *KeyPolybius) string {
-	size := len(key.Header)
-	ralphabet := []rune(key.Alphabet)
+func decryptPolybius(s string, alphabet string, header string) string {
+	ralphabet := []rune(alphabet)
+	hmap := buildIndexMap(header)
 	rs := []rune(s)
-	result := make([]rune, len(s) / 2)
+	result := make([]rune, len(s)/2)
 
 	for i := 0; i < len(s); i += 2 {
-		result[i / 2] = ralphabet[strings.IndexRune(key.Header, rs[i]) * size + strings.IndexRune(key.Header, rs[i + 1])]
+		result[i/2] = ralphabet[hmap[rs[i]]*len(header)+hmap[rs[i+1]]]
 	}
 
 	return string(result)
 }
 
-// ----- ADFGX -----
 type KeyADFGX struct {
 	Alphabet string
-	Key string
+	Key      string
 }
 
 type ADFGX struct {
@@ -56,23 +53,26 @@ type ADFGX struct {
 }
 
 func (c *ADFGX) GetText() string { return c.Data.Text }
-func (c *ADFGX) Encrypt() { c.Data.Text = encryptADFGX(c.Data.Text, c.Data.Key) }
-func (c *ADFGX) Decrypt() { c.Data.Text = decryptADFGX(c.Data.Text, c.Data.Key) }
-
-func encryptADFGX(s string, key *KeyADFGX) string {
-	result := encryptPolybius(s, &KeyPolybius{key.Alphabet, "ADFGX"})
-	return encryptColumn(result, key.Key)
+func (c *ADFGX) Encrypt() {
+	c.Data.Text = encryptADFGX(c.Data.Text, c.Data.Key.Alphabet, c.Data.Key.Key)
+}
+func (c *ADFGX) Decrypt() {
+	c.Data.Text = decryptADFGX(c.Data.Text, c.Data.Key.Alphabet, c.Data.Key.Key)
 }
 
-func decryptADFGX(s string, key *KeyADFGX) string {
-	result := decryptColumn(s, key.Key)
-	return decryptPolybius(result, &KeyPolybius{key.Alphabet, "ADFGX"})
+func encryptADFGX(s string, alphabet string, key string) string {
+	result := encryptPolybius(s, alphabet, "ADFGX")
+	return encryptColumn(result, key)
 }
 
-// ----- ADFGVX -----
+func decryptADFGX(s string, alphabet string, key string) string {
+	result := decryptColumn(s, key)
+	return decryptPolybius(result, alphabet, "ADFGX")
+}
+
 type KeyADFGVX struct {
 	Alphabet string
-	Key string
+	Key      string
 }
 
 type ADFGVX struct {
@@ -80,15 +80,19 @@ type ADFGVX struct {
 }
 
 func (c *ADFGVX) GetText() string { return c.Data.Text }
-func (c *ADFGVX) Encrypt() { c.Data.Text = encryptADFGVX(c.Data.Text, c.Data.Key) }
-func (c *ADFGVX) Decrypt() { c.Data.Text = decryptADFGVX(c.Data.Text, c.Data.Key) }
-
-func encryptADFGVX(s string, key *KeyADFGVX) string {
-	result := encryptPolybius(s, &KeyPolybius{key.Alphabet, "ADFGVX"})
-	return encryptColumn(result, key.Key)
+func (c *ADFGVX) Encrypt() {
+	c.Data.Text = encryptADFGVX(c.Data.Text, c.Data.Key.Alphabet, c.Data.Key.Key)
+}
+func (c *ADFGVX) Decrypt() {
+	c.Data.Text = decryptADFGVX(c.Data.Text, c.Data.Key.Alphabet, c.Data.Key.Key)
 }
 
-func decryptADFGVX(s string, key *KeyADFGVX) string {
-	result := decryptColumn(s, key.Key)
-	return decryptPolybius(result, &KeyPolybius{key.Alphabet, "ADFGVX"})
+func encryptADFGVX(s string, alphabet string, key string) string {
+	result := encryptPolybius(s, alphabet, "ADFGVX")
+	return encryptColumn(result, key)
+}
+
+func decryptADFGVX(s string, alphabet string, key string) string {
+	result := decryptColumn(s, key)
+	return decryptPolybius(result, alphabet, "ADFGVX")
 }

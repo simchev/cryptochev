@@ -4,7 +4,6 @@ import (
 	"math"
 )
 
-// ----- REVERSE -----
 type KeyReverse struct {}
 type Reverse struct {
 	Data *CipherClassicalData[KeyReverse]
@@ -24,28 +23,27 @@ func reverse(s string) string {
 	return string(rs)
 }
 
-// ----- ZIGZAG (RAILFENCE) -----
-type KeyZigzag uint
+type KeyZigzag int
 type Zigzag struct {
 	Data *CipherClassicalData[KeyZigzag]
 }
 
 func (c *Zigzag) GetText() string { return c.Data.Text }
-func (c *Zigzag) Encrypt() { c.Data.Text = encryptZigzag(c.Data.Text, c.Data.Key) }
-func (c *Zigzag) Decrypt() { c.Data.Text = decryptZigzag(c.Data.Text, c.Data.Key) }
+func (c *Zigzag) Encrypt() { c.Data.Text = encryptZigzag(c.Data.Text, int(*c.Data.Key)) }
+func (c *Zigzag) Decrypt() { c.Data.Text = decryptZigzag(c.Data.Text, int(*c.Data.Key)) }
 
-func encryptZigzag(s string, key *KeyZigzag) string {
-	if *key < 2 {
+func encryptZigzag(s string, key int) string {
+	if key < 2 {
 		return s
 	}
 
 	rs := []rune(s)
 	result := make([]rune, len(s))
-	d1 := 2 * (int(*key) - 1)
+	d1 := 2 * (key - 1)
 	d2 := 0
 	rIndex := 0
 
-	for i := 0; i < int(*key); i++ {
+	for i := 0; i < key; i++ {
 		j := i
 
 		for j < len(s) {
@@ -69,18 +67,18 @@ func encryptZigzag(s string, key *KeyZigzag) string {
 	return string(result)
 }
 
-func decryptZigzag(s string, key *KeyZigzag) string {
-	if *key < 2 {
+func decryptZigzag(s string, key int) string {
+	if key < 2 {
 		return s
 	}
 
 	rs := []rune(s)
 	result := make([]rune, len(s))
-	d1 := 2 * (int(*key) - 1)
+	d1 := 2 * (key - 1)
 	d2 := 0
 	rIndex := 0
 
-	for i := 0; i < int(*key); i++ {
+	for i := 0; i < key; i++ {
 		j := i
 
 		for j < len(s) {
@@ -104,18 +102,17 @@ func decryptZigzag(s string, key *KeyZigzag) string {
 	return string(result)
 }
 
-// ----- SCYTALE (SKYTALE) -----
-type KeyScytale uint
+type KeyScytale int
 type Scytale struct {
 	Data *CipherClassicalData[KeyScytale]
 }
 
 func (c *Scytale) GetText() string { return c.Data.Text }
-func (c *Scytale) Encrypt() { c.Data.Text = encryptScytale(c.Data.Text, c.Data.Key) }
-func (c *Scytale) Decrypt() { c.Data.Text = decryptScytale(c.Data.Text, c.Data.Key) }
+func (c *Scytale) Encrypt() { c.Data.Text = encryptScytale(c.Data.Text, int(*c.Data.Key)) }
+func (c *Scytale) Decrypt() { c.Data.Text = decryptScytale(c.Data.Text, int(*c.Data.Key)) }
 
-func encryptScytale(s string, key *KeyScytale) string {
-	if *key < 2 {
+func encryptScytale(s string, key int) string {
+	if key < 2 {
 		return s
 	}
 
@@ -123,12 +120,12 @@ func encryptScytale(s string, key *KeyScytale) string {
 	result := make([]rune, len(s))
 	rIndex := 0
 
-	for i := 0; i < int(*key); i++ {
+	for i := 0; i < key; i++ {
 		j := i
 
 		for j < len(s) {
 			result[rIndex] = rs[j]
-			j += int(*key)
+			j += key
 			rIndex++
 		}
 	}
@@ -136,8 +133,8 @@ func encryptScytale(s string, key *KeyScytale) string {
 	return string(result)
 }
 
-func decryptScytale(s string, key *KeyScytale) string {
-	if *key < 2 {
+func decryptScytale(s string, key int) string {
+	if key < 2 {
 		return s
 	}
 
@@ -145,12 +142,12 @@ func decryptScytale(s string, key *KeyScytale) string {
 	result := make([]rune, len(s))
 	rIndex := 0
 
-	for i := 0; i < int(*key); i++ {
+	for i := 0; i < key; i++ {
 		j := i
 
 		for j < len(s) {
 			result[j] = rs[rIndex]
-			j += int(*key)
+			j += key
 			rIndex++
 		}
 	}
@@ -158,7 +155,6 @@ func decryptScytale(s string, key *KeyScytale) string {
 	return string(result)
 }
 
-// ----- ROUTE -----
 const (
 	up complex128 	= 0 + 1i
 	right			= 1 + 0i
@@ -199,27 +195,27 @@ var ROUTE_BRL = route{bottomright, left, clockwise}
 var ROUTE_BRU = route{bottomright, up, c_clockwise}
 
 type KeyRoute struct {
-	Width uint
+	Width int
 	Route route
 }
 
-func cryptRoute(s string, key *KeyRoute, route routeType, encrypt bool) string {
+func cryptRoute(s string, width int, r route, rt routeType, encrypt bool) string {
 	rs := []rune(s)
 	result := make([]rune, len(s))
-	rows := int(math.Ceil(float64(len(s)) / float64(key.Width)))
-	cols := int(key.Width)
-	i := int(imag(key.Route.corner)) * (rows - 1)
-	j := int(real(key.Route.corner)) * int(cols - 1)
-	direction := key.Route.direction
-	rotation := key.Route.rotation
+	rows := int(math.Ceil(float64(len(s)) / float64(width)))
+	cols := width
+	i := int(imag(r.corner)) * (rows - 1)
+	j := int(real(r.corner)) * int(cols - 1)
+	direction := r.direction
+	rotation := r.rotation
 	rIndex := 0
 
-	switch route {
+	switch rt {
 	case routeTypeSpiral:
 		for rows > 0 && cols > 0 {
 			if (imag(direction) != 0) {
 				for r := 0; r < rows; r++ {
-					index := j + i * int(key.Width)
+					index := j + i * width
 					if index < len(rs) {
 						if encrypt {
 							result[rIndex] = rs[index]
@@ -234,7 +230,7 @@ func cryptRoute(s string, key *KeyRoute, route routeType, encrypt bool) string {
 				i += int(imag(direction))
 			} else {
 				for c := 0; c < cols; c++ {
-					index := j + i * int(key.Width)
+					index := j + i * width
 					if index < len(rs) {
 						if encrypt {
 							result[rIndex] = rs[index]
@@ -249,7 +245,7 @@ func cryptRoute(s string, key *KeyRoute, route routeType, encrypt bool) string {
 				j -= int(real(direction))
 			}
 	
-			direction *= key.Route.rotation
+			direction *= r.rotation
 			i -= int(imag(direction))
 			j += int(real(direction))
 		}
@@ -257,7 +253,7 @@ func cryptRoute(s string, key *KeyRoute, route routeType, encrypt bool) string {
 		for rows > 0 && cols > 0 {
 			if (imag(direction) != 0) {
 				for r := 0; r < rows; r++ {
-					index := j + i * int(key.Width)
+					index := j + i * width
 					if index < len(s) {
 						if encrypt {
 							result[rIndex] = rs[index]
@@ -272,7 +268,7 @@ func cryptRoute(s string, key *KeyRoute, route routeType, encrypt bool) string {
 				i += int(imag(direction))
 			} else {
 				for c := 0; c < cols; c++ {
-					index := j + i * int(key.Width)
+					index := j + i * width
 					if index < len(rs) {
 						if encrypt {
 							result[rIndex] = rs[index]
@@ -298,25 +294,22 @@ func cryptRoute(s string, key *KeyRoute, route routeType, encrypt bool) string {
 	return string(result)
 }
 
-// ----- ROUTE SPIRAL -----
 type RouteSpiral struct {
 	Data *CipherClassicalData[KeyRoute]
 }
 
 func (c *RouteSpiral) GetText() string { return c.Data.Text }
-func (c *RouteSpiral) Encrypt() { c.Data.Text = cryptRoute(c.Data.Text, c.Data.Key, routeTypeSpiral, true); }
-func (c *RouteSpiral) Decrypt() { c.Data.Text = cryptRoute(c.Data.Text, c.Data.Key, routeTypeSpiral, false); }
+func (c *RouteSpiral) Encrypt() { c.Data.Text = cryptRoute(c.Data.Text, c.Data.Key.Width, c.Data.Key.Route, routeTypeSpiral, true); }
+func (c *RouteSpiral) Decrypt() { c.Data.Text = cryptRoute(c.Data.Text, c.Data.Key.Width, c.Data.Key.Route, routeTypeSpiral, false); }
 
-// ----- ROUTE SERPENT -----
 type RouteSerpent struct {
 	Data *CipherClassicalData[KeyRoute]
 }
 
 func (c *RouteSerpent) GetText() string { return c.Data.Text }
-func (c *RouteSerpent) Encrypt() { c.Data.Text = cryptRoute(c.Data.Text, c.Data.Key, routeTypeSerpent, true) }
-func (c *RouteSerpent) Decrypt() { c.Data.Text = cryptRoute(c.Data.Text, c.Data.Key, routeTypeSerpent, false) }
+func (c *RouteSerpent) Encrypt() { c.Data.Text = cryptRoute(c.Data.Text, c.Data.Key.Width, c.Data.Key.Route, routeTypeSerpent, true) }
+func (c *RouteSerpent) Decrypt() { c.Data.Text = cryptRoute(c.Data.Text, c.Data.Key.Width, c.Data.Key.Route, routeTypeSerpent, false) }
 
-// ----- MAGNET -----
 type KeyMagnet struct {}
 type Magnet struct {
 	Data *CipherClassicalData[KeyMagnet]
@@ -364,7 +357,6 @@ func decryptMagnet(s string) string {
 	return string(result)
 }
 
-// ----- ELASTIC (reverse magnet) -----
 type KeyElastic struct {}
 type Elastic struct {
 	Data *CipherClassicalData[KeyElastic]

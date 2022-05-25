@@ -132,7 +132,7 @@ func TestScytale(t *testing.T) {
 }
 
 func TestRouteSpiral(t *testing.T) {
-	widths := [...]uint{ 6, 7, 3, 9, 1 }
+	widths := [...]int{ 6, 7, 3, 9, 1 }
 	routes := [...]route{
 		ROUTE_TLR,
 		ROUTE_TLD,
@@ -166,7 +166,7 @@ func TestRouteSpiral(t *testing.T) {
 }
 
 func TestRouteSerpent(t *testing.T) {
-	widths := [...]uint{ 6, 7, 3, 9, 1 }
+	widths := [...]int{ 6, 7, 3, 9, 1 }
 	routes := [...]route{
 		ROUTE_TLR,
 		ROUTE_TLD,

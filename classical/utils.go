@@ -10,7 +10,7 @@ const AlphabetL = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 const AlphabetL25 = "ABCDEFGHIKLMNOPQRSTUVWXYZ"
 const AlphabetL36 = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
 
-func buildAlphabetMap(alphabet string) map[rune]int {
+func buildIndexMap(alphabet string) map[rune]int {
 	amap := make(map[rune]int, len(alphabet))
 
 	for i, r := range alphabet {
