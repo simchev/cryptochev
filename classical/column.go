@@ -261,7 +261,7 @@ func decryptColumnDCount(s string, key string, dkey string) string {
 	rKeyPositions := getSortedKeyPositions(dkey)
 	gaps := 0
 	gapPos := 0
-	gapIndices := make([]int, 0, len(s) * 3)
+	gapIndices := make([]int, 0, int(math.Ceil(float64(triangleNumber(keySize)) / float64(triangleNumber(keySize - 1)) * float64(len(s)))))
 
 	for gapPos < len(s) + gaps {
 		for _, p := range rKeyPositions {
