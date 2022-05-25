@@ -336,21 +336,22 @@ func buildDLineGrid(rs []rune, rKeyIndices []int, keySize int, fill bool) ([][]r
 	sIndex := 0
 	blockIndex := 0
 	out: for sIndex < len(rs) {
+		blockPos := blockIndex * keySize
 		for i, ki := range rKeyIndices {
 			for j := 0; j < keySize; j++ {
-				grid[i + keySize * blockIndex][j] = rs[sIndex]
+				grid[i + blockPos][j] = rs[sIndex]
 				sIndex++
 
-				if j == ki {
-					break
-				} else if sIndex >= len(rs) {
+				if sIndex >= len(rs) {
 					break out
+				} else if j == ki {
+					break
 				}
 			}
 		}
 
 		if fill {
-			for i := keySize * blockIndex; i < keySize + keySize * blockIndex; i++ {
+			for i := blockPos; i < keySize + blockPos; i++ {
 				for j := 0; j < keySize; j++ {
 					if grid[i][j] == 0 {
 						grid[i][j] = rs[sIndex]
@@ -421,15 +422,16 @@ func decryptColumnDLine(s string, key string, fill bool) string {
 	sIndex = 0
 	blockIndex := 0
 	out: for sIndex < len(rs) {
+		blockPos := blockIndex * keySize
 		for i, ki := range rKeyIndices {
 			for j := 0; j < keySize; j++ {
-				result = append(result, grid2[i + keySize * blockIndex][j])
+				result = append(result, grid2[i + blockPos][j])
 				sIndex++
 
-				if j == ki {
-					break
-				} else if sIndex >= len(rs) {
+				if sIndex >= len(rs) {
 					break out
+				} else if j == ki {
+					break
 				}
 			}
 		}
@@ -437,9 +439,8 @@ func decryptColumnDLine(s string, key string, fill bool) string {
 		if fill {
 			for i, ki := range rKeyIndices {
 				for j := 0; j < keySize; j++ {
-					blockAdd := keySize * blockIndex
-					if grid2[i + blockAdd][j] != 0 && j > ki {
-						result = append(result, grid2[i + blockAdd][j])
+					if grid2[i + blockPos][j] != 0 && j > ki {
+						result = append(result, grid2[i + blockPos][j])
 						sIndex++
 
 						if sIndex >= len(rs) {

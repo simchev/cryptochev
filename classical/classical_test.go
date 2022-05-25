@@ -238,9 +238,9 @@ func TestColumnDCount(t *testing.T) {
 }
 
 func TestColumnDLine(t *testing.T) {
-	keys := [...]string{"BIRTHDAY", "MAX"}
-	expects := [...]string{"IWSCDAOEDEEREEOFTNAVLCREE", "ETK10WATCAT0AMA2"}
-	expectsFill := [...]string{"IWSCDAOEDEEREEOFTNAVLCREE", "EKT10WATT20CAAMA"}
+	keys := [...]string{"BIRTHDAY", "MAX", "YEP", "GHOST", "PHILIPPE"}
+	expects := [...]string{"IWSCDAOEDEEREEOFTNAVLCREE", "ETK10WATCAT0AMA2", "OCSEAMYUNTEE", "WEOPSDETYILVATSRIAEKAONINDI", "ROIAIEUMSTLEBCEJAJATIE"}
+	expectsFill := [...]string{"IWSCDAOEDEEREEOFTNAVLCREE", "EKT10WATT20CAAMA", "OCSMTAEYUNEE", "WEOPSIADLVATEREKASOIINTYNDI", "ROIAIEUMSTLEBCEJAJATIE"}
 
 	for i := range keys {
 		key := KeyColumnDLine{Key: keys[i], Fill: false}
