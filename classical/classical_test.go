@@ -225,19 +225,30 @@ func TestElastic(t *testing.T) {
 	}
 }
 
-func TestColumnDisruptedLine(t *testing.T) {
-
-}
-
-func TestColumnDisruptedCount(t *testing.T) {
+func TestColumnDCount(t *testing.T) {
 	keys := [...]string{"CRYPTO", "KATANA", "TOKYO", "BAMBOO", "FOREST"}
 	dkeys := [...]string{"SECRET", "DISTURB", "SHRINE", "GRASS", "MOUNTAIN"}
 	expects := [...]string{"WCEEOERETRIVFCEODNSELEADA", "A1MATA0WTTAK0EC2", "UONEASEYECTM", "VIEDWOKAONLSNTIEESYIPIRAATD", "URAEJIJSTOEACEMBATLIIE"}
 
-	for i := 0; i < len(keys); i++ {
-		key := KeyColumnDisruptedCount{CKey: keys[i], DKey: dkeys[i]}
-		c := ColumnDisruptedCount{Data: &CipherClassicalData[KeyColumnDisruptedCount]{Text: tests[i], Key: &key}}
+	for i, test := range tests {
+		key := KeyColumnDCount{CKey: keys[i], DKey: dkeys[i]}
+		c := ColumnDCount{Data: &CipherClassicalData[KeyColumnDCount]{Text: test, Key: &key}}
+		testCipher(t, &c, expects[i], test)
+	}
+}
+
+func TestColumnDLine(t *testing.T) {
+	keys := [...]string{"BIRTHDAY", "MAX"}
+	expects := [...]string{"IWSCDAOEDEEREEOFTNAVLCREE", "ETK10WATCAT0AMA2"}
+	expectsFill := [...]string{"IWSCDAOEDEEREEOFTNAVLCREE", "EKT10WATT20CAAMA"}
+
+	for i := range keys {
+		key := KeyColumnDLine{Key: keys[i], Fill: false}
+		c := ColumnDLine{Data: &CipherClassicalData[KeyColumnDLine]{Text: tests[i], Key: &key}}
 		testCipher(t, &c, expects[i], tests[i])
+		key2 := KeyColumnDLine{Key: keys[i], Fill: true}
+		c2 := ColumnDLine{Data: &CipherClassicalData[KeyColumnDLine]{Text: tests[i], Key: &key2}}
+		testCipher(t, &c2, expectsFill[i], tests[i])
 	}
 }
 
