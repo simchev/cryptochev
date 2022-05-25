@@ -40,7 +40,6 @@ func testCipherRegex(t *testing.T, c CipherClassical, regex string, test string)
 	}
 }
 
-// ----- SUBSTITUTION -----
 func TestShift(t *testing.T) {
 	shifts := [...]int{5, 10, -8, 3, 13}
 	expects := [...]string{"\\JFWJINXHT[JWJIKQJJFYTSHJ", "aOK^^KMUK^;<::KW", "QGM;9FLK==E=", "ZHORYHSDNLVWDQLGHVWUR\\LQGLD", "W\\bOYVR_NVWNZNV`PRaRaR"}
@@ -73,7 +72,17 @@ func TestROT13(t *testing.T) {
 	}
 }
 
-// ----- TRANSPOSITION -----
+func TestVigenere(t *testing.T) {
+	keys := [...]string{"", "LEMON", "MONSTEC", "CLEF", "SECRAT"}
+	alphabets := [...]string{AlphabetL, AlphabetL36, "ACEMNOSTUY", AlphabetL, AlphabetL36}
+	expects := [...]string{"WFCUIIOZKXFPDRRUBVWTNJJZC", "8IM87LGWO7B6LNNX", "EAETTSUYTSYY", "YPPTXPTFMTWYCYMIGDXWQJMSFTE", "2SWSL2WVCZJT5EK0CXBIVV"}
+
+	for i, test := range tests {
+		key := KeyVigenere{Alphabet: alphabets[i], Key: keys[i]}
+		c := Vigenere{Data: &CipherClassicalData[KeyVigenere]{Text: test, Key: &key}}
+		testCipher(t, &c, expects[i], test)
+	}
+}
 
 func TestReverse(t *testing.T) {
 	expects := [...]string{"ECNOTAEELFDEREVOCSIDERAEW", "MA0021TAKCATTAEW", "EMEESTNACUOY", "AIDNIYORTSEDINATSIKAPEVOLEW", "ETETECSIAMAJIAREILBUOJ"}
@@ -251,8 +260,6 @@ func TestColumnDLine(t *testing.T) {
 		testCipher(t, &c2, expectsFill[i], tests[i])
 	}
 }
-
-// ----- POLYBIUS -----
 
 func TestPolybius(t *testing.T) {
 	headers := [...]string{"POWERS", "123456", "HELPUS", "MIAWS", "01835"}

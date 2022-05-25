@@ -1,8 +1,9 @@
 package classical
 
-import "unicode"
+import (
+	"unicode"
+)
 
-// ----- SHIFT (unicode) -----
 type KeyShift int
 type Shift struct {
 	Data *CipherClassicalData[KeyShift]
@@ -23,7 +24,6 @@ func shift(s string, shift int) string {
 	return string(shifted)
 }
 
-// ----- CAESAR -----
 type KeyCaesar int
 type Caesar struct {
 	Data *CipherClassicalData[KeyCaesar]
@@ -37,7 +37,6 @@ func shiftAlphabet(s string, shift int) string {
 	shifted := []rune(s)
 	rshift := rune(shift % 26)
 
-	// Adjust latin letters if out of bound
 	for i, r := range s {
 		if unicode.IsUpper(r) {
 			shifted[i] = r + rshift
@@ -61,7 +60,6 @@ func shiftAlphabet(s string, shift int) string {
 	return string(shifted)
 }
 
-// ----- ROT13 -----
 type KeyROT13 struct {}
 type ROT13 struct {
 	Data *CipherClassicalData[KeyROT13]
@@ -70,3 +68,38 @@ type ROT13 struct {
 func (c *ROT13) GetText() string { return c.Data.Text }
 func (c *ROT13) Encrypt() { c.Data.Text = shiftAlphabet(c.Data.Text, 13) }
 func (c *ROT13) Decrypt() { c.Data.Text = shiftAlphabet(c.Data.Text, 13) }
+
+type KeyVigenere struct {
+	Alphabet string
+	Key string
+}
+
+type Vigenere struct {
+	Data *CipherClassicalData[KeyVigenere]
+}
+
+func (c *Vigenere) GetText() string { return c.Data.Text }
+func (c *Vigenere) Encrypt() { c.Data.Text = cryptVigenere(c.Data.Text, c.Data.Key.Alphabet, c.Data.Key.Key, true) }
+func (c *Vigenere) Decrypt() { c.Data.Text = cryptVigenere(c.Data.Text, c.Data.Key.Alphabet, c.Data.Key.Key, false) }
+
+func cryptVigenere(s string, alphabet string, key string, encrypt bool) string {
+	if key == "" {
+		key = alphabet
+	}
+
+	rs := []rune(s)
+	result := make([]rune, len(s))
+	amap := buildAlphabetMap(alphabet)
+	ra := []rune(alphabet)
+	rk := []rune(key)
+	
+	for i := range rs {
+		if encrypt {
+			result[i] = ra[(amap[rs[i]] + amap[rk[i % len(rk)]]) % len(alphabet)]
+		} else {
+			result[i] = ra[(amap[rs[i]] - amap[rk[i % len(rk)]] + len(alphabet)) % len(alphabet)]
+		}
+	}
+
+	return string(result)
+}
