@@ -62,11 +62,11 @@ func (c *ADFGX) Decrypt() {
 
 func encryptADFGX(s string, alphabet string, key string) string {
 	result := encryptPolybius(s, alphabet, "ADFGX")
-	return encryptColumn(result, key)
+	return cryptColumn(result, key, true)
 }
 
 func decryptADFGX(s string, alphabet string, key string) string {
-	result := decryptColumn(s, key)
+	result := cryptColumn(s, key, false)
 	return decryptPolybius(result, alphabet, "ADFGX")
 }
 
@@ -89,10 +89,10 @@ func (c *ADFGVX) Decrypt() {
 
 func encryptADFGVX(s string, alphabet string, key string) string {
 	result := encryptPolybius(s, alphabet, "ADFGVX")
-	return encryptColumn(result, key)
+	return cryptColumn(result, key, true)
 }
 
 func decryptADFGVX(s string, alphabet string, key string) string {
-	result := decryptColumn(s, key)
+	result := cryptColumn(s, key, false)
 	return decryptPolybius(result, alphabet, "ADFGVX")
 }

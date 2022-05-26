@@ -6,15 +6,14 @@ import (
 	"sort"
 )
 
-// ----- COLUMN -----
 type KeyColumn string
 type Column struct {
 	Data *CipherClassicalData[KeyColumn]
 }
 
 func (c *Column) GetText() string { return c.Data.Text }
-func (c *Column) Encrypt() { c.Data.Text = encryptColumn(c.Data.Text, string(*c.Data.Key)) }
-func (c *Column) Decrypt() { c.Data.Text = decryptColumn(c.Data.Text, string(*c.Data.Key)) }
+func (c *Column) Encrypt() { c.Data.Text = cryptColumn(c.Data.Text, string(*c.Data.Key), true) }
+func (c *Column) Decrypt() { c.Data.Text = cryptColumn(c.Data.Text, string(*c.Data.Key), false) }
 
 func getSortedKeyIndices(key string) []int {
 	rKey := []rune(key)
@@ -30,26 +29,7 @@ func getSortedKeyIndices(key string) []int {
 	return rKeyIndices
 }
 
-func encryptColumn(s string, key string) string {
-	keySize := len(key)
-	rs := []rune(s)
-	result := make([]rune, 0, len(s))
-	rKeyIndices := getSortedKeyIndices(key)
-
-	rows := int(math.Ceil(float64(len(s)) / float64(keySize)))
-	for _, i := range rKeyIndices {
-		for j := 0; j < rows; j++ {
-			index := i + j * keySize
-			if index < len(s) {
-				result = append(result, rs[index])
-			}
-		}
-	}
-
-	return string(result)
-}
-
-func decryptColumn(s string, key string) string {
+func cryptColumn(s string, key string, encrypt bool) string {
 	keySize := len(key)
 	rs := []rune(s)
 	result := make([]rune, len(s))
@@ -61,7 +41,8 @@ func decryptColumn(s string, key string) string {
 		for j := 0; j < rows; j++ {
 			index := i + j * keySize
 			if index < len(s) {
-				result[index] = rs[sIndex]
+				i1, i2 := utils.ReverseIf(index, sIndex, encrypt)
+				result[i1] = rs[i2]
 				sIndex++
 			}
 		}
@@ -70,24 +51,24 @@ func decryptColumn(s string, key string) string {
 	return string(result)
 }
 
-// ----- MYSZKOWSKI -----
 type KeyMyszkowski string
 type Myszkowski struct {
 	Data *CipherClassicalData[KeyMyszkowski]
 }
 
 func (c *Myszkowski) GetText() string { return c.Data.Text }
-func (c *Myszkowski) Encrypt() { c.Data.Text = encryptMyszkowski(c.Data.Text, string(*c.Data.Key)) }
-func (c *Myszkowski) Decrypt() { c.Data.Text = decryptMyszkowski(c.Data.Text, string(*c.Data.Key)) }
+func (c *Myszkowski) Encrypt() { c.Data.Text = cryptMyszkowski(c.Data.Text, string(*c.Data.Key), true) }
+func (c *Myszkowski) Decrypt() { c.Data.Text = cryptMyszkowski(c.Data.Text, string(*c.Data.Key), false) }
 
-func encryptMyszkowski(s string, key string) string {
+func cryptMyszkowski(s string, key string, encrypt bool) string {
 	keySize := len(key)
 	rs := []rune(s)
-	result := make([]rune, 0, len(s))
+	result := make([]rune, len(s))
 	rKey := []rune(key)
 	rKeyIndices := getSortedKeyIndices(key)
 
 	rows := int(math.Ceil(float64(len(s)) / float64(keySize)))
+	sIndex := 0
 	for i := 0; i < len(rKeyIndices); i++ { 
 		equivalent := 0
 		for j := 1; i + j < len(rKeyIndices); j++ {
@@ -102,41 +83,8 @@ func encryptMyszkowski(s string, key string) string {
 			for k := 0; k < equivalent + 1; k++ {
 				index := rKeyIndices[i + k] + j * keySize
 				if index < len(s) {
-					result = append(result, rs[index])
-				}
-			}
-		}
-
-		i += equivalent
-	}
-
-	return string(result)
-}
-
-func decryptMyszkowski(s string, key string) string {
-	keySize := len(key)
-	rs := []rune(s)
-	result := make([]rune, len(s))
-	rKey := []rune(key)
-	rKeyIndices := getSortedKeyIndices(key)
-
-	rows := int(math.Ceil(float64(len(s)) / float64(keySize)))
-	sIndex := 0
-	for i := 0; i < len(rKeyIndices); i++ { 
-		equivalent := 0
-		for j := 1; i + j < len(rKeyIndices); j++ {
-			if rKey[rKeyIndices[i + j]] == rKey[rKeyIndices[i]] {
-				equivalent++
-			} else {
-				break
-			}
-		}
-
-		for j := 0; j < rows; j++ {
-			for k := 0; k < equivalent + 1; k++ {
-				index := rKeyIndices[i + k] + j * keySize
-				if index < len(s) {
-					result[index] = rs[sIndex]
+					i1, i2 := utils.ReverseIf(index, sIndex, encrypt)
+					result[i1] = rs[i2]
 					sIndex++
 				}
 			}
@@ -172,7 +120,6 @@ func getSortedKeyPositions(key string) []int {
 	return rKeyPositions
 }
 
-// ----- COLUMN DISRUPTED COUNT -----
 type KeyColumnDCount struct {
 	CKey string
 	DKey string
@@ -304,7 +251,6 @@ func decryptColumnDCount(s string, key string, dkey string) string {
 	return string(result)
 }
 
-// ----- COLUMN DISRUPTED LINE -----
 type KeyColumnDLine struct {
 	Key string
 	Fill bool

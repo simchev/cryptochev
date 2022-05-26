@@ -42,24 +42,24 @@ func cryptZigzag(s string, key int, encrypt bool) string {
 	result := make([]rune, len(s))
 	d1 := 2 * (key - 1)
 	d2 := 0
-	rIndex := 0
+	sIndex := 0
 
 	for i := 0; i < key; i++ {
 		j := i
 
 		for j < len(s) {
 			if d1 != 0 {
-				i1, i2 := utils.ReverseIf(j, rIndex, encrypt)
+				i1, i2 := utils.ReverseIf(j, sIndex, encrypt)
 				result[i1] = rs[i2]
 				j += d1
-				rIndex++
+				sIndex++
 			}
 
 			if d2 != 0 && j < len(s) {
-				i1, i2 := utils.ReverseIf(j, rIndex, encrypt)
+				i1, i2 := utils.ReverseIf(j, sIndex, encrypt)
 				result[i1] = rs[i2]
 				j += d2
-				rIndex++
+				sIndex++
 			}
 		}
 
@@ -86,16 +86,16 @@ func cryptScytale(s string, key int, encrypt bool) string {
 
 	rs := []rune(s)
 	result := make([]rune, len(s))
-	rIndex := 0
+	sIndex := 0
 
 	for i := 0; i < key; i++ {
 		j := i
 
 		for j < len(s) {
-			i1, i2 := utils.ReverseIf(j, rIndex, encrypt)
+			i1, i2 := utils.ReverseIf(j, sIndex, encrypt)
 			result[i1] = rs[i2]
 			j += key
-			rIndex++
+			sIndex++
 		}
 	}
 
@@ -155,7 +155,7 @@ func cryptRoute(s string, width int, r route, rt routeType, encrypt bool) string
 	j := int(real(r.corner)) * int(cols - 1)
 	direction := r.direction
 	rotation := r.rotation
-	rIndex := 0
+	sIndex := 0
 
 	switch rt {
 	case routeTypeSpiral:
@@ -164,9 +164,9 @@ func cryptRoute(s string, width int, r route, rt routeType, encrypt bool) string
 				for r := 0; r < rows; r++ {
 					index := j + i * width
 					if index < len(rs) {
-						i1, i2 := utils.ReverseIf(index, rIndex, encrypt)
+						i1, i2 := utils.ReverseIf(index, sIndex, encrypt)
 						result[i1] = rs[i2]
-						rIndex++
+						sIndex++
 					}
 					i -= int(imag(direction))
 				}
@@ -176,9 +176,9 @@ func cryptRoute(s string, width int, r route, rt routeType, encrypt bool) string
 				for c := 0; c < cols; c++ {
 					index := j + i * width
 					if index < len(rs) {
-						i1, i2 := utils.ReverseIf(index, rIndex, encrypt)
+						i1, i2 := utils.ReverseIf(index, sIndex, encrypt)
 						result[i1] = rs[i2]
-						rIndex++
+						sIndex++
 					}
 					j += int(real(direction))
 				}
@@ -196,9 +196,9 @@ func cryptRoute(s string, width int, r route, rt routeType, encrypt bool) string
 				for r := 0; r < rows; r++ {
 					index := j + i * width
 					if index < len(s) {
-						i1, i2 := utils.ReverseIf(index, rIndex, encrypt)
+						i1, i2 := utils.ReverseIf(index, sIndex, encrypt)
 						result[i1] = rs[i2]
-						rIndex++
+						sIndex++
 					}
 					i -= int(imag(direction))
 				}
@@ -208,9 +208,9 @@ func cryptRoute(s string, width int, r route, rt routeType, encrypt bool) string
 				for c := 0; c < cols; c++ {
 					index := j + i * width
 					if index < len(rs) {
-						i1, i2 := utils.ReverseIf(index, rIndex, encrypt)
+						i1, i2 := utils.ReverseIf(index, sIndex, encrypt)
 						result[i1] = rs[i2]
-						rIndex++
+						sIndex++
 					}
 					j += int(real(direction))
 				}
@@ -258,18 +258,18 @@ func cryptMagnet(s string, encrypt bool) string {
 	rs := []rune(s)
 	result := make([]rune, len(s))
 	mid := len(s) / 2
-	rIndex := 0
+	sIndex := 0
 
 	for i := 0; i < mid; i++ {
-		i1, i2 := utils.ReverseIf(i, rIndex, encrypt)
+		i1, i2 := utils.ReverseIf(i, sIndex, encrypt)
 		result[i1] = rs[i2]
-		i1, i2 = utils.ReverseIf(len(s) - i - 1, rIndex + 1, encrypt)
+		i1, i2 = utils.ReverseIf(len(s) - i - 1, sIndex + 1, encrypt)
 		result[i1] = rs[i2]
-		rIndex += 2
+		sIndex += 2
 	}
 
 	if len(s) % 2 != 0 {
-		i1, i2 := utils.ReverseIf(mid, rIndex, encrypt)
+		i1, i2 := utils.ReverseIf(mid, sIndex, encrypt)
 		result[i1] = rs[i2]
 	}
 
@@ -290,21 +290,21 @@ func cryptElastic(s string, encrypt bool) string {
 	result := make([]rune, len(s))
 	mid := len(s) / 2
 	diff := 0
-	rIndex := 0
+	sIndex := 0
 
 	if len(s) % 2 != 0 {
-		i1, i2 := utils.ReverseIf(mid, rIndex, encrypt)
+		i1, i2 := utils.ReverseIf(mid, sIndex, encrypt)
 		result[i1] = rs[i2]
-		rIndex++
+		sIndex++
 		diff = 1
 	}
-	
+
 	for i := 0; i < mid; i++ {
-		i1, i2 := utils.ReverseIf(mid - i - 1, rIndex, encrypt)
+		i1, i2 := utils.ReverseIf(mid - i - 1, sIndex, encrypt)
 		result[i1] = rs[i2]
-		i1, i2 = utils.ReverseIf(mid + i + diff, rIndex + 1, encrypt)
+		i1, i2 = utils.ReverseIf(mid + i + diff, sIndex + 1, encrypt)
 		result[i1] = rs[i2]
-		rIndex += 2
+		sIndex += 2
 	}
 
 	return string(result)
