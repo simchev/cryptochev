@@ -1,12 +1,12 @@
 package classical
 
 type CipherClassicalData[K CipherClassicalKey] struct {
-	Text string
+	Text []rune
 	Key  *K
 }
 
 type CipherClassical interface {
-	GetText() string
+	GetText() []rune
 	Encrypt()
 	Decrypt()
 }

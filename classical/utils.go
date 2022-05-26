@@ -5,42 +5,30 @@ import (
 	"math"
 	"math/rand"
 	"unicode"
-	"unicode/utf8"
 )
 
 const AlphabetL = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 const AlphabetL25 = "ABCDEFGHIKLMNOPQRSTUVWXYZ"
 const AlphabetL36 = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
 
-func ShuffleString(s string) string {
-	rs := []rune(s)
-
-	rand.Shuffle(len(rs), func(i, j int) {
-		rs[i], rs[j] = rs[j], rs[i]
-	})
-
-	return string(rs)
+func RandomAlphabetL() []rune {
+	return utils.Shuffle([]rune(AlphabetL))
 }
 
-func RandomAlphabetL() string {
-	return ShuffleString(AlphabetL)
+func RandomAlphabetL25() []rune {
+	return utils.Shuffle([]rune(AlphabetL25))
 }
 
-func RandomAlphabetL25() string {
-	return ShuffleString(AlphabetL25)
-}
-
-func RandomAlphabetL36() string {
-	return ShuffleString(AlphabetL36)
+func RandomAlphabetL36() []rune {
+	return utils.Shuffle([]rune(AlphabetL36))
 }
 
 func RandomLetter() rune {
 	return rune(65 + rand.Intn(26))
 }
 
-func RandomRuneFromString(s string) rune {
-	rs := []rune(s)
-	return rs[rand.Intn(len(rs))]
+func RandomRuneFrom(s []rune) rune {
+	return s[rand.Intn(len(s))]
 }
 
 func ToPadded(s string, width int) string {
@@ -52,7 +40,7 @@ func ToPadded(s string, width int) string {
 		utils.SeedRand()
 
 		for i := 0; i < pad; i++ {
-			rpad = append(rpad, RandomRuneFromString(s))
+			rpad = append(rpad, RandomRuneFrom(rs))
 		}
 	}
 
@@ -71,7 +59,7 @@ func ToUnpadded(s string, width int) string {
 
 func ToAlpha(s string) string {
 	rs := []rune(s)
-	result := make([]rune, 0, utf8.RuneCountInString(s))
+	result := make([]rune, 0, len(rs))
 
 	for _, r := range rs {
 		if unicode.IsLetter(r) {
@@ -84,7 +72,7 @@ func ToAlpha(s string) string {
 
 func ToAlphaNumeric(s string) string {
 	rs := []rune(s)
-	result := make([]rune, 0, utf8.RuneCountInString(s))
+	result := make([]rune, 0, len(rs))
 
 	for _, r := range rs {
 		if unicode.IsLetter(r) || unicode.IsNumber(r) {
@@ -109,7 +97,7 @@ func ToJToI(s string) string {
 
 func ToSpaced(s string, n int) string {
 	rs := []rune(s)
-
+	
 	if len(rs) == 0 {
 		return s
 	}
@@ -138,11 +126,10 @@ func triangleNumber(n int) int {
 	return sum
 }
 
-func buildIndexMap(alphabet string) map[rune]int {
-	ralphabet := []rune(alphabet)
-	amap := make(map[rune]int, len(ralphabet))
+func buildIndexMap(alphabet []rune) map[rune]int {
+	amap := make(map[rune]int, len(alphabet))
 
-	for i, r := range ralphabet {
+	for i, r := range alphabet {
 		amap[r] = i
 	}
 
