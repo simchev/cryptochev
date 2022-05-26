@@ -102,3 +102,36 @@ func cryptVigenere(s string, alphabet string, key string, encrypt bool) string {
 
 	return string(result)
 }
+
+type VigenereBeaufort struct {
+	Data *CipherClassicalData[KeyVigenere]
+}
+
+func (c *VigenereBeaufort) GetText() string { return c.Data.Text }
+func (c *VigenereBeaufort) Encrypt() { c.Data.Text = cryptVigenere(c.Data.Text, c.Data.Key.Alphabet, c.Data.Key.Key, false) }
+func (c *VigenereBeaufort) Decrypt() { c.Data.Text = cryptVigenere(c.Data.Text, c.Data.Key.Alphabet, c.Data.Key.Key, true) }
+
+func gronsfeldToVigenereKey(alphabet string, key string) string {
+	ra := []rune(alphabet)
+	keyv := make([]rune, 0, len(key))
+
+	for _, r := range key {
+		if unicode.IsDigit(r) {
+			keyv = append(keyv, ra[r - '0'])
+		}
+	}
+
+	return string(keyv)
+}
+
+type VigenereGronsfeld struct {
+	Data *CipherClassicalData[KeyVigenere]
+}
+
+func (c *VigenereGronsfeld) GetText() string { return c.Data.Text }
+func (c *VigenereGronsfeld) Encrypt() { c.Data.Text = cryptVigenere(c.Data.Text, c.Data.Key.Alphabet, gronsfeldToVigenereKey(c.Data.Key.Alphabet, c.Data.Key.Key), true) }
+func (c *VigenereGronsfeld) Decrypt() { c.Data.Text = cryptVigenere(c.Data.Text, c.Data.Key.Alphabet, gronsfeldToVigenereKey(c.Data.Key.Alphabet, c.Data.Key.Key), false) }
+
+/*type VigenereGromark struct {
+	Data *CipherClassicalData[KeyVigenere]
+}*/

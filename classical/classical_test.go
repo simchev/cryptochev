@@ -84,6 +84,30 @@ func TestVigenere(t *testing.T) {
 	}
 }
 
+func TestVigenereBeaufort(t *testing.T) {
+	keys := [...]string{"", "LEMON", "MONSTEC", "CLEF", "SECRAT"}
+	alphabets := [...]string{AlphabetL, AlphabetL36, "ACEMNOSTUY", AlphabetL, AlphabetL36}
+	expects := [...]string{"WDYOAYCLUFLTFRPQVNMHZTRFG", "LAYFGZ99WGPXXVXB", "SANOMESMTUTO", "UTHJTTLVIXOOYCEYCHPMMNEIBXW", "2KSULZWN92JR57GBCVBARX"}
+
+	for i, test := range tests {
+		key := KeyVigenere{Alphabet: alphabets[i], Key: keys[i]}
+		c := VigenereBeaufort{Data: &CipherClassicalData[KeyVigenere]{Text: test, Key: &key}}
+		testCipher(t, &c, expects[i], test)
+	}
+}
+
+func TestVigenereGronsfeld(t *testing.T) {
+	keys := [...]string{"15642", "23578", "", "15240", "0123"}
+	alphabets := [...]string{AlphabetL, AlphabetL36, "ACEMNOSTUY", AlphabetL, AlphabetL36}
+	expects := [...]string{"XJGVGENYGQWJXIFGQKICUTTGG", "YHF12CFPH235EGIO", "YSANNYMMACMM", "XJNSVFUCOITYCRIEJUXRPDKRDJF", "JPWELJGUAJLDMBKVCFVHTF"}
+
+	for i, test := range tests {
+		key := KeyVigenere{Alphabet: alphabets[i], Key: keys[i]}
+		c := VigenereGronsfeld{Data: &CipherClassicalData[KeyVigenere]{Text: test, Key: &key}}
+		testCipher(t, &c, expects[i], test)
+	}
+}
+
 func TestReverse(t *testing.T) {
 	expects := [...]string{"ECNOTAEELFDEREVOCSIDERAEW", "MA0021TAKCATTAEW", "EMEESTNACUOY", "AIDNIYORTSEDINATSIKAPEVOLEW", "ETETECSIAMAJIAREILBUOJ"}
 
