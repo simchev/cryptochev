@@ -29,5 +29,6 @@ type CipherClassicalKey interface {
 		KeyColumnDCount |
 		KeyColumnDLine |
 		KeyVigenere |
-		KeySubstitute
+		KeySubstitute |
+		KeyAutokey
 }

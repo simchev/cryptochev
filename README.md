@@ -4,4 +4,4 @@ Cryptographic module in Go.
 
 Unimplemented ciphers:
 - Running key: use Vigenere.
-- Pigpen, Templar, etc. (substitutions): use Substitute.
+- Direct substitutions (ex: Pigpen): use Substitute.

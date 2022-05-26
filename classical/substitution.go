@@ -142,3 +142,29 @@ func (c *VigenereGronsfeld) GetText() []rune { return c.Data.Text }
 func (c *VigenereGronsfeld) Encrypt() { c.Data.Text = cryptVigenere(c.Data.Text, c.Data.Key.Alphabet, gronsfeldToVigenereKey(c.Data.Key.Alphabet, c.Data.Key.Key), true) }
 func (c *VigenereGronsfeld) Decrypt() { c.Data.Text = cryptVigenere(c.Data.Text, c.Data.Key.Alphabet, gronsfeldToVigenereKey(c.Data.Key.Alphabet, c.Data.Key.Key), false) }
 
+type KeyAutokey struct {
+	Alphabet []rune
+	Primer []rune
+}
+
+type Autokey struct {
+	Data *CipherClassicalData[KeyAutokey]
+}
+
+func (c *Autokey) GetText() []rune { return c.Data.Text }
+func (c *Autokey) Encrypt() { c.Data.Text = cryptVigenere(c.Data.Text, c.Data.Key.Alphabet, append(c.Data.Key.Primer, c.Data.Text...), true) }
+func (c *Autokey) Decrypt() { c.Data.Text = decryptAutokey(c.Data.Text, c.Data.Key.Alphabet, c.Data.Key.Primer) }
+
+func decryptAutokey(s []rune, alphabet []rune, primer []rune) []rune {
+	result := make([]rune, len(s))
+	key := make([]rune, 0, len(s) + len(primer))
+	key = append(key, primer...)
+	amap := buildIndexMap(alphabet)
+	
+	for i, r := range s {
+		result[i] = alphabet[(amap[r] - amap[key[i]] + len(alphabet)) % len(alphabet)]
+		key = append(key, result[i])
+	}
+
+	return result
+}

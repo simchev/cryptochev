@@ -391,3 +391,27 @@ func TestADFGVX(t *testing.T) {
 		testCipher(t, &c, expects[i], test)
 	}
 }
+
+func TestAutokey(t *testing.T) {
+	primers := [...]string{"ALLO", "SALUT", "BONJOUR", "COMMENT", "CAVA"}
+	alphabets := [...]string{
+		"92DF6VSMBG3I0HZQ17WYRLA5CETPKNX8J4UO",
+		"REBSNFZU8DP46CH9XMW1VY32GAKOJL750ITQ",
+		"LIGQPV5WFYU913OX8MADBE62ZHSCK7JR0N4T",
+		"3U0NBY1PXLVRDWA89GT67F2OJQ5EIZS4KCMH",
+		"EO4QB7GFA3Y5HMCJ10P9KN2S8ZVRDW6LXTIU",
+	}
+	expects := [...]string{
+		"63MYMP4TH218BCMKVZPEICW3Q", 
+		"YKWF0UH9208R3Y2R", 
+		"7KWE0WJTTRFQ", 
+		"VAPFUSQEOUGIYV1X6J3Q5CBS1VQ", 
+		"W3ZHYUULQXJUNGMLRALS5E",
+	}
+
+	for i, test := range tests {
+		key := KeyAutokey{Alphabet: []rune(alphabets[i]), Primer: []rune(primers[i])}
+		c := Autokey{Data: &CipherClassicalData[KeyAutokey]{Text: []rune(test), Key: &key}}
+		testCipher(t, &c, expects[i], test)
+	}
+}

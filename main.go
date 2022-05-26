@@ -6,11 +6,11 @@ import (
 )
 
 func main() {
-	s := "WEATTACKAT1200AM"
-	key1 := classical.AlphabetL36
-	key2 := "あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもん"
-	key := classical.KeySubstitute{Alphabet: []rune(key1), SAlphabet: []rune(key2)}
-	c := classical.Substitute{Data: &classical.CipherClassicalData[classical.KeySubstitute]{Text: []rune(s), Key: &key}}
+	s := "ATTACKATDAWN"
+	key1 := classical.AlphabetL
+	key2 := "QUEENLY"
+	key := classical.KeyAutokey{Alphabet: []rune(key1), Primer: []rune(key2)}
+	c := classical.Autokey{Data: &classical.CipherClassicalData[classical.KeyAutokey]{Text: []rune(s), Key: &key}}
 
 	fmt.Println(classical.ToSpaced(string(c.Data.Text), 5))
 	c.Encrypt()
