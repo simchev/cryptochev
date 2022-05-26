@@ -1,6 +1,7 @@
 package classical
 
 import (
+	"cryptochev/utils"
 	"math"
 )
 
@@ -29,10 +30,10 @@ type Zigzag struct {
 }
 
 func (c *Zigzag) GetText() string { return c.Data.Text }
-func (c *Zigzag) Encrypt() { c.Data.Text = encryptZigzag(c.Data.Text, int(*c.Data.Key)) }
-func (c *Zigzag) Decrypt() { c.Data.Text = decryptZigzag(c.Data.Text, int(*c.Data.Key)) }
+func (c *Zigzag) Encrypt() { c.Data.Text = cryptZigzag(c.Data.Text, int(*c.Data.Key), true) }
+func (c *Zigzag) Decrypt() { c.Data.Text = cryptZigzag(c.Data.Text, int(*c.Data.Key), false) }
 
-func encryptZigzag(s string, key int) string {
+func cryptZigzag(s string, key int, encrypt bool) string {
 	if key < 2 {
 		return s
 	}
@@ -48,48 +49,15 @@ func encryptZigzag(s string, key int) string {
 
 		for j < len(s) {
 			if d1 != 0 {
-				result[rIndex] = rs[j]
+				i1, i2 := utils.ReverseIf(j, rIndex, encrypt)
+				result[i1] = rs[i2]
 				j += d1
 				rIndex++
 			}
 
 			if d2 != 0 && j < len(s) {
-				result[rIndex] = rs[j]
-				j += d2
-				rIndex++
-			}
-		}
-
-		d1 -= 2
-		d2 += 2
-	}
-
-	return string(result)
-}
-
-func decryptZigzag(s string, key int) string {
-	if key < 2 {
-		return s
-	}
-
-	rs := []rune(s)
-	result := make([]rune, len(s))
-	d1 := 2 * (key - 1)
-	d2 := 0
-	rIndex := 0
-
-	for i := 0; i < key; i++ {
-		j := i
-
-		for j < len(s) {
-			if d1 != 0 {
-				result[j] = rs[rIndex]
-				j += d1
-				rIndex++
-			}
-
-			if d2 != 0 && j < len(s) {
-				result[j] = rs[rIndex]
+				i1, i2 := utils.ReverseIf(j, rIndex, encrypt)
+				result[i1] = rs[i2]
 				j += d2
 				rIndex++
 			}
@@ -108,10 +76,10 @@ type Scytale struct {
 }
 
 func (c *Scytale) GetText() string { return c.Data.Text }
-func (c *Scytale) Encrypt() { c.Data.Text = encryptScytale(c.Data.Text, int(*c.Data.Key)) }
-func (c *Scytale) Decrypt() { c.Data.Text = decryptScytale(c.Data.Text, int(*c.Data.Key)) }
+func (c *Scytale) Encrypt() { c.Data.Text = cryptScytale(c.Data.Text, int(*c.Data.Key), true) }
+func (c *Scytale) Decrypt() { c.Data.Text = cryptScytale(c.Data.Text, int(*c.Data.Key), false) }
 
-func encryptScytale(s string, key int) string {
+func cryptScytale(s string, key int, encrypt bool) string {
 	if key < 2 {
 		return s
 	}
@@ -124,29 +92,8 @@ func encryptScytale(s string, key int) string {
 		j := i
 
 		for j < len(s) {
-			result[rIndex] = rs[j]
-			j += key
-			rIndex++
-		}
-	}
-
-	return string(result)
-}
-
-func decryptScytale(s string, key int) string {
-	if key < 2 {
-		return s
-	}
-
-	rs := []rune(s)
-	result := make([]rune, len(s))
-	rIndex := 0
-
-	for i := 0; i < key; i++ {
-		j := i
-
-		for j < len(s) {
-			result[j] = rs[rIndex]
+			i1, i2 := utils.ReverseIf(j, rIndex, encrypt)
+			result[i1] = rs[i2]
 			j += key
 			rIndex++
 		}
@@ -217,11 +164,8 @@ func cryptRoute(s string, width int, r route, rt routeType, encrypt bool) string
 				for r := 0; r < rows; r++ {
 					index := j + i * width
 					if index < len(rs) {
-						if encrypt {
-							result[rIndex] = rs[index]
-						} else {
-							result[index] = rs[rIndex]
-						}
+						i1, i2 := utils.ReverseIf(index, rIndex, encrypt)
+						result[i1] = rs[i2]
 						rIndex++
 					}
 					i -= int(imag(direction))
@@ -232,11 +176,8 @@ func cryptRoute(s string, width int, r route, rt routeType, encrypt bool) string
 				for c := 0; c < cols; c++ {
 					index := j + i * width
 					if index < len(rs) {
-						if encrypt {
-							result[rIndex] = rs[index]
-						} else {
-							result[index] = rs[rIndex]
-						}
+						i1, i2 := utils.ReverseIf(index, rIndex, encrypt)
+						result[i1] = rs[i2]
 						rIndex++
 					}
 					j += int(real(direction))
@@ -255,11 +196,8 @@ func cryptRoute(s string, width int, r route, rt routeType, encrypt bool) string
 				for r := 0; r < rows; r++ {
 					index := j + i * width
 					if index < len(s) {
-						if encrypt {
-							result[rIndex] = rs[index]
-						} else {
-							result[index] = rs[rIndex]
-						}
+						i1, i2 := utils.ReverseIf(index, rIndex, encrypt)
+						result[i1] = rs[i2]
 						rIndex++
 					}
 					i -= int(imag(direction))
@@ -270,11 +208,8 @@ func cryptRoute(s string, width int, r route, rt routeType, encrypt bool) string
 				for c := 0; c < cols; c++ {
 					index := j + i * width
 					if index < len(rs) {
-						if encrypt {
-							result[rIndex] = rs[index]
-						} else {
-							result[index] = rs[rIndex]
-						}
+						i1, i2 := utils.ReverseIf(index, rIndex, encrypt)
+						result[i1] = rs[i2]
 						rIndex++
 					}
 					j += int(real(direction))
@@ -316,42 +251,26 @@ type Magnet struct {
 }
 
 func (c *Magnet) GetText() string { return c.Data.Text }
-func (c *Magnet) Encrypt() { c.Data.Text = encryptMagnet(c.Data.Text) }
-func (c *Magnet) Decrypt() { c.Data.Text = decryptMagnet(c.Data.Text) }
+func (c *Magnet) Encrypt() { c.Data.Text = cryptMagnet(c.Data.Text, true) }
+func (c *Magnet) Decrypt() { c.Data.Text = cryptMagnet(c.Data.Text, false) }
 
-func encryptMagnet(s string) string {
+func cryptMagnet(s string, encrypt bool) string {
 	rs := []rune(s)
 	result := make([]rune, len(s))
 	mid := len(s) / 2
 	rIndex := 0
 
 	for i := 0; i < mid; i++ {
-		result[rIndex] = rs[i]
-		result[rIndex + 1] = rs[len(s) - i - 1]
+		i1, i2 := utils.ReverseIf(i, rIndex, encrypt)
+		result[i1] = rs[i2]
+		i1, i2 = utils.ReverseIf(len(s) - i - 1, rIndex + 1, encrypt)
+		result[i1] = rs[i2]
 		rIndex += 2
 	}
 
 	if len(s) % 2 != 0 {
-		result[rIndex] = rs[mid]
-	}
-
-	return string(result)
-}
-
-func decryptMagnet(s string) string {
-	rs := []rune(s)
-	result := make([]rune, len(s))
-	mid := len(s) / 2
-	rIndex := 0
-
-	for i := 0; i < mid; i++ {
-		result[i] = rs[rIndex]
-		result[len(s) - i - 1] = rs[rIndex + 1]
-		rIndex += 2
-	}
-
-	if len(s) % 2 != 0 {
-		result[mid] = rs[rIndex]
+		i1, i2 := utils.ReverseIf(mid, rIndex, encrypt)
+		result[i1] = rs[i2]
 	}
 
 	return string(result)
@@ -363,10 +282,10 @@ type Elastic struct {
 }
 
 func (c *Elastic) GetText() string { return c.Data.Text }
-func (c *Elastic) Encrypt() { c.Data.Text = encryptElastic(c.Data.Text) }
-func (c *Elastic) Decrypt() { c.Data.Text = decryptElastic(c.Data.Text) }
+func (c *Elastic) Encrypt() { c.Data.Text = cryptElastic(c.Data.Text, true) }
+func (c *Elastic) Decrypt() { c.Data.Text = cryptElastic(c.Data.Text, false) }
 
-func encryptElastic(s string) string {
+func cryptElastic(s string, encrypt bool) string {
 	rs := []rune(s)
 	result := make([]rune, len(s))
 	mid := len(s) / 2
@@ -374,36 +293,17 @@ func encryptElastic(s string) string {
 	rIndex := 0
 
 	if len(s) % 2 != 0 {
-		result[rIndex] = rs[mid]
+		i1, i2 := utils.ReverseIf(mid, rIndex, encrypt)
+		result[i1] = rs[i2]
 		rIndex++
 		diff = 1
 	}
-
+	
 	for i := 0; i < mid; i++ {
-		result[rIndex] = rs[mid - i - 1]
-		result[rIndex + 1] = rs[mid + i + diff]
-		rIndex += 2
-	}
-
-	return string(result)
-}
-
-func decryptElastic(s string) string {
-	rs := []rune(s)
-	result := make([]rune, len(s))
-	mid := len(s) / 2
-	diff := 0
-	rIndex := 0
-
-	if len(s) % 2 != 0 {
-		result[mid] = rs[rIndex]
-		rIndex++
-		diff = 1
-	}
-
-	for i := 0; i < mid; i++ {
-		result[mid - i - 1] = rs[rIndex]
-		result[mid + i + diff] = rs[rIndex + 1]
+		i1, i2 := utils.ReverseIf(mid - i - 1, rIndex, encrypt)
+		result[i1] = rs[i2]
+		i1, i2 = utils.ReverseIf(mid + i + diff, rIndex + 1, encrypt)
+		result[i1] = rs[i2]
 		rIndex += 2
 	}
 

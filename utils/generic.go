@@ -17,3 +17,10 @@ func IndexOf[T comparable](collection []T, el T) int {
 	}
 	return -1
 }
+
+func ReverseIf[T comparable](t1 T, t2 T, c bool) (T, T) {
+	if c {
+		t1, t2 = t2, t1
+	}
+	return t1, t2
+}

@@ -10,16 +10,6 @@ const AlphabetL = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 const AlphabetL25 = "ABCDEFGHIKLMNOPQRSTUVWXYZ"
 const AlphabetL36 = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
 
-func buildIndexMap(alphabet string) map[rune]int {
-	amap := make(map[rune]int, len(alphabet))
-
-	for i, r := range alphabet {
-		amap[r] = i
-	}
-
-	return amap
-}
-
 func ShuffleString(s string) string {
 	r := []rune(s)
 
@@ -136,4 +126,14 @@ func triangleNumber(n int) int {
 		sum += i
 	}
 	return sum
+}
+
+func buildIndexMap(alphabet string) map[rune]int {
+	amap := make(map[rune]int, len(alphabet))
+
+	for i, r := range alphabet {
+		amap[r] = i
+	}
+
+	return amap
 }
