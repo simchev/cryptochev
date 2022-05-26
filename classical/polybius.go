@@ -18,11 +18,12 @@ func (c *Polybius) Decrypt() {
 }
 
 func encryptPolybius(s string, alphabet string, header string) string {
+	rs := []rune(s)
 	rheader := []rune(header)
 	amap := buildIndexMap(alphabet)
-	result := make([]rune, len(s)*2)
+	result := make([]rune, len(rs)*2)
 
-	for i, r := range s {
+	for i, r := range rs {
 		result[i*2] = rheader[amap[r]/len(header)]
 		result[i*2+1] = rheader[amap[r]%len(header)]
 	}
@@ -31,12 +32,12 @@ func encryptPolybius(s string, alphabet string, header string) string {
 }
 
 func decryptPolybius(s string, alphabet string, header string) string {
+	rs := []rune(s)
 	ralphabet := []rune(alphabet)
 	hmap := buildIndexMap(header)
-	rs := []rune(s)
-	result := make([]rune, len(s)/2)
+	result := make([]rune, len(rs)/2)
 
-	for i := 0; i < len(s); i += 2 {
+	for i := 0; i < len(rs); i += 2 {
 		result[i/2] = ralphabet[hmap[rs[i]]*len(header)+hmap[rs[i+1]]]
 	}
 

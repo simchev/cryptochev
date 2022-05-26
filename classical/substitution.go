@@ -4,6 +4,32 @@ import (
 	"unicode"
 )
 
+type KeySubstitute struct {
+	Alphabet string
+	SAlphabet string
+}
+
+type Substitute struct {
+	Data *CipherClassicalData[KeySubstitute]
+}
+
+func (c *Substitute) GetText() string { return c.Data.Text }
+func (c *Substitute) Encrypt() { c.Data.Text = substitute(c.Data.Text, c.Data.Key.Alphabet, c.Data.Key.SAlphabet) }
+func (c *Substitute) Decrypt() { c.Data.Text = substitute(c.Data.Text, c.Data.Key.SAlphabet, c.Data.Key.Alphabet) }
+
+func substitute(s string, alphabet string, salphabet string) string {
+	rs := []rune(s)
+	result := make([]rune, len(rs))
+	rsa := []rune(salphabet)
+	amap := buildIndexMap(alphabet)
+
+	for i, r := range rs {
+		result[i] = rsa[amap[r]]
+	}
+
+	return string(result)
+}
+
 type KeyShift int
 type Shift struct {
 	Data *CipherClassicalData[KeyShift]
@@ -14,7 +40,7 @@ func (c *Shift) Encrypt() { c.Data.Text = shift(c.Data.Text, int(*c.Data.Key)) }
 func (c *Shift) Decrypt() { c.Data.Text = shift(c.Data.Text, -int(*c.Data.Key)) }
 
 func shift(s string, shift int) string {
-	shifted := make([]rune, len(s))
+	shifted := []rune(s)
 	rshift := rune(shift)
 
 	for i, r := range s {
@@ -36,24 +62,15 @@ func (c *Caesar) Decrypt() { c.Data.Text = shiftAlphabet(c.Data.Text, -int(*c.Da
 func shiftAlphabet(s string, shift int) string {
 	shifted := []rune(s)
 	rshift := rune(shift % 26)
+	if rshift < 0 {
+		rshift += 26
+	}
 
-	for i, r := range s {
+	for i, r := range shifted {
 		if unicode.IsUpper(r) {
-			shifted[i] = r + rshift
-
-			if shifted[i] < 65 {
-				shifted[i] += 26
-			} else if shifted[i] > 90 {
-				shifted[i] -= 26
-			}
+			shifted[i] = (shifted[i] + rshift - 'A') % 26 + 'A'
 		} else if unicode.IsLower(r) {
-			shifted[i] = r + rshift
-
-			if shifted[i] < 97 {
-				shifted[i] += 26
-			} else if shifted[i] > 122 {
-				shifted[i] -= 26
-			}
+			shifted[i] = (shifted[i] + rshift - 'a') % 26 + 'a'
 		}
 	}
 
@@ -87,16 +104,17 @@ func cryptVigenere(s string, alphabet string, key string, encrypt bool) string {
 		key = alphabet
 	}
 
-	result := make([]rune, len(s))
+	rs := []rune(s)
+	result := make([]rune, len(rs))
 	amap := buildIndexMap(alphabet)
 	ra := []rune(alphabet)
 	rk := []rune(key)
 	
-	for i, r := range s {
+	for i, r := range rs {
 		if encrypt {
-			result[i] = ra[(amap[r] + amap[rk[i % len(rk)]]) % len(alphabet)]
+			result[i] = ra[(amap[r] + amap[rk[i % len(rk)]]) % len(ra)]
 		} else {
-			result[i] = ra[(amap[r] - amap[rk[i % len(rk)]] + len(alphabet)) % len(alphabet)]
+			result[i] = ra[(amap[r] - amap[rk[i % len(rk)]] + len(ra)) % len(ra)]
 		}
 	}
 
@@ -113,9 +131,10 @@ func (c *VigenereBeaufort) Decrypt() { c.Data.Text = cryptVigenere(c.Data.Text, 
 
 func gronsfeldToVigenereKey(alphabet string, key string) string {
 	ra := []rune(alphabet)
-	keyv := make([]rune, 0, len(key))
+	rkey := []rune(key)
+	keyv := make([]rune, 0, len(rkey))
 
-	for _, r := range key {
+	for _, r := range rkey {
 		if unicode.IsDigit(r) {
 			keyv = append(keyv, ra[r - '0'])
 		}
@@ -132,6 +151,3 @@ func (c *VigenereGronsfeld) GetText() string { return c.Data.Text }
 func (c *VigenereGronsfeld) Encrypt() { c.Data.Text = cryptVigenere(c.Data.Text, c.Data.Key.Alphabet, gronsfeldToVigenereKey(c.Data.Key.Alphabet, c.Data.Key.Key), true) }
 func (c *VigenereGronsfeld) Decrypt() { c.Data.Text = cryptVigenere(c.Data.Text, c.Data.Key.Alphabet, gronsfeldToVigenereKey(c.Data.Key.Alphabet, c.Data.Key.Key), false) }
 
-/*type VigenereGromark struct {
-	Data *CipherClassicalData[KeyVigenere]
-}*/

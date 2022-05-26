@@ -40,6 +40,30 @@ func testCipherRegex(t *testing.T, c CipherClassical, regex string, test string)
 	}
 }
 
+func TestSubstitute(t *testing.T) {
+	alphabets := [...]string{AlphabetL, AlphabetL36, AlphabetL, AlphabetL25, AlphabetL}
+	salphabets := [...]string{
+		"0123456789!\"/$%?&*()±@£¢¤²", 
+		"あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもん", 
+		"一二三四五六七八九十人上下千百口土中女子円火犬猫本体", 
+		"ΑΒΓΔδΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ", 
+		"АБВГДЕЖꙂꙀИІКЛМНОПРСТФХѠЦЧШ",
+	}
+	expects := [...]string{
+		"£40*438(2%@4*435\"440)%$24", 
+		"ぬおあととあうさあとひふんんあす", 
+		"本百円三一千子女五五下五", 
+		"ΦδΚΝΥδΞΑΙΘΡΣΑΜΘΔδΡΣΠΝΨΘΜΔΘΑ", 
+		"ИНФБКꙀДРАꙀИАЛАꙀСВДТДТД",
+	}
+
+	for i, test := range tests {
+		key := KeySubstitute{Alphabet: alphabets[i], SAlphabet: salphabets[i]}
+		c := Substitute{Data: &CipherClassicalData[KeySubstitute]{Text: test, Key: &key}}
+		testCipher(t, &c, expects[i], test)
+	}
+}
+
 func TestShift(t *testing.T) {
 	shifts := [...]int{5, 10, -8, 3, 13}
 	expects := [...]string{"\\JFWJINXHT[JWJIKQJJFYTSHJ", "aOK^^KMUK^;<::KW", "QGM;9FLK==E=", "ZHORYHSDNLVWDQLGHVWUR\\LQGLD", "W\\bOYVR_NVWNZNV`PRaRaR"}
@@ -127,7 +151,7 @@ func TestColumn(t *testing.T) {
 		key := KeyColumn(keys[i])
 		c := Column{Data: &CipherClassicalData[KeyColumn]{Text: test, Key: &key}}
 		testCipher(t, &c, expects[i], test)
-		test2 := ToPadded(test, len(keys[i]))
+		test2 := ToPadded(test, len([]rune(keys[i])))
 		c2 := Column{Data: &CipherClassicalData[KeyColumn]{Text: test2, Key: &key}}
 		testCipherRegex(t, &c2, expectsPad[i], test2)
 	}
@@ -232,7 +256,7 @@ func TestMyszkowski(t *testing.T) {
 		key := KeyMyszkowski(keys[i])
 		c := Myszkowski{Data: &CipherClassicalData[KeyMyszkowski]{Text: test, Key: &key}}
 		testCipher(t, &c, expects[i], test)
-		test2 := ToPadded(test, len(keys[i]))
+		test2 := ToPadded(test, len([]rune(keys[i])))
 		c2 := Myszkowski{Data: &CipherClassicalData[KeyMyszkowski]{Text: test2, Key: &key}}
 		testCipherRegex(t, &c2, expectsPad[i], test2)
 	}
@@ -304,7 +328,7 @@ func TestPolybius(t *testing.T) {
 
 	for i, test := range tests {
 		key := KeyPolybius{Alphabet: alphabets[i], Header: headers[i]}
-		if len(headers[i]) < 6 && strings.Contains(test, "J") {
+		if len([]rune(headers[i])) < 6 && strings.Contains(test, "J") {
 			test = ToJToI(test)
 		}
 		c := Polybius{Data: &CipherClassicalData[KeyPolybius]{Text: test, Key: &key}}

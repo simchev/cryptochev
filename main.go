@@ -6,11 +6,11 @@ import (
 )
 
 func main() {
-	s := "WEAREDISCOVEREDFLEEATONCE"
-	key1 := "CRYPTO"
-	key2 := "SECRET"
-	key := classical.KeyColumnDCount{CKey: key1, DKey: key2}
-	c := classical.ColumnDCount{Data: &classical.CipherClassicalData[classical.KeyColumnDCount]{Text: s, Key: &key}}
+	s := "WEATTACKAT1200AM"
+	key1 := classical.AlphabetL36
+	key2 := "あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもん"
+	key := classical.KeySubstitute{Alphabet: key1, SAlphabet: key2}
+	c := classical.Substitute{Data: &classical.CipherClassicalData[classical.KeySubstitute]{Text: s, Key: &key}}
 
 	fmt.Println(classical.ToSpaced(c.Data.Text, 5))
 	c.Encrypt()

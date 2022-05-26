@@ -2,8 +2,10 @@ package classical
 
 import (
 	"cryptochev/utils"
+	"math"
 	"math/rand"
 	"unicode"
+	"unicode/utf8"
 )
 
 const AlphabetL = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -11,13 +13,13 @@ const AlphabetL25 = "ABCDEFGHIKLMNOPQRSTUVWXYZ"
 const AlphabetL36 = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
 
 func ShuffleString(s string) string {
-	r := []rune(s)
+	rs := []rune(s)
 
-	rand.Shuffle(len(r), func(i, j int) {
-		r[i], r[j] = r[j], r[i]
+	rand.Shuffle(len(rs), func(i, j int) {
+		rs[i], rs[j] = rs[j], rs[i]
 	})
 
-	return string(r)
+	return string(rs)
 }
 
 func RandomAlphabetL() string {
@@ -37,58 +39,66 @@ func RandomLetter() rune {
 }
 
 func RandomRuneFromString(s string) rune {
-	return []rune(s)[rand.Intn(len(s))]
+	rs := []rune(s)
+	return rs[rand.Intn(len(rs))]
 }
 
 func ToPadded(s string, width int) string {
-	if len(s) % width != 0 {
-		pad := width - len(s) % width
+	rs := []rune(s)
+	rpad := make([]rune, 0, width)
+
+	if len(rs) % width != 0 {
+		pad := width - len(rs) % width
 		utils.SeedRand()
 
 		for i := 0; i < pad; i++ {
-			s += string(RandomRuneFromString(s))
+			rpad = append(rpad, RandomRuneFromString(s))
 		}
 	}
 
-	return s
+	return string(append(rs, rpad...))
 }
 
 func ToUnpadded(s string, width int) string {
-	if len(s) % width != 0 {
-		s = s[:len(s) - (width - len(s) % width)]
+	rs := []rune(s)
+
+	if len(rs) % width != 0 {
+		rs = rs[:len(rs) - (width - len(rs) % width)]
 	}
 
-	return s
+	return string(rs)
 }
 
 func ToAlpha(s string) string {
-	rs := make([]rune, 0, len(s))
+	rs := []rune(s)
+	result := make([]rune, 0, utf8.RuneCountInString(s))
 
-	for _, r := range s {
+	for _, r := range rs {
 		if unicode.IsLetter(r) {
-			rs = append(rs, r)
+			result = append(result, r)
 		}
 	}
 
-	return string(rs)
+	return string(result)
 }
 
 func ToAlphaNumeric(s string) string {
-	rs := make([]rune, 0, len(s))
+	rs := []rune(s)
+	result := make([]rune, 0, utf8.RuneCountInString(s))
 
-	for _, r := range s {
+	for _, r := range rs {
 		if unicode.IsLetter(r) || unicode.IsNumber(r) {
-			rs = append(rs, r)
+			result = append(result, r)
 		}
 	}
 
-	return string(rs)
+	return string(result)
 }
 
 func ToJToI(s string) string {
 	rs := []rune(s)
 
-	for i, r := range s {
+	for i, r := range rs {
 		if r == 74 || r == 106 {
 			rs[i]--
 		}
@@ -98,26 +108,26 @@ func ToJToI(s string) string {
 }
 
 func ToSpaced(s string, n int) string {
-	spaced := ""
+	rs := []rune(s)
 
-	for i := 0; i < len(s); i += n {
+	if len(rs) == 0 {
+		return s
+	}
+
+	result := make([]rune, 0, len(rs) + int(math.Ceil(float64(len(rs)) / float64(n))))
+
+	for i := 0; i < len(rs); i += n {
 		end := i + n
 
-		if end > len(s) {
-			end = len(s)
+		if end > len(rs) {
+			end = len(rs)
 		}
 
-		spaced += s[i:end]
-		spaced += " "
+		result = append(result, rs[i:end]...)
+		result = append(result, ' ')
 	}
 
-	if len(s) / n > 0 {
-		spaced = spaced[0:len(spaced) - 1]
-	} else {
-		spaced = s
-	}
-
-	return spaced
+	return string(result[0:len(result)-1])
 }
 
 func triangleNumber(n int) int {
@@ -129,9 +139,10 @@ func triangleNumber(n int) int {
 }
 
 func buildIndexMap(alphabet string) map[rune]int {
-	amap := make(map[rune]int, len(alphabet))
+	ralphabet := []rune(alphabet)
+	amap := make(map[rune]int, len(ralphabet))
 
-	for i, r := range alphabet {
+	for i, r := range ralphabet {
 		amap[r] = i
 	}
 

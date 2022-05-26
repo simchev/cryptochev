@@ -17,7 +17,7 @@ func (c *Column) Decrypt() { c.Data.Text = cryptColumn(c.Data.Text, string(*c.Da
 
 func getSortedKeyIndices(key string) []int {
 	rKey := []rune(key)
-	rKeyIndices := make([]int, len(key))
+	rKeyIndices := make([]int, len(rKey))
 	for i := 0; i < len(rKey); i++ {
 		rKeyIndices[i] = i;
 	}
@@ -30,17 +30,17 @@ func getSortedKeyIndices(key string) []int {
 }
 
 func cryptColumn(s string, key string, encrypt bool) string {
-	keySize := len(key)
+	rkey := []rune(key)
 	rs := []rune(s)
-	result := make([]rune, len(s))
+	result := make([]rune, len(rs))
 	rKeyIndices := getSortedKeyIndices(key)
 
-	rows := int(math.Ceil(float64(len(s)) / float64(keySize)))
+	rows := int(math.Ceil(float64(len(rs)) / float64(len(rkey))))
 	sIndex := 0
 	for _, i := range rKeyIndices {
 		for j := 0; j < rows; j++ {
-			index := i + j * keySize
-			if index < len(s) {
+			index := i + j * len(rkey)
+			if index < len(rs) {
 				i1, i2 := utils.ReverseIf(index, sIndex, encrypt)
 				result[i1] = rs[i2]
 				sIndex++
@@ -61,13 +61,13 @@ func (c *Myszkowski) Encrypt() { c.Data.Text = cryptMyszkowski(c.Data.Text, stri
 func (c *Myszkowski) Decrypt() { c.Data.Text = cryptMyszkowski(c.Data.Text, string(*c.Data.Key), false) }
 
 func cryptMyszkowski(s string, key string, encrypt bool) string {
-	keySize := len(key)
+	rkey := []rune(key)
 	rs := []rune(s)
-	result := make([]rune, len(s))
+	result := make([]rune, len(rs))
 	rKey := []rune(key)
 	rKeyIndices := getSortedKeyIndices(key)
 
-	rows := int(math.Ceil(float64(len(s)) / float64(keySize)))
+	rows := int(math.Ceil(float64(len(rs)) / float64(len(rkey))))
 	sIndex := 0
 	for i := 0; i < len(rKeyIndices); i++ { 
 		equivalent := 0
@@ -81,8 +81,8 @@ func cryptMyszkowski(s string, key string, encrypt bool) string {
 
 		for j := 0; j < rows; j++ {
 			for k := 0; k < equivalent + 1; k++ {
-				index := rKeyIndices[i + k] + j * keySize
-				if index < len(s) {
+				index := rKeyIndices[i + k] + j * len(rkey)
+				if index < len(rs) {
 					i1, i2 := utils.ReverseIf(index, sIndex, encrypt)
 					result[i1] = rs[i2]
 					sIndex++
@@ -98,8 +98,8 @@ func cryptMyszkowski(s string, key string, encrypt bool) string {
 
 func getSortedKeyPositions(key string) []int {
 	rKey := []rune(key)
-	rKeyPositions := make([]int, len(key))
-	rKeyIndices := make([]int, len(key))
+	rKeyPositions := make([]int, len(rKey))
+	rKeyIndices := make([]int, len(rKey))
 	for i := 0; i < len(rKey); i++ {
 		rKeyIndices[i] = i;
 	}
@@ -134,22 +134,23 @@ func (c *ColumnDCount) Encrypt() { c.Data.Text = encryptColumnDCount(c.Data.Text
 func (c *ColumnDCount) Decrypt() { c.Data.Text = decryptColumnDCount(c.Data.Text, c.Data.Key.CKey, c.Data.Key.DKey) }
 
 func encryptColumnDCount(s string, key string, dkey string) string {
-	if len(dkey) < 2 {
+	rdkey := []rune(dkey)
+	if len(rdkey) < 2 {
 		return s
 	}
 
-	keySize := len(key)
+	rkey := []rune(key)
 	rs := []rune(s)
-	result := make([]rune, 0, len(s))
+	result := make([]rune, 0, len(rs))
 	rKeyIndices := getSortedKeyIndices(key)
 	rKeyPositions := getSortedKeyPositions(dkey)
 	gaps := 0
 	gapPos := 0
 
-	for gapPos < len(s) + gaps {
+	for gapPos < len(rs) + gaps {
 		for _, p := range rKeyPositions {
 			gapPos += p
-			if gapPos < len(s) + gaps {
+			if gapPos < len(rs) + gaps {
 				gaps++
 				gapPos++
 			} else {
@@ -158,18 +159,18 @@ func encryptColumnDCount(s string, key string, dkey string) string {
 		}
 	}
 
-	rows := int(math.Ceil(float64(len(s) + gaps) / float64(keySize)))
+	rows := int(math.Ceil(float64(len(rs) + gaps) / float64(len(rkey))))
 	gapCount := 0
 	posIndex := 0
 	nextGap := rKeyPositions[0]
 	grid := make([][]rune, rows)
 	for i := range grid {
-		grid[i] = make([]rune, keySize)
+		grid[i] = make([]rune, len(rkey))
 	}
 
 	for i := 0; i < rows; i++ {
-		for j := 0; j < keySize; j++ {
-			index := j + i * keySize
+		for j := 0; j < len(rkey); j++ {
+			index := j + i * len(rkey)
 			if index == nextGap {
 				posIndex++
 				if posIndex >= len(rKeyPositions) {
@@ -177,7 +178,7 @@ func encryptColumnDCount(s string, key string, dkey string) string {
 				}
 				nextGap += rKeyPositions[posIndex] + 1
 				gapCount++
-			} else if index - gapCount < len(s) {
+			} else if index - gapCount < len(rs) {
 				grid[i][j] = rs[index - gapCount]
 			} else {
 				break
@@ -197,23 +198,24 @@ func encryptColumnDCount(s string, key string, dkey string) string {
 }
 
 func decryptColumnDCount(s string, key string, dkey string) string {
-	if len(dkey) < 2 {
+	rdkey := []rune(dkey)
+	if len(rdkey) < 2 {
 		return s
 	}
 
-	keySize := len(key)
+	rkey := []rune(key)
 	rs := []rune(s)
-	result := make([]rune, 0, len(s))
+	result := make([]rune, 0, len(rs))
 	rKeyIndices := getSortedKeyIndices(key)
 	rKeyPositions := getSortedKeyPositions(dkey)
 	gaps := 0
 	gapPos := 0
-	gapIndices := make([]int, 0, int(math.Ceil(float64(triangleNumber(keySize)) / float64(triangleNumber(keySize - 1)) * float64(len(s)))))
+	gapIndices := make([]int, 0, int(math.Ceil(float64(triangleNumber(len(rkey))) / float64(triangleNumber(len(rkey) - 1)) * float64(len(rs)))))
 
-	for gapPos < len(s) + gaps {
+	for gapPos < len(rs) + gaps {
 		for _, p := range rKeyPositions {
 			gapPos += p
-			if gapPos < len(s) + gaps {
+			if gapPos < len(rs) + gaps {
 				gapIndices = append(gapIndices, gapPos)
 				gaps++
 				gapPos++
@@ -223,17 +225,17 @@ func decryptColumnDCount(s string, key string, dkey string) string {
 		}
 	}
 
-	rows := int(math.Ceil(float64(len(s) + gaps) / float64(keySize)))
+	rows := int(math.Ceil(float64(len(rs) + gaps) / float64(len(rkey))))
 	sIndex := 0
 	grid := make([][]rune, rows)
 	for i := range grid {
-		grid[i] = make([]rune, keySize)
+		grid[i] = make([]rune, len(rkey))
 	}
 
 	for _, i := range rKeyIndices {
 		for j := 0; j < rows; j++ {
-			index := i + j * keySize
-			if !utils.Contains(gapIndices, index) && index < len(s) + gaps && sIndex < len(s) {
+			index := i + j * len(rkey)
+			if !utils.Contains(gapIndices, index) && index < len(rs) + gaps && sIndex < len(rs) {
 				grid[j][i] = rs[sIndex]
 				sIndex++
 			}
@@ -241,7 +243,7 @@ func decryptColumnDCount(s string, key string, dkey string) string {
 	}
 
 	for i := 0; i < rows; i++ {
-		for j := 0; j < keySize; j++ {
+		for j := 0; j < len(rkey); j++ {
 			if grid[i][j] != 0 {
 				result = append(result, grid[i][j])
 			}
@@ -318,15 +320,15 @@ func buildDLineGrid(rs []rune, rKeyIndices []int, keySize int, fill bool) ([][]r
 }
 
 func encryptColumnDLine(s string, key string, fill bool) string {
-	if len(key) < 2 {
+	rkey := []rune(key)
+	if len(rkey) < 2 {
 		return s
 	}
-
-	keySize := len(key)
+	
 	rs := []rune(s)
-	result := make([]rune, 0, len(s))
+	result := make([]rune, 0, len(rs))
 	rKeyIndices := getSortedKeyIndices(key)
-	grid, rows := buildDLineGrid(rs, rKeyIndices, keySize, fill)
+	grid, rows := buildDLineGrid(rs, rKeyIndices, len(rkey), fill)
 
 	for _, i := range rKeyIndices {
 		for j := 0; j < rows; j++ {
@@ -340,19 +342,19 @@ func encryptColumnDLine(s string, key string, fill bool) string {
 }
 
 func decryptColumnDLine(s string, key string, fill bool) string {
-	if len(key) < 2 {
+	rkey := []rune(key)
+	if len(rkey) < 2 {
 		return s
 	}
 
-	keySize := len(key)
 	rs := []rune(s)
-	result := make([]rune, 0, len(s))
+	result := make([]rune, 0, len(rs))
 	rKeyIndices := getSortedKeyIndices(key)
-	grid, rows := buildDLineGrid(rs, rKeyIndices, keySize, fill)
+	grid, rows := buildDLineGrid(rs, rKeyIndices, len(rkey), fill)
 
 	grid2 := make([][]rune, rows)
 	for i := range grid2 {
-		grid2[i] = make([]rune, keySize)
+		grid2[i] = make([]rune, len(rkey))
 	}
 
 	sIndex := 0
@@ -368,9 +370,9 @@ func decryptColumnDLine(s string, key string, fill bool) string {
 	sIndex = 0
 	blockIndex := 0
 	out: for sIndex < len(rs) {
-		blockPos := blockIndex * keySize
+		blockPos := blockIndex * len(rkey)
 		for i, ki := range rKeyIndices {
-			for j := 0; j < keySize; j++ {
+			for j := 0; j < len(rkey); j++ {
 				result = append(result, grid2[i + blockPos][j])
 				sIndex++
 
@@ -384,7 +386,7 @@ func decryptColumnDLine(s string, key string, fill bool) string {
 
 		if fill {
 			for i, ki := range rKeyIndices {
-				for j := 0; j < keySize; j++ {
+				for j := 0; j < len(rkey); j++ {
 					if grid2[i + blockPos][j] != 0 && j > ki {
 						result = append(result, grid2[i + blockPos][j])
 						sIndex++
