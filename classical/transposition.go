@@ -22,26 +22,29 @@ func reverse(s []rune) []rune {
 	return s
 }
 
-type KeyZigzag int
+type KeyZigzag struct {
+	Lines int
+}
+
 type Zigzag struct {
 	Data *CipherClassicalData[KeyZigzag]
 }
 
 func (c *Zigzag) GetText() []rune { return c.Data.Text }
-func (c *Zigzag) Encrypt() { c.Data.Text = cryptZigzag(c.Data.Text, int(*c.Data.Key), true) }
-func (c *Zigzag) Decrypt() { c.Data.Text = cryptZigzag(c.Data.Text, int(*c.Data.Key), false) }
+func (c *Zigzag) Encrypt() { c.Data.Text = cryptZigzag(c.Data.Text, c.Data.Key.Lines, true) }
+func (c *Zigzag) Decrypt() { c.Data.Text = cryptZigzag(c.Data.Text, c.Data.Key.Lines, false) }
 
-func cryptZigzag(s []rune, key int, encrypt bool) []rune {
-	if key < 2 {
+func cryptZigzag(s []rune, lines int, encrypt bool) []rune {
+	if lines < 2 {
 		return s
 	}
 
 	result := make([]rune, len(s))
-	d1 := 2 * (key - 1)
+	d1 := 2 * (lines - 1)
 	d2 := 0
 	sIndex := 0
 
-	for i := 0; i < key; i++ {
+	for i := 0; i < lines; i++ {
 		j := i
 
 		for j < len(s) {
@@ -67,30 +70,33 @@ func cryptZigzag(s []rune, key int, encrypt bool) []rune {
 	return result
 }
 
-type KeyScytale int
+type KeyScytale struct {
+	Lines int
+}
+
 type Scytale struct {
 	Data *CipherClassicalData[KeyScytale]
 }
 
 func (c *Scytale) GetText() []rune { return c.Data.Text }
-func (c *Scytale) Encrypt() { c.Data.Text = cryptScytale(c.Data.Text, int(*c.Data.Key), true) }
-func (c *Scytale) Decrypt() { c.Data.Text = cryptScytale(c.Data.Text, int(*c.Data.Key), false) }
+func (c *Scytale) Encrypt() { c.Data.Text = cryptScytale(c.Data.Text, c.Data.Key.Lines, true) }
+func (c *Scytale) Decrypt() { c.Data.Text = cryptScytale(c.Data.Text, c.Data.Key.Lines, false) }
 
-func cryptScytale(s []rune, key int, encrypt bool) []rune {
-	if key < 2 {
+func cryptScytale(s []rune, lines int, encrypt bool) []rune {
+	if lines < 2 {
 		return s
 	}
 
 	result := make([]rune, len(s))
 	sIndex := 0
 
-	for i := 0; i < key; i++ {
+	for i := 0; i < lines; i++ {
 		j := i
 
 		for j < len(s) {
 			i1, i2 := utils.ReverseIf(j, sIndex, encrypt)
 			result[i1] = s[i2]
-			j += key
+			j += lines
 			sIndex++
 		}
 	}

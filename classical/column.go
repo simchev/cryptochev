@@ -6,14 +6,17 @@ import (
 	"sort"
 )
 
-type KeyColumn []rune
+type KeyColumn struct {
+	Key []rune
+}
+
 type Column struct {
 	Data *CipherClassicalData[KeyColumn]
 }
 
 func (c *Column) GetText() []rune { return c.Data.Text }
-func (c *Column) Encrypt() { c.Data.Text = cryptColumn(c.Data.Text, []rune(*c.Data.Key), true) }
-func (c *Column) Decrypt() { c.Data.Text = cryptColumn(c.Data.Text, []rune(*c.Data.Key), false) }
+func (c *Column) Encrypt() { c.Data.Text = cryptColumn(c.Data.Text, c.Data.Key.Key, true) }
+func (c *Column) Decrypt() { c.Data.Text = cryptColumn(c.Data.Text, c.Data.Key.Key, false) }
 
 func getSortedKeyIndices(key []rune) []int {
 	keyIndices := make([]int, len(key))
@@ -48,14 +51,17 @@ func cryptColumn(s []rune, key []rune, encrypt bool) []rune {
 	return result
 }
 
-type KeyMyszkowski []rune
+type KeyMyszkowski struct {
+	Key []rune
+}
+
 type Myszkowski struct {
 	Data *CipherClassicalData[KeyMyszkowski]
 }
 
 func (c *Myszkowski) GetText() []rune { return c.Data.Text }
-func (c *Myszkowski) Encrypt() { c.Data.Text = cryptMyszkowski(c.Data.Text, []rune(*c.Data.Key), true) }
-func (c *Myszkowski) Decrypt() { c.Data.Text = cryptMyszkowski(c.Data.Text, []rune(*c.Data.Key), false) }
+func (c *Myszkowski) Encrypt() { c.Data.Text = cryptMyszkowski(c.Data.Text, c.Data.Key.Key, true) }
+func (c *Myszkowski) Decrypt() { c.Data.Text = cryptMyszkowski(c.Data.Text, c.Data.Key.Key, false) }
 
 func cryptMyszkowski(s []rune, key []rune, encrypt bool) []rune {
 	result := make([]rune, len(s))
@@ -114,7 +120,7 @@ func getSortedKeyPositions(key []rune) []int {
 }
 
 type KeyColumnDCount struct {
-	CKey []rune
+	Key []rune
 	DKey []rune
 }
 
@@ -123,8 +129,8 @@ type ColumnDCount struct {
 }
 
 func (c *ColumnDCount) GetText() []rune { return c.Data.Text }
-func (c *ColumnDCount) Encrypt() { c.Data.Text = encryptColumnDCount(c.Data.Text, c.Data.Key.CKey, c.Data.Key.DKey) }
-func (c *ColumnDCount) Decrypt() { c.Data.Text = decryptColumnDCount(c.Data.Text, c.Data.Key.CKey, c.Data.Key.DKey) }
+func (c *ColumnDCount) Encrypt() { c.Data.Text = encryptColumnDCount(c.Data.Text, c.Data.Key.Key, c.Data.Key.DKey) }
+func (c *ColumnDCount) Decrypt() { c.Data.Text = decryptColumnDCount(c.Data.Text, c.Data.Key.Key, c.Data.Key.DKey) }
 
 func encryptColumnDCount(s []rune, key []rune, dkey []rune) []rune {
 	if len(dkey) < 2 {

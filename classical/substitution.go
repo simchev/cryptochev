@@ -31,14 +31,17 @@ func substitute(s []rune, alphabet []rune, salphabet []rune) []rune {
 	return result
 }
 
-type KeyShift int
+type KeyShift struct {
+	Shift int
+}
+
 type Shift struct {
 	Data *CipherClassicalData[KeyShift]
 }
 
 func (c *Shift) GetText() []rune { return c.Data.Text }
-func (c *Shift) Encrypt() { c.Data.Text = shift(c.Data.Text, int(*c.Data.Key)) }
-func (c *Shift) Decrypt() { c.Data.Text = shift(c.Data.Text, -int(*c.Data.Key)) }
+func (c *Shift) Encrypt() { c.Data.Text = shift(c.Data.Text, c.Data.Key.Shift) }
+func (c *Shift) Decrypt() { c.Data.Text = shift(c.Data.Text, -c.Data.Key.Shift) }
 
 func shift(s []rune, shift int) []rune {
 	rshift := rune(shift)
@@ -50,14 +53,17 @@ func shift(s []rune, shift int) []rune {
 	return s
 }
 
-type KeyCaesar int
+type KeyCaesar struct {
+	Shift int
+}
+
 type Caesar struct {
 	Data *CipherClassicalData[KeyCaesar]
 }
 
 func (c *Caesar) GetText() []rune { return c.Data.Text }
-func (c *Caesar) Encrypt() { c.Data.Text = shiftAlphabet(c.Data.Text, int(*c.Data.Key)) }
-func (c *Caesar) Decrypt() { c.Data.Text = shiftAlphabet(c.Data.Text, -int(*c.Data.Key)) }
+func (c *Caesar) Encrypt() { c.Data.Text = shiftAlphabet(c.Data.Text, c.Data.Key.Shift) }
+func (c *Caesar) Decrypt() { c.Data.Text = shiftAlphabet(c.Data.Text, -c.Data.Key.Shift) }
 
 func shiftAlphabet(s []rune, shift int) []rune {
 	rshift := rune(shift % 26)
@@ -198,7 +204,7 @@ func cryptPlayfair(s []rune, alphabet []rune, null rune, encrypt bool) []rune {
 		i1 := amap[s[i]]
 		i2 := amap[null]
 		
-		if i != len(s) - 1 && i1 != amap[s[i + 1]] {
+		if i != len(s) - 1 && i1 != amap[s[i + 1]] { // NEED TO MAKE IT APPEND INSTEAD OF REPLACING
 			i2 = amap[s[i + 1]]
 		} else if null == 0 {
 			i2 = amap[alphabet[rand.Intn(len(alphabet))]]

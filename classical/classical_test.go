@@ -73,7 +73,7 @@ func TestShift(t *testing.T) {
 	expects := [...]string{"\\JFWJINXHT[JWJIKQJJFYTSHJ", "aOK^^KMUK^;<::KW", "QGM;9FLK==E=", "ZHORYHSDNLVWDQLGHVWUR\\LQGLD", "W\\bOYVR_NVWNZNV`PRaRaR"}
 
 	for i, test := range tests {
-		key := KeyShift(shifts[i])
+		key := KeyShift{Shift: shifts[i]}
 		c := Shift{Data: &CipherClassicalData[KeyShift]{Text: []rune(test), Key: &key}}
 		testCipher(t, &c, expects[i], test)
 	}
@@ -84,7 +84,7 @@ func TestCaesar(t *testing.T) {
 	expects := [...]string{"CKGXKJOYIUBKXKJLRKKGZUTIK", "YGCVVCEMCV1200CO", "TJPXVIONZZHZ", "LTADKTEPZXHIPCXSTHIGDNXCSXP", "YDJQAXTGPXYPBPXHRTITIT"}
 
 	for i, test := range tests {
-		key := KeyCaesar(shifts[i])
+		key := KeyCaesar{Shift: shifts[i]}
 		c := Caesar{Data: &CipherClassicalData[KeyCaesar]{Text: []rune(test), Key: &key}}
 		testCipher(t, &c, expects[i], test)
 	}
@@ -152,7 +152,7 @@ func TestColumn(t *testing.T) {
 	expectsPad := [...]string{"^EIELOWDVFTRCEECEODAEASREN$", "^T1.AAAEK0TTMA2.WC0$", "^NCU.AETE.EOYMS$", "^VS.II.EI.KY.TD.PR.ET.LD.SN.AO.AI.WNAOE.$", "^LTA.ETOSUCJ.JIREIEI.M.BEA.A.$"}
 
 	for i, test := range tests {
-		key := KeyColumn(keys[i])
+		key := KeyColumn{Key: []rune(keys[i])}
 		c := Column{Data: &CipherClassicalData[KeyColumn]{Text: []rune(test), Key: &key}}
 		testCipher(t, &c, expects[i], test)
 		test2 := ToPadded(test, len([]rune(keys[i])))
@@ -166,7 +166,7 @@ func TestZigzag(t *testing.T) {
 	expects := [...]string{"WCLEESOFECAIVDENRDEEAOERT", "W0E20A1ATTMTAAKC", "YAEOCNSEEUTM", "WEEDSLITONRVAOETYPSIAAINIKD", "JOUBLIERAIJAMAISCETETE"}
 
 	for i, test := range tests {
-		key := KeyZigzag(keys[i])
+		key := KeyZigzag{Lines: keys[i]}
 		c := Zigzag{Data: &CipherClassicalData[KeyZigzag]{Text: []rune(test), Key: &key}}
 		testCipher(t, &c, expects[i], test)
 	}
@@ -177,7 +177,7 @@ func TestScytale(t *testing.T) {
 	expects := [...]string{"WIREEESEAACDTROFOEVLNDEEC", "WATCA10AETAKT20M", "YOUCANTSEEME", "WTIEANLNDOIIVDAEEPSATKRIOSY", "JIJSTOEACEURMEBAATLIIE"}
 
 	for i, test := range tests {
-		key := KeyScytale(keys[i])
+		key := KeyScytale{Lines: keys[i]}
 		c := Scytale{Data: &CipherClassicalData[KeyScytale]{Text: []rune(test), Key: &key}}
 		testCipher(t, &c, expects[i], test)
 	}
@@ -257,7 +257,7 @@ func TestMyszkowski(t *testing.T) {
 	expectsPad := [...]string{"^EODAEASRENWDVFTEIELORCEEC$", "^T1.C0.TA20..WKAEAMAT.$", "^OCNSEEYUATEM$", "^ESEY..WOTIIIEANKR.LNDAT.VDAIO.PS.$", "^UAITOLRJACE.BISEJEMTIAE.$"}
 
 	for i, test := range tests {
-		key := KeyMyszkowski(keys[i])
+		key := KeyMyszkowski{Key: []rune(keys[i])}
 		c := Myszkowski{Data: &CipherClassicalData[KeyMyszkowski]{Text: []rune(test), Key: &key}}
 		testCipher(t, &c, expects[i], test)
 		test2 := ToPadded(test, len([]rune(keys[i])))
@@ -292,7 +292,7 @@ func TestColumnDCount(t *testing.T) {
 	expects := [...]string{"WCEEOERETRIVFCEODNSELEADA", "A1MATA0WTTAK0EC2", "UONEASEYECTM", "VIEDWOKAONLSNTIEESYIPIRAATD", "URAEJIJSTOEACEMBATLIIE"}
 
 	for i, test := range tests {
-		key := KeyColumnDCount{CKey: []rune(keys[i]), DKey: []rune(dkeys[i])}
+		key := KeyColumnDCount{Key: []rune(keys[i]), DKey: []rune(dkeys[i])}
 		c := ColumnDCount{Data: &CipherClassicalData[KeyColumnDCount]{Text: []rune(test), Key: &key}}
 		testCipher(t, &c, expects[i], test)
 	}

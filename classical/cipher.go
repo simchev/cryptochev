@@ -2,13 +2,16 @@ package classical
 
 type CipherClassicalData[K CipherClassicalKey] struct {
 	Text []rune
-	Key  *K
+	//Errors []error
+	Key *K
 }
 
 type CipherClassical interface {
 	GetText() []rune
+	//GetErrors() []error
 	Encrypt()
 	Decrypt()
+	//Verify() bool
 }
 
 type CipherClassicalKey interface {
