@@ -1,6 +1,9 @@
 package classical
 
 import (
+	"cryptochev/utils"
+	"math"
+	"math/rand"
 	"unicode"
 )
 
@@ -164,6 +167,60 @@ func decryptAutokey(s []rune, alphabet []rune, primer []rune) []rune {
 	for i, r := range s {
 		result[i] = alphabet[(amap[r] - amap[key[i]] + len(alphabet)) % len(alphabet)]
 		key = append(key, result[i])
+	}
+
+	return result
+}
+
+type KeyPlayfair struct {
+	Alphabet []rune
+	Null rune
+}
+
+type Playfair struct {
+	Data *CipherClassicalData[KeyPlayfair]
+}
+
+func (c *Playfair) GetText() []rune { return c.Data.Text }
+func (c *Playfair) Encrypt() { c.Data.Text = cryptPlayfair(c.Data.Text, c.Data.Key.Alphabet, c.Data.Key.Null, true) }
+func (c *Playfair) Decrypt() { c.Data.Text = cryptPlayfair(c.Data.Text, c.Data.Key.Alphabet, c.Data.Key.Null, false) }
+
+func cryptPlayfair(s []rune, alphabet []rune, null rune, encrypt bool) []rune {
+	result := make([]rune, len(s), len(s) + 1)
+	width := int(math.Sqrt(float64(len(alphabet))))
+	amap := buildIndexMap(alphabet)
+
+	if len(s) % 2 != 0 {
+		result = append(result, null)
+	}
+
+	for i := 0; i < len(s); i += 2 {
+		i1 := amap[s[i]]
+		i2 := amap[null]
+		
+		if i != len(s) - 1 && i1 != amap[s[i + 1]] {
+			i2 = amap[s[i + 1]]
+		} else if null == 0 {
+			i2 = amap[alphabet[rand.Intn(len(alphabet))]]
+		}
+
+		row1 := i1 / width
+		col1 := i1 % width
+		row2 := i2 / width
+		col2 := i2 % width
+
+		if row1 == row2 {
+			inc, _ := utils.ReverseIf(-1, 1, encrypt)
+			result[i] = alphabet[(col1 + inc + width) % width + row1 * width]
+			result[i + 1] = alphabet[(col2 + inc + width) % width + row2 * width]
+		} else if col1 == col2 {
+			inc, _ := utils.ReverseIf(-1, 1, encrypt)
+			result[i] = alphabet[col1 + (row1 + inc + width) % width * width]
+			result[i + 1] = alphabet[col2 + (row2 + inc + width) % width * width]
+		} else {
+			result[i] = alphabet[col2 + row1 * width]
+			result[i + 1] = alphabet[col1 + row2 * width]
+		}
 	}
 
 	return result

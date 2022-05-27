@@ -30,5 +30,6 @@ type CipherClassicalKey interface {
 		KeyColumnDLine |
 		KeyVigenere |
 		KeySubstitute |
-		KeyAutokey
+		KeyAutokey |
+		KeyPlayfair
 }
