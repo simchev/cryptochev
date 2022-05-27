@@ -23,6 +23,34 @@ func RandomAlphabetL36() []rune {
 	return utils.Shuffle([]rune(AlphabetL36))
 }
 
+func RandomAlphabetKey(alphabet []rune, key []rune) []rune {
+	amap := buildIndexMap(alphabet)
+	ukey := make([]rune, 0, len(key))
+	for _, r := range key {
+		_, found := amap[r]
+		if found && utils.IndexOf(ukey, r) == -1 {
+			ukey = append(ukey, r)
+		}
+	}
+
+	remains := make([]rune, 0, len(alphabet) - len(ukey))
+	for _, r := range alphabet {
+		if utils.IndexOf(ukey, r) == -1 && utils.IndexOf(remains, r) == -1 {
+			remains = append(remains, r)
+		}
+	}
+
+	return append(ukey, utils.Shuffle(remains)...)
+}
+
+func RandomAlphabetL25Key(key []rune) []rune {
+	return RandomAlphabetKey([]rune(AlphabetL25), key)
+}
+
+func RandomAlphabetL36Key(key []rune) []rune {
+	return RandomAlphabetKey([]rune(AlphabetL36), key)
+}
+
 func RandomLetter() rune {
 	return rune(65 + rand.Intn(26))
 }
