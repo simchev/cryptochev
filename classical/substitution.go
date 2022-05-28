@@ -7,13 +7,8 @@ import (
 	"unicode"
 )
 
-func NewSubstitute(text []rune, key *KeySubstitute) *Substitute {
-	return &Substitute{Cipher: &CipherClassical[KeySubstitute]{Text: text, Key: key}}
-}
-
-func NewKeySubstitute(alphabet []rune, salphabet []rune) *KeySubstitute {
-	return &KeySubstitute{Alphabet: alphabet, SAlphabet: salphabet}
-}
+func NewKeySubstitute(alphabet []rune, salphabet []rune) *KeySubstitute { return &KeySubstitute{Alphabet: alphabet, SAlphabet: salphabet} }
+func NewSubstitute(text []rune, key *KeySubstitute) *Substitute { return &Substitute{Cipher: &CipherClassical[KeySubstitute]{Text: text, Key: key}} }
 
 type KeySubstitute struct {
 	Alphabet []rune
@@ -38,13 +33,8 @@ func substitute(s []rune, alphabet []rune, salphabet []rune) []rune {
 	return result
 }
 
-func NewShift(text []rune, key *KeyShift) *Shift {
-	return &Shift{Cipher: &CipherClassical[KeyShift]{Text: text, Key: key}}
-}
-
-func NewKeyShift(shift int) *KeyShift {
-	return &KeyShift{Shift: shift}
-}
+func NewKeyShift(shift int) *KeyShift { return &KeyShift{Shift: shift} }
+func NewShift(text []rune, key *KeyShift) *Shift { return &Shift{Cipher: &CipherClassical[KeyShift]{Text: text, Key: key}} }
 
 type KeyShift struct { Shift int }
 type Shift struct { Cipher *CipherClassical[KeyShift] }
@@ -64,13 +54,8 @@ func shift(s []rune, shift int) []rune {
 	return s
 }
 
-func NewCaesar(text []rune, key *KeyCaesar) *Caesar {
-	return &Caesar{Cipher: &CipherClassical[KeyCaesar]{Text: text, Key: key}}
-}
-
-func NewKeyCaesar(shift int) *KeyCaesar {
-	return &KeyCaesar{Shift: shift}
-}
+func NewKeyCaesar(shift int) *KeyCaesar { return &KeyCaesar{Shift: shift} }
+func NewCaesar(text []rune, key *KeyCaesar) *Caesar { return &Caesar{Cipher: &CipherClassical[KeyCaesar]{Text: text, Key: key}} }
 
 type KeyCaesar struct { Shift int }
 type Caesar struct { Cipher *CipherClassical[KeyCaesar] }
@@ -97,13 +82,8 @@ func shiftAlphabet(s []rune, shift int) []rune {
 	return s
 }
 
-func NewROT13(text []rune, key *KeyROT13) *ROT13 {
-	return &ROT13{Cipher: &CipherClassical[KeyROT13]{Text: text, Key: key}}
-}
-
-func NewKeyROT13() *KeyROT13 {
-	return &KeyROT13{}
-}
+func NewKeyROT13() *KeyROT13 { return &KeyROT13{} }
+func NewROT13(text []rune, key *KeyROT13) *ROT13 { return &ROT13{Cipher: &CipherClassical[KeyROT13]{Text: text, Key: key}} }
 
 type KeyROT13 struct {}
 type ROT13 struct { Cipher *CipherClassical[KeyROT13] }
@@ -113,13 +93,8 @@ func (c *ROT13) Encrypt() { c.Cipher.Text = shiftAlphabet(c.Cipher.Text, 13) }
 func (c *ROT13) Decrypt() { c.Cipher.Text = shiftAlphabet(c.Cipher.Text, 13) }
 func (c *ROT13) Verify() bool { return true }
 
-func NewVigenere(text []rune, key *KeyVigenere) *Vigenere {
-	return &Vigenere{Cipher: &CipherClassical[KeyVigenere]{Text: text, Key: key}}
-}
-
-func NewKeyVigenere(alphabet []rune, key []rune) *KeyVigenere {
-	return &KeyVigenere{Alphabet: alphabet, Key: key}
-}
+func NewKeyVigenere(alphabet []rune, key []rune) *KeyVigenere { return &KeyVigenere{Alphabet: alphabet, Key: key} }
+func NewVigenere(text []rune, key *KeyVigenere) *Vigenere { return &Vigenere{Cipher: &CipherClassical[KeyVigenere]{Text: text, Key: key}} }
 
 type KeyVigenere struct {
 	Alphabet []rune
@@ -152,9 +127,7 @@ func cryptVigenere(s []rune, alphabet []rune, key []rune, encrypt bool) []rune {
 	return result
 }
 
-func NewVigenereBeaufort(text []rune, key *KeyVigenere) *VigenereBeaufort {
-	return &VigenereBeaufort{Cipher: &CipherClassical[KeyVigenere]{Text: text, Key: key}}
-}
+func NewVigenereBeaufort(text []rune, key *KeyVigenere) *VigenereBeaufort { return &VigenereBeaufort{Cipher: &CipherClassical[KeyVigenere]{Text: text, Key: key}} }
 
 type VigenereBeaufort struct { Cipher *CipherClassical[KeyVigenere] }
 func (c *VigenereBeaufort) GetText() []rune { return c.Cipher.Text }
@@ -175,9 +148,7 @@ func gronsfeldToVigenereKey(alphabet []rune, key []rune) []rune {
 	return keyv
 }
 
-func NewVigenereGronsfeld(text []rune, key *KeyVigenere) *VigenereGronsfeld {
-	return &VigenereGronsfeld{Cipher: &CipherClassical[KeyVigenere]{Text: text, Key: key}}
-}
+func NewVigenereGronsfeld(text []rune, key *KeyVigenere) *VigenereGronsfeld { return &VigenereGronsfeld{Cipher: &CipherClassical[KeyVigenere]{Text: text, Key: key}} }
 
 type VigenereGronsfeld struct { Cipher *CipherClassical[KeyVigenere] }
 func (c *VigenereGronsfeld) GetText() []rune { return c.Cipher.Text }
@@ -186,13 +157,8 @@ func (c *VigenereGronsfeld) Encrypt() { c.Cipher.Text = cryptVigenere(c.Cipher.T
 func (c *VigenereGronsfeld) Decrypt() { c.Cipher.Text = cryptVigenere(c.Cipher.Text, c.Cipher.Key.Alphabet, gronsfeldToVigenereKey(c.Cipher.Key.Alphabet, c.Cipher.Key.Key), false) }
 func (c *VigenereGronsfeld) Verify() bool { return true }
 
-func NewAutokey(text []rune, key *KeyAutokey) *Autokey {
-	return &Autokey{Cipher: &CipherClassical[KeyAutokey]{Text: text, Key: key}}
-}
-
-func NewKeyAutokey(alphabet []rune, primer []rune) *KeyAutokey {
-	return &KeyAutokey{Alphabet: alphabet, Primer: primer}
-}
+func NewKeyAutokey(alphabet []rune, primer []rune) *KeyAutokey { return &KeyAutokey{Alphabet: alphabet, Primer: primer} }
+func NewAutokey(text []rune, key *KeyAutokey) *Autokey { return &Autokey{Cipher: &CipherClassical[KeyAutokey]{Text: text, Key: key}} }
 
 type KeyAutokey struct {
 	Alphabet []rune
@@ -220,13 +186,8 @@ func decryptAutokey(s []rune, alphabet []rune, primer []rune) []rune {
 	return result
 }
 
-func NewPlayfair(text []rune, key *KeyPlayfair) *Playfair {
-	return &Playfair{Cipher: &CipherClassical[KeyPlayfair]{Text: text, Key: key}}
-}
-
-func NewKeyPlayfair(alphabet []rune, null rune) *KeyPlayfair {
-	return &KeyPlayfair{Alphabet: alphabet, Null: null}
-}
+func NewKeyPlayfair(alphabet []rune, null rune) *KeyPlayfair { return &KeyPlayfair{Alphabet: alphabet, Null: null} }
+func NewPlayfair(text []rune, key *KeyPlayfair) *Playfair { return &Playfair{Cipher: &CipherClassical[KeyPlayfair]{Text: text, Key: key}} }
 
 type KeyPlayfair struct {
 	Alphabet []rune

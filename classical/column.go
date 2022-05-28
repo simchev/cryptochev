@@ -95,13 +95,8 @@ func buildDLineGrid(s []rune, keyIndices []int, keySize int, fill bool) ([][]run
 	return grid, rows
 }
 
-func NewColumn(text []rune, key *KeyColumn) *Column {
-	return &Column{Cipher: &CipherClassical[KeyColumn]{Text: text, Key: key}}
-}
-
-func NewKeyColumn(key []rune) *KeyColumn {
-	return &KeyColumn{Key: key}
-}
+func NewKeyColumn(key []rune) *KeyColumn { return &KeyColumn{Key: key} }
+func NewColumn(text []rune, key *KeyColumn) *Column { return &Column{Cipher: &CipherClassical[KeyColumn]{Text: text, Key: key}} }
 
 type KeyColumn struct { Key []rune }
 type Column struct { Cipher *CipherClassical[KeyColumn] }
@@ -131,13 +126,8 @@ func cryptColumn(s []rune, key []rune, encrypt bool) []rune {
 	return result
 }
 
-func NewMyszkowski(text []rune, key *KeyMyszkowski) *Myszkowski {
-	return &Myszkowski{Cipher: &CipherClassical[KeyMyszkowski]{Text: text, Key: key}}
-}
-
-func NewKeyMyszkowski(key []rune) *KeyMyszkowski {
-	return &KeyMyszkowski{Key: key}
-}
+func NewKeyMyszkowski(key []rune) *KeyMyszkowski { return &KeyMyszkowski{Key: key} }
+func NewMyszkowski(text []rune, key *KeyMyszkowski) *Myszkowski { return &Myszkowski{Cipher: &CipherClassical[KeyMyszkowski]{Text: text, Key: key}} }
 
 type KeyMyszkowski struct { Key []rune }
 type Myszkowski struct { Cipher *CipherClassical[KeyMyszkowski] }
@@ -180,13 +170,8 @@ func cryptMyszkowski(s []rune, key []rune, encrypt bool) []rune {
 	return result
 }
 
-func NewColumnDCount(text []rune, key *KeyColumnDCount) *ColumnDCount {
-	return &ColumnDCount{Cipher: &CipherClassical[KeyColumnDCount]{Text: text, Key: key}}
-}
-
-func NewKeyColumnDCount(key []rune, dkey []rune) *KeyColumnDCount {
-	return &KeyColumnDCount{Key: key, DKey: dkey}
-}
+func NewKeyColumnDCount(key []rune, dkey []rune) *KeyColumnDCount { return &KeyColumnDCount{Key: key, DKey: dkey} }
+func NewColumnDCount(text []rune, key *KeyColumnDCount) *ColumnDCount { return &ColumnDCount{Cipher: &CipherClassical[KeyColumnDCount]{Text: text, Key: key}} }
 
 type KeyColumnDCount struct {
 	Key []rune
@@ -314,13 +299,8 @@ func decryptColumnDCount(s []rune, key []rune, dkey []rune) []rune {
 	return result
 }
 
-func NewColumnDLine(text []rune, key *KeyColumnDLine) *ColumnDLine {
-	return &ColumnDLine{Cipher: &CipherClassical[KeyColumnDLine]{Text: text, Key: key}}
-}
-
-func NewKeyColumnDLine(key []rune, fill bool) *KeyColumnDLine {
-	return &KeyColumnDLine{Key: key, Fill: fill}
-}
+func NewKeyColumnDLine(key []rune, fill bool) *KeyColumnDLine { return &KeyColumnDLine{Key: key, Fill: fill} }
+func NewColumnDLine(text []rune, key *KeyColumnDLine) *ColumnDLine { return &ColumnDLine{Cipher: &CipherClassical[KeyColumnDLine]{Text: text, Key: key}} }
 
 type KeyColumnDLine struct {
 	Key []rune

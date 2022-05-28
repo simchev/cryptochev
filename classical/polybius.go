@@ -1,12 +1,7 @@
 package classical
 
-func NewPolybius(text []rune, key *KeyPolybius) *Polybius {
-	return &Polybius{Cipher: &CipherClassical[KeyPolybius]{Text: text, Key: key}}
-}
-
-func NewKeyPolybius(alphabet []rune, header []rune) *KeyPolybius {
-	return &KeyPolybius{Alphabet: alphabet, Header: header}
-}
+func NewKeyPolybius(alphabet []rune, header []rune) *KeyPolybius { return &KeyPolybius{Alphabet: alphabet, Header: header} }
+func NewPolybius(text []rune, key *KeyPolybius) *Polybius { return &Polybius{Cipher: &CipherClassical[KeyPolybius]{Text: text, Key: key}} }
 
 type KeyPolybius struct {
 	Alphabet []rune
@@ -43,13 +38,8 @@ func decryptPolybius(s []rune, alphabet []rune, header []rune) []rune {
 	return result
 }
 
-func NewADFGX(text []rune, key *KeyADFGX) *ADFGX {
-	return &ADFGX{Cipher: &CipherClassical[KeyADFGX]{Text: text, Key: key}}
-}
-
-func NewKeyADFGX(alphabet []rune, key []rune) *KeyADFGX {
-	return &KeyADFGX{Alphabet: alphabet, Key: key}
-}
+func NewKeyADFGX(alphabet []rune, key []rune) *KeyADFGX { return &KeyADFGX{Alphabet: alphabet, Key: key} }
+func NewADFGX(text []rune, key *KeyADFGX) *ADFGX { return &ADFGX{Cipher: &CipherClassical[KeyADFGX]{Text: text, Key: key}} }
 
 type KeyADFGX struct {
 	Alphabet []rune
@@ -73,13 +63,8 @@ func decryptADFGX(s []rune, alphabet []rune, key []rune) []rune {
 	return decryptPolybius(result, alphabet, []rune("ADFGX"))
 }
 
-func NewADFGVX(text []rune, key *KeyADFGVX) *ADFGVX {
-	return &ADFGVX{Cipher: &CipherClassical[KeyADFGVX]{Text: text, Key: key}}
-}
-
-func NewKeyADFGVX(alphabet []rune, key []rune) *KeyADFGVX {
-	return &KeyADFGVX{Alphabet: alphabet, Key: key}
-}
+func NewKeyADFGVX(alphabet []rune, key []rune) *KeyADFGVX { return &KeyADFGVX{Alphabet: alphabet, Key: key} }
+func NewADFGVX(text []rune, key *KeyADFGVX) *ADFGVX { return &ADFGVX{Cipher: &CipherClassical[KeyADFGVX]{Text: text, Key: key}} }
 
 type KeyADFGVX struct {
 	Alphabet []rune
