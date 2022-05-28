@@ -13,7 +13,7 @@ func errorTest(t *testing.T, msg string, exp string, res string) {
 	t.Errorf("%s. Expected: %s\nActual: %s", msg, ToSpaced(exp, spaces), ToSpaced(res, spaces))
 }
 
-func testCipher(t *testing.T, c CipherClassical, exp string, test string) {
+func testCipher(t *testing.T, c ICipherClassical, exp string, test string) {
 	c.Encrypt()
 	ciphertext := string(c.GetText())
 	if ciphertext != exp {
@@ -27,7 +27,7 @@ func testCipher(t *testing.T, c CipherClassical, exp string, test string) {
 	}
 }
 
-func testCipherRegex(t *testing.T, c CipherClassical, regex string, test string) {
+func testCipherRegex(t *testing.T, c ICipherClassical, regex string, test string) {
 	c.Encrypt()
 	ciphertext := string(c.GetText())
 	matched, err := regexp.MatchString(regex, ciphertext)
@@ -63,7 +63,7 @@ func TestSubstitute(t *testing.T) {
 
 	for i, test := range tests {
 		key := KeySubstitute{Alphabet: []rune(alphabets[i]), SAlphabet: []rune(salphabets[i])}
-		c := Substitute{Data: &CipherClassicalData[KeySubstitute]{Text: []rune(test), Key: &key}}
+		c := Substitute{Cipher: &CipherClassical[KeySubstitute]{Text: []rune(test), Key: &key}}
 		testCipher(t, &c, expects[i], test)
 	}
 }
@@ -74,7 +74,7 @@ func TestShift(t *testing.T) {
 
 	for i, test := range tests {
 		key := KeyShift{Shift: shifts[i]}
-		c := Shift{Data: &CipherClassicalData[KeyShift]{Text: []rune(test), Key: &key}}
+		c := Shift{Cipher: &CipherClassical[KeyShift]{Text: []rune(test), Key: &key}}
 		testCipher(t, &c, expects[i], test)
 	}
 }
@@ -85,7 +85,7 @@ func TestCaesar(t *testing.T) {
 
 	for i, test := range tests {
 		key := KeyCaesar{Shift: shifts[i]}
-		c := Caesar{Data: &CipherClassicalData[KeyCaesar]{Text: []rune(test), Key: &key}}
+		c := Caesar{Cipher: &CipherClassical[KeyCaesar]{Text: []rune(test), Key: &key}}
 		testCipher(t, &c, expects[i], test)
 	}
 }
@@ -95,7 +95,7 @@ func TestROT13(t *testing.T) {
 
 	for i, test := range tests {
 		key := KeyROT13{}
-		c := ROT13{Data: &CipherClassicalData[KeyROT13]{Text: []rune(test), Key: &key}}
+		c := ROT13{Cipher: &CipherClassical[KeyROT13]{Text: []rune(test), Key: &key}}
 		testCipher(t, &c, expects[i], test)
 	}
 }
@@ -107,7 +107,7 @@ func TestVigenere(t *testing.T) {
 
 	for i, test := range tests {
 		key := KeyVigenere{Alphabet: []rune(alphabets[i]), Key: []rune(keys[i])}
-		c := Vigenere{Data: &CipherClassicalData[KeyVigenere]{Text: []rune(test), Key: &key}}
+		c := Vigenere{Cipher: &CipherClassical[KeyVigenere]{Text: []rune(test), Key: &key}}
 		testCipher(t, &c, expects[i], test)
 	}
 }
@@ -119,7 +119,7 @@ func TestVigenereBeaufort(t *testing.T) {
 
 	for i, test := range tests {
 		key := KeyVigenere{Alphabet: []rune(alphabets[i]), Key: []rune(keys[i])}
-		c := VigenereBeaufort{Data: &CipherClassicalData[KeyVigenere]{Text: []rune(test), Key: &key}}
+		c := VigenereBeaufort{Cipher: &CipherClassical[KeyVigenere]{Text: []rune(test), Key: &key}}
 		testCipher(t, &c, expects[i], test)
 	}
 }
@@ -131,7 +131,7 @@ func TestVigenereGronsfeld(t *testing.T) {
 
 	for i, test := range tests {
 		key := KeyVigenere{Alphabet: []rune(alphabets[i]), Key: []rune(keys[i])}
-		c := VigenereGronsfeld{Data: &CipherClassicalData[KeyVigenere]{Text: []rune(test), Key: &key}}
+		c := VigenereGronsfeld{Cipher: &CipherClassical[KeyVigenere]{Text: []rune(test), Key: &key}}
 		testCipher(t, &c, expects[i], test)
 	}
 }
@@ -141,7 +141,7 @@ func TestReverse(t *testing.T) {
 
 	for i, test := range tests {
 		key := KeyReverse{}
-		c := Reverse{Data: &CipherClassicalData[KeyReverse]{Text: []rune(test), Key: &key}}
+		c := Reverse{Cipher: &CipherClassical[KeyReverse]{Text: []rune(test), Key: &key}}
 		testCipher(t, &c, expects[i], test)
 	}
 }
@@ -153,10 +153,10 @@ func TestColumn(t *testing.T) {
 
 	for i, test := range tests {
 		key := KeyColumn{Key: []rune(keys[i])}
-		c := Column{Data: &CipherClassicalData[KeyColumn]{Text: []rune(test), Key: &key}}
+		c := Column{Cipher: &CipherClassical[KeyColumn]{Text: []rune(test), Key: &key}}
 		testCipher(t, &c, expects[i], test)
 		test2 := ToPadded(test, len([]rune(keys[i])))
-		c2 := Column{Data: &CipherClassicalData[KeyColumn]{Text: []rune(test2), Key: &key}}
+		c2 := Column{Cipher: &CipherClassical[KeyColumn]{Text: []rune(test2), Key: &key}}
 		testCipherRegex(t, &c2, expectsPad[i], test2)
 	}
 }
@@ -167,7 +167,7 @@ func TestZigzag(t *testing.T) {
 
 	for i, test := range tests {
 		key := KeyZigzag{Lines: keys[i]}
-		c := Zigzag{Data: &CipherClassicalData[KeyZigzag]{Text: []rune(test), Key: &key}}
+		c := Zigzag{Cipher: &CipherClassical[KeyZigzag]{Text: []rune(test), Key: &key}}
 		testCipher(t, &c, expects[i], test)
 	}
 }
@@ -178,7 +178,7 @@ func TestScytale(t *testing.T) {
 
 	for i, test := range tests {
 		key := KeyScytale{Lines: keys[i]}
-		c := Scytale{Data: &CipherClassicalData[KeyScytale]{Text: []rune(test), Key: &key}}
+		c := Scytale{Cipher: &CipherClassical[KeyScytale]{Text: []rune(test), Key: &key}}
 		testCipher(t, &c, expects[i], test)
 	}
 }
@@ -211,7 +211,7 @@ func TestRouteSpiral(t *testing.T) {
 	for i, test := range tests {
 		for j, r := range routes {
 			key := KeyRoute{Width: widths[i], Route: r}
-			c := RouteSpiral{Data: &CipherClassicalData[KeyRoute]{Text: []rune(test), Key: &key}}
+			c := RouteSpiral{Cipher: &CipherClassical[KeyRoute]{Text: []rune(test), Key: &key}}
 			testCipher(t, &c, expects[i][j], test)
 		}
 	}
@@ -245,7 +245,7 @@ func TestRouteSerpent(t *testing.T) {
 	for i, test := range tests {
 		for j, r := range routes {
 			key := KeyRoute{Width: widths[i], Route: r}
-			c := RouteSerpent{Data: &CipherClassicalData[KeyRoute]{Text: []rune(test), Key: &key}}
+			c := RouteSerpent{Cipher: &CipherClassical[KeyRoute]{Text: []rune(test), Key: &key}}
 			testCipher(t, &c, expects[i][j], test)
 		}
 	}
@@ -258,10 +258,10 @@ func TestMyszkowski(t *testing.T) {
 
 	for i, test := range tests {
 		key := KeyMyszkowski{Key: []rune(keys[i])}
-		c := Myszkowski{Data: &CipherClassicalData[KeyMyszkowski]{Text: []rune(test), Key: &key}}
+		c := Myszkowski{Cipher: &CipherClassical[KeyMyszkowski]{Text: []rune(test), Key: &key}}
 		testCipher(t, &c, expects[i], test)
 		test2 := ToPadded(test, len([]rune(keys[i])))
-		c2 := Myszkowski{Data: &CipherClassicalData[KeyMyszkowski]{Text: []rune(test2), Key: &key}}
+		c2 := Myszkowski{Cipher: &CipherClassical[KeyMyszkowski]{Text: []rune(test2), Key: &key}}
 		testCipherRegex(t, &c2, expectsPad[i], test2)
 	}
 }
@@ -271,7 +271,7 @@ func TestMagnet(t *testing.T) {
 
 	for i, test := range tests {
 		key := KeyMagnet{}
-		c := Magnet{Data: &CipherClassicalData[KeyMagnet]{Text: []rune(test), Key: &key}}
+		c := Magnet{Cipher: &CipherClassical[KeyMagnet]{Text: []rune(test), Key: &key}}
 		testCipher(t, &c, expects[i], test)
 	}
 }
@@ -281,7 +281,7 @@ func TestElastic(t *testing.T) {
 
 	for i, test := range tests {
 		key := KeyElastic{}
-		c := Elastic{Data: &CipherClassicalData[KeyElastic]{Text: []rune(test), Key: &key}}
+		c := Elastic{Cipher: &CipherClassical[KeyElastic]{Text: []rune(test), Key: &key}}
 		testCipher(t, &c, expects[i], test)
 	}
 }
@@ -293,7 +293,7 @@ func TestColumnDCount(t *testing.T) {
 
 	for i, test := range tests {
 		key := KeyColumnDCount{Key: []rune(keys[i]), DKey: []rune(dkeys[i])}
-		c := ColumnDCount{Data: &CipherClassicalData[KeyColumnDCount]{Text: []rune(test), Key: &key}}
+		c := ColumnDCount{Cipher: &CipherClassical[KeyColumnDCount]{Text: []rune(test), Key: &key}}
 		testCipher(t, &c, expects[i], test)
 	}
 }
@@ -305,10 +305,10 @@ func TestColumnDLine(t *testing.T) {
 
 	for i := range keys {
 		key := KeyColumnDLine{Key: []rune(keys[i]), Fill: false}
-		c := ColumnDLine{Data: &CipherClassicalData[KeyColumnDLine]{Text: []rune(tests[i]), Key: &key}}
+		c := ColumnDLine{Cipher: &CipherClassical[KeyColumnDLine]{Text: []rune(tests[i]), Key: &key}}
 		testCipher(t, &c, expects[i], tests[i])
 		key2 := KeyColumnDLine{Key: []rune(keys[i]), Fill: true}
-		c2 := ColumnDLine{Data: &CipherClassicalData[KeyColumnDLine]{Text: []rune(tests[i]), Key: &key2}}
+		c2 := ColumnDLine{Cipher: &CipherClassical[KeyColumnDLine]{Text: []rune(tests[i]), Key: &key2}}
 		testCipher(t, &c2, expectsFill[i], tests[i])
 	}
 }
@@ -335,7 +335,7 @@ func TestPolybius(t *testing.T) {
 		if len([]rune(headers[i])) < 6 && strings.Contains(test, "J") {
 			test = ToJToI(test)
 		}
-		c := Polybius{Data: &CipherClassicalData[KeyPolybius]{Text: []rune(test), Key: &key}}
+		c := Polybius{Cipher: &CipherClassical[KeyPolybius]{Text: []rune(test), Key: &key}}
 		testCipher(t, &c, expects[i], test)
 	}
 }
@@ -363,7 +363,7 @@ func TestADFGX(t *testing.T) {
 		if strings.Contains(test, "J") {
 			test = ToJToI(test)
 		}
-		c := ADFGX{Data: &CipherClassicalData[KeyADFGX]{Text: []rune(test), Key: &key}}
+		c := ADFGX{Cipher: &CipherClassical[KeyADFGX]{Text: []rune(test), Key: &key}}
 		testCipher(t, &c, expects[i], test)
 	}
 }
@@ -387,7 +387,7 @@ func TestADFGVX(t *testing.T) {
 
 	for i, test := range tests {
 		key := KeyADFGVX{Alphabet: []rune(alphabets[i]), Key: []rune(keys[i])}
-		c := ADFGVX{Data: &CipherClassicalData[KeyADFGVX]{Text: []rune(test), Key: &key}}
+		c := ADFGVX{Cipher: &CipherClassical[KeyADFGVX]{Text: []rune(test), Key: &key}}
 		testCipher(t, &c, expects[i], test)
 	}
 }
@@ -411,7 +411,7 @@ func TestAutokey(t *testing.T) {
 
 	for i, test := range tests {
 		key := KeyAutokey{Alphabet: []rune(alphabets[i]), Primer: []rune(primers[i])}
-		c := Autokey{Data: &CipherClassicalData[KeyAutokey]{Text: []rune(test), Key: &key}}
+		c := Autokey{Cipher: &CipherClassical[KeyAutokey]{Text: []rune(test), Key: &key}}
 		testCipher(t, &c, expects[i], test)
 	}
 }

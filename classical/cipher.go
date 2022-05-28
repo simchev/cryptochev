@@ -1,17 +1,17 @@
 package classical
 
-type CipherClassicalData[K CipherClassicalKey] struct {
-	Text []rune
-	//Errors []error
-	Key *K
+type CipherClassical[K CipherClassicalKey] struct {
+	Text   []rune
+	Errors []error
+	Key    *K
 }
 
-type CipherClassical interface {
+type ICipherClassical interface {
 	GetText() []rune
-	//GetErrors() []error
+	GetErrors() []error
 	Encrypt()
 	Decrypt()
-	//Verify() bool
+	Verify() bool
 }
 
 type CipherClassicalKey interface {

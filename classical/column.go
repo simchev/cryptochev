@@ -10,13 +10,12 @@ type KeyColumn struct {
 	Key []rune
 }
 
-type Column struct {
-	Data *CipherClassicalData[KeyColumn]
-}
-
-func (c *Column) GetText() []rune { return c.Data.Text }
-func (c *Column) Encrypt() { c.Data.Text = cryptColumn(c.Data.Text, c.Data.Key.Key, true) }
-func (c *Column) Decrypt() { c.Data.Text = cryptColumn(c.Data.Text, c.Data.Key.Key, false) }
+type Column struct { Cipher *CipherClassical[KeyColumn] }
+func (c *Column) GetErrors() []error { return c.Cipher.Errors }
+func (c *Column) GetText() []rune { return c.Cipher.Text }
+func (c *Column) Encrypt() { c.Cipher.Text = cryptColumn(c.Cipher.Text, c.Cipher.Key.Key, true) }
+func (c *Column) Decrypt() { c.Cipher.Text = cryptColumn(c.Cipher.Text, c.Cipher.Key.Key, false) }
+func (c *Column) Verify() bool { return true }
 
 func getSortedKeyIndices(key []rune) []int {
 	keyIndices := make([]int, len(key))
@@ -55,13 +54,12 @@ type KeyMyszkowski struct {
 	Key []rune
 }
 
-type Myszkowski struct {
-	Data *CipherClassicalData[KeyMyszkowski]
-}
-
-func (c *Myszkowski) GetText() []rune { return c.Data.Text }
-func (c *Myszkowski) Encrypt() { c.Data.Text = cryptMyszkowski(c.Data.Text, c.Data.Key.Key, true) }
-func (c *Myszkowski) Decrypt() { c.Data.Text = cryptMyszkowski(c.Data.Text, c.Data.Key.Key, false) }
+type Myszkowski struct { Cipher *CipherClassical[KeyMyszkowski] }
+func (c *Myszkowski) GetErrors() []error { return c.Cipher.Errors }
+func (c *Myszkowski) GetText() []rune { return c.Cipher.Text }
+func (c *Myszkowski) Encrypt() { c.Cipher.Text = cryptMyszkowski(c.Cipher.Text, c.Cipher.Key.Key, true) }
+func (c *Myszkowski) Decrypt() { c.Cipher.Text = cryptMyszkowski(c.Cipher.Text, c.Cipher.Key.Key, false) }
+func (c *Myszkowski) Verify() bool { return true }
 
 func cryptMyszkowski(s []rune, key []rune, encrypt bool) []rune {
 	result := make([]rune, len(s))
@@ -124,13 +122,12 @@ type KeyColumnDCount struct {
 	DKey []rune
 }
 
-type ColumnDCount struct {
-	Data *CipherClassicalData[KeyColumnDCount]
-}
-
-func (c *ColumnDCount) GetText() []rune { return c.Data.Text }
-func (c *ColumnDCount) Encrypt() { c.Data.Text = encryptColumnDCount(c.Data.Text, c.Data.Key.Key, c.Data.Key.DKey) }
-func (c *ColumnDCount) Decrypt() { c.Data.Text = decryptColumnDCount(c.Data.Text, c.Data.Key.Key, c.Data.Key.DKey) }
+type ColumnDCount struct { Cipher *CipherClassical[KeyColumnDCount] }
+func (c *ColumnDCount) GetErrors() []error { return c.Cipher.Errors }
+func (c *ColumnDCount) GetText() []rune { return c.Cipher.Text }
+func (c *ColumnDCount) Encrypt() { c.Cipher.Text = encryptColumnDCount(c.Cipher.Text, c.Cipher.Key.Key, c.Cipher.Key.DKey) }
+func (c *ColumnDCount) Decrypt() { c.Cipher.Text = decryptColumnDCount(c.Cipher.Text, c.Cipher.Key.Key, c.Cipher.Key.DKey) }
+func (c *ColumnDCount) Verify() bool { return true }
 
 func encryptColumnDCount(s []rune, key []rune, dkey []rune) []rune {
 	if len(dkey) < 2 {
@@ -251,13 +248,12 @@ type KeyColumnDLine struct {
 	Fill bool
 }
 
-type ColumnDLine struct {
-	Data *CipherClassicalData[KeyColumnDLine]
-}
-
-func (c *ColumnDLine) GetText() []rune { return c.Data.Text }
-func (c *ColumnDLine) Encrypt() { c.Data.Text = encryptColumnDLine(c.Data.Text, c.Data.Key.Key, c.Data.Key.Fill) }
-func (c *ColumnDLine) Decrypt() { c.Data.Text = decryptColumnDLine(c.Data.Text, c.Data.Key.Key, c.Data.Key.Fill) }
+type ColumnDLine struct { Cipher *CipherClassical[KeyColumnDLine] }
+func (c *ColumnDLine) GetErrors() []error { return c.Cipher.Errors }
+func (c *ColumnDLine) GetText() []rune { return c.Cipher.Text }
+func (c *ColumnDLine) Encrypt() { c.Cipher.Text = encryptColumnDLine(c.Cipher.Text, c.Cipher.Key.Key, c.Cipher.Key.Fill) }
+func (c *ColumnDLine) Decrypt() { c.Cipher.Text = decryptColumnDLine(c.Cipher.Text, c.Cipher.Key.Key, c.Cipher.Key.Fill) }
+func (c *ColumnDLine) Verify() bool { return true }
 
 func buildDLineGrid(s []rune, keyIndices []int, keySize int, fill bool) ([][]rune, int) {
 	block := 0

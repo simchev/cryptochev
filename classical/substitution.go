@@ -12,13 +12,12 @@ type KeySubstitute struct {
 	SAlphabet []rune
 }
 
-type Substitute struct {
-	Data *CipherClassicalData[KeySubstitute]
-}
-
-func (c *Substitute) GetText() []rune { return c.Data.Text }
-func (c *Substitute) Encrypt() { c.Data.Text = substitute(c.Data.Text, c.Data.Key.Alphabet, c.Data.Key.SAlphabet) }
-func (c *Substitute) Decrypt() { c.Data.Text = substitute(c.Data.Text, c.Data.Key.SAlphabet, c.Data.Key.Alphabet) }
+type Substitute struct { Cipher *CipherClassical[KeySubstitute] }
+func (c *Substitute) GetText() []rune { return c.Cipher.Text }
+func (c *Substitute) GetErrors() []error { return c.Cipher.Errors }
+func (c *Substitute) Encrypt() { c.Cipher.Text = substitute(c.Cipher.Text, c.Cipher.Key.Alphabet, c.Cipher.Key.SAlphabet) }
+func (c *Substitute) Decrypt() { c.Cipher.Text = substitute(c.Cipher.Text, c.Cipher.Key.SAlphabet, c.Cipher.Key.Alphabet) }
+func (c *Substitute) Verify() bool { return true }
 
 func substitute(s []rune, alphabet []rune, salphabet []rune) []rune {
 	result := make([]rune, len(s))
@@ -31,17 +30,13 @@ func substitute(s []rune, alphabet []rune, salphabet []rune) []rune {
 	return result
 }
 
-type KeyShift struct {
-	Shift int
-}
-
-type Shift struct {
-	Data *CipherClassicalData[KeyShift]
-}
-
-func (c *Shift) GetText() []rune { return c.Data.Text }
-func (c *Shift) Encrypt() { c.Data.Text = shift(c.Data.Text, c.Data.Key.Shift) }
-func (c *Shift) Decrypt() { c.Data.Text = shift(c.Data.Text, -c.Data.Key.Shift) }
+type KeyShift struct { Shift int }
+type Shift struct { Cipher *CipherClassical[KeyShift] }
+func (c *Shift) GetText() []rune { return c.Cipher.Text }
+func (c *Shift) GetErrors() []error { return c.Cipher.Errors }
+func (c *Shift) Encrypt() { c.Cipher.Text = shift(c.Cipher.Text, c.Cipher.Key.Shift) }
+func (c *Shift) Decrypt() { c.Cipher.Text = shift(c.Cipher.Text, -c.Cipher.Key.Shift) }
+func (c *Shift) Verify() bool { return true }
 
 func shift(s []rune, shift int) []rune {
 	rshift := rune(shift)
@@ -53,17 +48,13 @@ func shift(s []rune, shift int) []rune {
 	return s
 }
 
-type KeyCaesar struct {
-	Shift int
-}
-
-type Caesar struct {
-	Data *CipherClassicalData[KeyCaesar]
-}
-
-func (c *Caesar) GetText() []rune { return c.Data.Text }
-func (c *Caesar) Encrypt() { c.Data.Text = shiftAlphabet(c.Data.Text, c.Data.Key.Shift) }
-func (c *Caesar) Decrypt() { c.Data.Text = shiftAlphabet(c.Data.Text, -c.Data.Key.Shift) }
+type KeyCaesar struct { Shift int }
+type Caesar struct { Cipher *CipherClassical[KeyCaesar] }
+func (c *Caesar) GetText() []rune { return c.Cipher.Text }
+func (c *Caesar) GetErrors() []error { return c.Cipher.Errors }
+func (c *Caesar) Encrypt() { c.Cipher.Text = shiftAlphabet(c.Cipher.Text, c.Cipher.Key.Shift) }
+func (c *Caesar) Decrypt() { c.Cipher.Text = shiftAlphabet(c.Cipher.Text, -c.Cipher.Key.Shift) }
+func (c *Caesar) Verify() bool { return true }
 
 func shiftAlphabet(s []rune, shift int) []rune {
 	rshift := rune(shift % 26)
@@ -83,26 +74,24 @@ func shiftAlphabet(s []rune, shift int) []rune {
 }
 
 type KeyROT13 struct {}
-type ROT13 struct {
-	Data *CipherClassicalData[KeyROT13]
-}
-
-func (c *ROT13) GetText() []rune { return c.Data.Text }
-func (c *ROT13) Encrypt() { c.Data.Text = shiftAlphabet(c.Data.Text, 13) }
-func (c *ROT13) Decrypt() { c.Data.Text = shiftAlphabet(c.Data.Text, 13) }
+type ROT13 struct { Cipher *CipherClassical[KeyROT13] }
+func (c *ROT13) GetText() []rune { return c.Cipher.Text }
+func (c *ROT13) GetErrors() []error { return c.Cipher.Errors }
+func (c *ROT13) Encrypt() { c.Cipher.Text = shiftAlphabet(c.Cipher.Text, 13) }
+func (c *ROT13) Decrypt() { c.Cipher.Text = shiftAlphabet(c.Cipher.Text, 13) }
+func (c *ROT13) Verify() bool { return true }
 
 type KeyVigenere struct {
 	Alphabet []rune
 	Key []rune
 }
 
-type Vigenere struct {
-	Data *CipherClassicalData[KeyVigenere]
-}
-
-func (c *Vigenere) GetText() []rune { return c.Data.Text }
-func (c *Vigenere) Encrypt() { c.Data.Text = cryptVigenere(c.Data.Text, c.Data.Key.Alphabet, c.Data.Key.Key, true) }
-func (c *Vigenere) Decrypt() { c.Data.Text = cryptVigenere(c.Data.Text, c.Data.Key.Alphabet, c.Data.Key.Key, false) }
+type Vigenere struct { Cipher *CipherClassical[KeyVigenere] }
+func (c *Vigenere) GetText() []rune { return c.Cipher.Text }
+func (c *Vigenere) GetErrors() []error { return c.Cipher.Errors }
+func (c *Vigenere) Encrypt() { c.Cipher.Text = cryptVigenere(c.Cipher.Text, c.Cipher.Key.Alphabet, c.Cipher.Key.Key, true) }
+func (c *Vigenere) Decrypt() { c.Cipher.Text = cryptVigenere(c.Cipher.Text, c.Cipher.Key.Alphabet, c.Cipher.Key.Key, false) }
+func (c *Vigenere) Verify() bool { return true }
 
 func cryptVigenere(s []rune, alphabet []rune, key []rune, encrypt bool) []rune {
 	if len(key) == 0 {
@@ -123,13 +112,12 @@ func cryptVigenere(s []rune, alphabet []rune, key []rune, encrypt bool) []rune {
 	return result
 }
 
-type VigenereBeaufort struct {
-	Data *CipherClassicalData[KeyVigenere]
-}
-
-func (c *VigenereBeaufort) GetText() []rune { return c.Data.Text }
-func (c *VigenereBeaufort) Encrypt() { c.Data.Text = cryptVigenere(c.Data.Text, c.Data.Key.Alphabet, c.Data.Key.Key, false) }
-func (c *VigenereBeaufort) Decrypt() { c.Data.Text = cryptVigenere(c.Data.Text, c.Data.Key.Alphabet, c.Data.Key.Key, true) }
+type VigenereBeaufort struct { Cipher *CipherClassical[KeyVigenere] }
+func (c *VigenereBeaufort) GetText() []rune { return c.Cipher.Text }
+func (c *VigenereBeaufort) GetErrors() []error { return c.Cipher.Errors }
+func (c *VigenereBeaufort) Encrypt() { c.Cipher.Text = cryptVigenere(c.Cipher.Text, c.Cipher.Key.Alphabet, c.Cipher.Key.Key, false) }
+func (c *VigenereBeaufort) Decrypt() { c.Cipher.Text = cryptVigenere(c.Cipher.Text, c.Cipher.Key.Alphabet, c.Cipher.Key.Key, true) }
+func (c *VigenereBeaufort) Verify() bool { return true }
 
 func gronsfeldToVigenereKey(alphabet []rune, key []rune) []rune {
 	keyv := make([]rune, 0, len(key))
@@ -143,26 +131,24 @@ func gronsfeldToVigenereKey(alphabet []rune, key []rune) []rune {
 	return keyv
 }
 
-type VigenereGronsfeld struct {
-	Data *CipherClassicalData[KeyVigenere]
-}
-
-func (c *VigenereGronsfeld) GetText() []rune { return c.Data.Text }
-func (c *VigenereGronsfeld) Encrypt() { c.Data.Text = cryptVigenere(c.Data.Text, c.Data.Key.Alphabet, gronsfeldToVigenereKey(c.Data.Key.Alphabet, c.Data.Key.Key), true) }
-func (c *VigenereGronsfeld) Decrypt() { c.Data.Text = cryptVigenere(c.Data.Text, c.Data.Key.Alphabet, gronsfeldToVigenereKey(c.Data.Key.Alphabet, c.Data.Key.Key), false) }
+type VigenereGronsfeld struct { Cipher *CipherClassical[KeyVigenere] }
+func (c *VigenereGronsfeld) GetText() []rune { return c.Cipher.Text }
+func (c *VigenereGronsfeld) GetErrors() []error { return c.Cipher.Errors }
+func (c *VigenereGronsfeld) Encrypt() { c.Cipher.Text = cryptVigenere(c.Cipher.Text, c.Cipher.Key.Alphabet, gronsfeldToVigenereKey(c.Cipher.Key.Alphabet, c.Cipher.Key.Key), true) }
+func (c *VigenereGronsfeld) Decrypt() { c.Cipher.Text = cryptVigenere(c.Cipher.Text, c.Cipher.Key.Alphabet, gronsfeldToVigenereKey(c.Cipher.Key.Alphabet, c.Cipher.Key.Key), false) }
+func (c *VigenereGronsfeld) Verify() bool { return true }
 
 type KeyAutokey struct {
 	Alphabet []rune
 	Primer []rune
 }
 
-type Autokey struct {
-	Data *CipherClassicalData[KeyAutokey]
-}
-
-func (c *Autokey) GetText() []rune { return c.Data.Text }
-func (c *Autokey) Encrypt() { c.Data.Text = cryptVigenere(c.Data.Text, c.Data.Key.Alphabet, append(c.Data.Key.Primer, c.Data.Text...), true) }
-func (c *Autokey) Decrypt() { c.Data.Text = decryptAutokey(c.Data.Text, c.Data.Key.Alphabet, c.Data.Key.Primer) }
+type Autokey struct { Cipher *CipherClassical[KeyAutokey] }
+func (c *Autokey) GetText() []rune { return c.Cipher.Text }
+func (c *Autokey) GetErrors() []error { return c.Cipher.Errors }
+func (c *Autokey) Encrypt() { c.Cipher.Text = cryptVigenere(c.Cipher.Text, c.Cipher.Key.Alphabet, append(c.Cipher.Key.Primer, c.Cipher.Text...), true) }
+func (c *Autokey) Decrypt() { c.Cipher.Text = decryptAutokey(c.Cipher.Text, c.Cipher.Key.Alphabet, c.Cipher.Key.Primer) }
+func (c *Autokey) Verify() bool { return true }
 
 func decryptAutokey(s []rune, alphabet []rune, primer []rune) []rune {
 	result := make([]rune, len(s))
@@ -183,18 +169,18 @@ type KeyPlayfair struct {
 	Null rune
 }
 
-type Playfair struct {
-	Data *CipherClassicalData[KeyPlayfair]
-}
-
-func (c *Playfair) GetText() []rune { return c.Data.Text }
-func (c *Playfair) Encrypt() { c.Data.Text = cryptPlayfair(c.Data.Text, c.Data.Key.Alphabet, c.Data.Key.Null, true) }
-func (c *Playfair) Decrypt() { c.Data.Text = cryptPlayfair(c.Data.Text, c.Data.Key.Alphabet, c.Data.Key.Null, false) }
+type Playfair struct { Cipher *CipherClassical[KeyPlayfair] }
+func (c *Playfair) GetText() []rune { return c.Cipher.Text }
+func (c *Playfair) GetErrors() []error { return c.Cipher.Errors }
+func (c *Playfair) Encrypt() { c.Cipher.Text = cryptPlayfair(c.Cipher.Text, c.Cipher.Key.Alphabet, c.Cipher.Key.Null, true) }
+func (c *Playfair) Decrypt() { c.Cipher.Text = cryptPlayfair(c.Cipher.Text, c.Cipher.Key.Alphabet, c.Cipher.Key.Null, false) }
+func (c *Playfair) Verify() bool { return true }
 
 func cryptPlayfair(s []rune, alphabet []rune, null rune, encrypt bool) []rune {
 	result := make([]rune, len(s), len(s) + 1)
 	width := int(math.Sqrt(float64(len(alphabet))))
 	amap := buildIndexMap(alphabet)
+	inc, _ := utils.ReverseIf(-1, 1, encrypt)
 
 	if len(s) % 2 != 0 {
 		result = append(result, null)
@@ -216,11 +202,9 @@ func cryptPlayfair(s []rune, alphabet []rune, null rune, encrypt bool) []rune {
 		col2 := i2 % width
 
 		if row1 == row2 {
-			inc, _ := utils.ReverseIf(-1, 1, encrypt)
 			result[i] = alphabet[(col1 + inc + width) % width + row1 * width]
 			result[i + 1] = alphabet[(col2 + inc + width) % width + row2 * width]
 		} else if col1 == col2 {
-			inc, _ := utils.ReverseIf(-1, 1, encrypt)
 			result[i] = alphabet[col1 + (row1 + inc + width) % width * width]
 			result[i + 1] = alphabet[col2 + (row2 + inc + width) % width * width]
 		} else {
