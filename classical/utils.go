@@ -164,14 +164,6 @@ func ToSpaced(s string, n int) string {
 	return string(result[0:len(result)-1])
 }
 
-func triangleNumber(n int) int {
-	sum := 0
-	for i := n; i > 0; i-- {
-		sum += i
-	}
-	return sum
-}
-
 func buildIndexMap(alphabet []rune) map[rune]int {
 	amap := make(map[rune]int, len(alphabet))
 

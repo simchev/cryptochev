@@ -47,7 +47,7 @@ func buildDLineGrid(text []rune, keyIndices []int, keySize int, fill bool) ([][]
 	if fill {
 		block = keySize * keySize
 	} else {
-		block = triangleNumber(keySize)
+		block = utils.TriangleNumber(keySize)
 	}
 	blocks := int(math.Ceil(float64(len(text)) / float64(block)))
 	rows := blocks * keySize
@@ -262,7 +262,7 @@ func decryptColumnDCount(text []rune, key []rune, dkey []rune) []rune {
 	keyPositions := getSortedKeyPositions(dkey)
 	gaps := 0
 	gapPos := 0
-	gapIndices := make([]int, 0, int(math.Ceil(float64(triangleNumber(len(key))) / float64(triangleNumber(len(key) - 1)) * float64(len(text)))))
+	gapIndices := make([]int, 0, int(math.Ceil(float64(utils.TriangleNumber(len(key))) / float64(utils.TriangleNumber(len(key) - 1)) * float64(len(text)))))
 
 	for gapPos < len(text) + gaps {
 		for _, p := range keyPositions {
