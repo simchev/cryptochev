@@ -5,6 +5,45 @@ import (
 	"math"
 )
 
+const (
+	up complex128 	= 0 + 1i
+	right			= 1 + 0i
+	down			= 0 - 1i
+	left			= -1 + 0i
+)
+
+const (
+	topleft complex128 	= 0 + 0i
+	topright			= 1 + 0i
+	bottomright			= 1 + 1i
+	bottomleft			= 0 + 1i
+)
+
+const (
+	clockwise complex128 	= 0 - 1i
+	c_clockwise				= 0 + 1i
+)
+
+type routeType int
+const (
+	routeTypeSpiral routeType = iota
+	routeTypeSerpent
+)
+
+type route struct {
+	corner 		complex128
+	direction 	complex128
+	rotation 	complex128
+}
+var ROUTE_TLR = route{topleft, right, clockwise}
+var ROUTE_TLD = route{topleft, down, c_clockwise}
+var ROUTE_TRL = route{topright, left, c_clockwise}
+var ROUTE_TRD = route{topright, down, clockwise}
+var ROUTE_BLR = route{bottomleft, right, c_clockwise}
+var ROUTE_BLU = route{bottomleft, up, clockwise}
+var ROUTE_BRL = route{bottomright, left, clockwise}
+var ROUTE_BRU = route{bottomright, up, c_clockwise}
+
 func NewReverse(text []rune, key *KeyReverse) *Reverse {
 	return &Reverse{Cipher: &CipherClassical[KeyReverse]{Text: text, Key: key}}
 }
@@ -149,45 +188,6 @@ func (c *RouteSerpent) GetErrors() []error { return c.Cipher.Errors }
 func (c *RouteSerpent) Encrypt() { c.Cipher.Text = cryptRoute(c.Cipher.Text, c.Cipher.Key.Width, c.Cipher.Key.Route, routeTypeSerpent, true) }
 func (c *RouteSerpent) Decrypt() { c.Cipher.Text = cryptRoute(c.Cipher.Text, c.Cipher.Key.Width, c.Cipher.Key.Route, routeTypeSerpent, false) }
 func (c *RouteSerpent) Verify() bool { return true }
-
-const (
-	up complex128 	= 0 + 1i
-	right			= 1 + 0i
-	down			= 0 - 1i
-	left			= -1 + 0i
-)
-
-const (
-	topleft complex128 	= 0 + 0i
-	topright			= 1 + 0i
-	bottomright			= 1 + 1i
-	bottomleft			= 0 + 1i
-)
-
-const (
-	clockwise complex128 	= 0 - 1i
-	c_clockwise				= 0 + 1i
-)
-
-type routeType int
-const (
-	routeTypeSpiral routeType = iota
-	routeTypeSerpent
-)
-
-type route struct {
-	corner 		complex128
-	direction 	complex128
-	rotation 	complex128
-}
-var ROUTE_TLR = route{topleft, right, clockwise}
-var ROUTE_TLD = route{topleft, down, c_clockwise}
-var ROUTE_TRL = route{topright, left, c_clockwise}
-var ROUTE_TRD = route{topright, down, clockwise}
-var ROUTE_BLR = route{bottomleft, right, c_clockwise}
-var ROUTE_BLU = route{bottomleft, up, clockwise}
-var ROUTE_BRL = route{bottomright, left, clockwise}
-var ROUTE_BRU = route{bottomright, up, c_clockwise}
 
 func cryptRoute(s []rune, width int, r route, rt routeType, encrypt bool) []rune {
 	result := make([]rune, len(s))
