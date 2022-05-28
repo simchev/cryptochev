@@ -53,12 +53,12 @@ func (c *Reverse) Encrypt() { c.Cipher.Text = reverse(c.Cipher.Text) }
 func (c *Reverse) Decrypt() { c.Cipher.Text = reverse(c.Cipher.Text) }
 func (c *Reverse) Verify() bool { return true }
 
-func reverse(s []rune) []rune {
-	for i, j := 0, len(s) - 1; i < j; i, j = i + 1, j - 1 {
-		s[i], s[j] = s[j], s[i]
+func reverse(text []rune) []rune {
+	for i, j := 0, len(text) - 1; i < j; i, j = i + 1, j - 1 {
+		text[i], text[j] = text[j], text[i]
 	}
 
-	return s
+	return text
 }
 
 func NewKeyZigzag(lines int) *KeyZigzag { return &KeyZigzag{Lines: lines} }
@@ -75,12 +75,12 @@ func (c *Zigzag) Encrypt() { c.Cipher.Text = cryptZigzag(c.Cipher.Text, c.Cipher
 func (c *Zigzag) Decrypt() { c.Cipher.Text = cryptZigzag(c.Cipher.Text, c.Cipher.Key.Lines, false) }
 func (c *Zigzag) Verify() bool { return true }
 
-func cryptZigzag(s []rune, lines int, encrypt bool) []rune {
+func cryptZigzag(text []rune, lines int, encrypt bool) []rune {
 	if lines < 2 {
-		return s
+		return text
 	}
 
-	result := make([]rune, len(s))
+	result := make([]rune, len(text))
 	d1 := 2 * (lines - 1)
 	d2 := 0
 	sIndex := 0
@@ -88,17 +88,17 @@ func cryptZigzag(s []rune, lines int, encrypt bool) []rune {
 	for i := 0; i < lines; i++ {
 		j := i
 
-		for j < len(s) {
+		for j < len(text) {
 			if d1 != 0 {
 				i1, i2 := utils.ReverseIf(j, sIndex, encrypt)
-				result[i1] = s[i2]
+				result[i1] = text[i2]
 				j += d1
 				sIndex++
 			}
 
-			if d2 != 0 && j < len(s) {
+			if d2 != 0 && j < len(text) {
 				i1, i2 := utils.ReverseIf(j, sIndex, encrypt)
-				result[i1] = s[i2]
+				result[i1] = text[i2]
 				j += d2
 				sIndex++
 			}
@@ -125,20 +125,20 @@ func (c *Scytale) Encrypt() { c.Cipher.Text = cryptScytale(c.Cipher.Text, c.Ciph
 func (c *Scytale) Decrypt() { c.Cipher.Text = cryptScytale(c.Cipher.Text, c.Cipher.Key.Lines, false) }
 func (c *Scytale) Verify() bool { return true }
 
-func cryptScytale(s []rune, lines int, encrypt bool) []rune {
+func cryptScytale(text []rune, lines int, encrypt bool) []rune {
 	if lines < 2 {
-		return s
+		return text
 	}
 
-	result := make([]rune, len(s))
+	result := make([]rune, len(text))
 	sIndex := 0
 
 	for i := 0; i < lines; i++ {
 		j := i
 
-		for j < len(s) {
+		for j < len(text) {
 			i1, i2 := utils.ReverseIf(j, sIndex, encrypt)
-			result[i1] = s[i2]
+			result[i1] = text[i2]
 			j += lines
 			sIndex++
 		}
@@ -173,9 +173,9 @@ func (c *RouteSerpent) Encrypt() { c.Cipher.Text = cryptRoute(c.Cipher.Text, c.C
 func (c *RouteSerpent) Decrypt() { c.Cipher.Text = cryptRoute(c.Cipher.Text, c.Cipher.Key.Width, c.Cipher.Key.Route, routeTypeSerpent, false) }
 func (c *RouteSerpent) Verify() bool { return true }
 
-func cryptRoute(s []rune, width int, r route, rt routeType, encrypt bool) []rune {
-	result := make([]rune, len(s))
-	rows := int(math.Ceil(float64(len(s)) / float64(width)))
+func cryptRoute(text []rune, width int, r route, rt routeType, encrypt bool) []rune {
+	result := make([]rune, len(text))
+	rows := int(math.Ceil(float64(len(text)) / float64(width)))
 	cols := width
 	i := int(imag(r.corner)) * (rows - 1)
 	j := int(real(r.corner)) * int(cols - 1)
@@ -189,9 +189,9 @@ func cryptRoute(s []rune, width int, r route, rt routeType, encrypt bool) []rune
 			if (imag(direction) != 0) {
 				for r := 0; r < rows; r++ {
 					index := j + i * width
-					if index < len(s) {
+					if index < len(text) {
 						i1, i2 := utils.ReverseIf(index, sIndex, encrypt)
-						result[i1] = s[i2]
+						result[i1] = text[i2]
 						sIndex++
 					}
 					i -= int(imag(direction))
@@ -201,9 +201,9 @@ func cryptRoute(s []rune, width int, r route, rt routeType, encrypt bool) []rune
 			} else {
 				for c := 0; c < cols; c++ {
 					index := j + i * width
-					if index < len(s) {
+					if index < len(text) {
 						i1, i2 := utils.ReverseIf(index, sIndex, encrypt)
-						result[i1] = s[i2]
+						result[i1] = text[i2]
 						sIndex++
 					}
 					j += int(real(direction))
@@ -221,9 +221,9 @@ func cryptRoute(s []rune, width int, r route, rt routeType, encrypt bool) []rune
 			if (imag(direction) != 0) {
 				for r := 0; r < rows; r++ {
 					index := j + i * width
-					if index < len(s) {
+					if index < len(text) {
 						i1, i2 := utils.ReverseIf(index, sIndex, encrypt)
-						result[i1] = s[i2]
+						result[i1] = text[i2]
 						sIndex++
 					}
 					i -= int(imag(direction))
@@ -233,9 +233,9 @@ func cryptRoute(s []rune, width int, r route, rt routeType, encrypt bool) []rune
 			} else {
 				for c := 0; c < cols; c++ {
 					index := j + i * width
-					if index < len(s) {
+					if index < len(text) {
 						i1, i2 := utils.ReverseIf(index, sIndex, encrypt)
-						result[i1] = s[i2]
+						result[i1] = text[i2]
 						sIndex++
 					}
 					j += int(real(direction))
@@ -264,22 +264,22 @@ func (c *Magnet) Encrypt() { c.Cipher.Text = cryptMagnet(c.Cipher.Text, true) }
 func (c *Magnet) Decrypt() { c.Cipher.Text = cryptMagnet(c.Cipher.Text, false) }
 func (c *Magnet) Verify() bool { return true }
 
-func cryptMagnet(s []rune, encrypt bool) []rune {
-	result := make([]rune, len(s))
-	mid := len(s) / 2
+func cryptMagnet(text []rune, encrypt bool) []rune {
+	result := make([]rune, len(text))
+	mid := len(text) / 2
 	sIndex := 0
 
 	for i := 0; i < mid; i++ {
 		i1, i2 := utils.ReverseIf(i, sIndex, encrypt)
-		result[i1] = s[i2]
-		i1, i2 = utils.ReverseIf(len(s) - i - 1, sIndex + 1, encrypt)
-		result[i1] = s[i2]
+		result[i1] = text[i2]
+		i1, i2 = utils.ReverseIf(len(text) - i - 1, sIndex + 1, encrypt)
+		result[i1] = text[i2]
 		sIndex += 2
 	}
 
-	if len(s) % 2 != 0 {
+	if len(text) % 2 != 0 {
 		i1, i2 := utils.ReverseIf(mid, sIndex, encrypt)
-		result[i1] = s[i2]
+		result[i1] = text[i2]
 	}
 
 	return result
@@ -294,24 +294,24 @@ func (c *Elastic) Encrypt() { c.Cipher.Text = cryptElastic(c.Cipher.Text, true) 
 func (c *Elastic) Decrypt() { c.Cipher.Text = cryptElastic(c.Cipher.Text, false) }
 func (c *Elastic) Verify() bool { return true }
 
-func cryptElastic(s []rune, encrypt bool) []rune {
-	result := make([]rune, len(s))
-	mid := len(s) / 2
+func cryptElastic(text []rune, encrypt bool) []rune {
+	result := make([]rune, len(text))
+	mid := len(text) / 2
 	diff := 0
 	sIndex := 0
 
-	if len(s) % 2 != 0 {
+	if len(text) % 2 != 0 {
 		i1, i2 := utils.ReverseIf(mid, sIndex, encrypt)
-		result[i1] = s[i2]
+		result[i1] = text[i2]
 		sIndex++
 		diff = 1
 	}
 
 	for i := 0; i < mid; i++ {
 		i1, i2 := utils.ReverseIf(mid - i - 1, sIndex, encrypt)
-		result[i1] = s[i2]
+		result[i1] = text[i2]
 		i1, i2 = utils.ReverseIf(mid + i + diff, sIndex + 1, encrypt)
-		result[i1] = s[i2]
+		result[i1] = text[i2]
 		sIndex += 2
 	}
 

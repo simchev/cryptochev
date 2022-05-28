@@ -65,8 +65,8 @@ func RandomLetter() rune {
 	return rune(65 + rand.Intn(26))
 }
 
-func RandomRuneFrom(s []rune) rune {
-	return s[rand.Intn(len(s))]
+func RandomRuneFrom(r []rune) rune {
+	return r[rand.Intn(len(r))]
 }
 
 func ToPadded(s string, width int) string {

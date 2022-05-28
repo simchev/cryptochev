@@ -22,11 +22,11 @@ func (c *Substitute) Encrypt() { c.Cipher.Text = substitute(c.Cipher.Text, c.Cip
 func (c *Substitute) Decrypt() { c.Cipher.Text = substitute(c.Cipher.Text, c.Cipher.Key.SAlphabet, c.Cipher.Key.Alphabet) }
 func (c *Substitute) Verify() bool { return true }
 
-func substitute(s []rune, alphabet []rune, salphabet []rune) []rune {
-	result := make([]rune, len(s))
+func substitute(text []rune, alphabet []rune, salphabet []rune) []rune {
+	result := make([]rune, len(text))
 	amap := buildIndexMap(alphabet)
 
-	for i, r := range s {
+	for i, r := range text {
 		result[i] = salphabet[amap[r]]
 	}
 
@@ -47,14 +47,14 @@ func (c *Shift) Encrypt() { c.Cipher.Text = shift(c.Cipher.Text, c.Cipher.Key.Sh
 func (c *Shift) Decrypt() { c.Cipher.Text = shift(c.Cipher.Text, -c.Cipher.Key.Shift) }
 func (c *Shift) Verify() bool { return true }
 
-func shift(s []rune, shift int) []rune {
+func shift(text []rune, shift int) []rune {
 	rshift := rune(shift)
 
-	for i, r := range s {
-		s[i] = r + rshift
+	for i, r := range text {
+		text[i] = r + rshift
 	}
 
-	return s
+	return text
 }
 
 func NewKeyCaesar(shift int) *KeyCaesar { return &KeyCaesar{Shift: shift} }
@@ -71,21 +71,21 @@ func (c *Caesar) Encrypt() { c.Cipher.Text = shiftAlphabet(c.Cipher.Text, c.Ciph
 func (c *Caesar) Decrypt() { c.Cipher.Text = shiftAlphabet(c.Cipher.Text, -c.Cipher.Key.Shift) }
 func (c *Caesar) Verify() bool { return true }
 
-func shiftAlphabet(s []rune, shift int) []rune {
+func shiftAlphabet(text []rune, shift int) []rune {
 	rshift := rune(shift % 26)
 	if rshift < 0 {
 		rshift += 26
 	}
 
-	for i, r := range s {
+	for i, r := range text {
 		if unicode.IsUpper(r) {
-			s[i] = (r + rshift - 'A') % 26 + 'A'
+			text[i] = (r + rshift - 'A') % 26 + 'A'
 		} else if unicode.IsLower(r) {
-			s[i] = (r + rshift - 'a') % 26 + 'a'
+			text[i] = (r + rshift - 'a') % 26 + 'a'
 		}
 	}
 
-	return s
+	return text
 }
 
 func NewROT13(text []rune) *ROT13 { return &ROT13{Cipher: &CipherClassical[KeyNone]{Text: text, Key: &KeyNone{}}} }
@@ -112,15 +112,15 @@ func (c *Vigenere) Encrypt() { c.Cipher.Text = cryptVigenere(c.Cipher.Text, c.Ci
 func (c *Vigenere) Decrypt() { c.Cipher.Text = cryptVigenere(c.Cipher.Text, c.Cipher.Key.Alphabet, c.Cipher.Key.Key, false) }
 func (c *Vigenere) Verify() bool { return true }
 
-func cryptVigenere(s []rune, alphabet []rune, key []rune, encrypt bool) []rune {
+func cryptVigenere(text []rune, alphabet []rune, key []rune, encrypt bool) []rune {
 	if len(key) == 0 {
 		key = alphabet
 	}
 
-	result := make([]rune, len(s))
+	result := make([]rune, len(text))
 	amap := buildIndexMap(alphabet)
 	
-	for i, r := range s {
+	for i, r := range text {
 		if encrypt {
 			result[i] = alphabet[(amap[r] + amap[key[i % len(key)]]) % len(alphabet)]
 		} else {
@@ -176,13 +176,13 @@ func (c *Autokey) Encrypt() { c.Cipher.Text = cryptVigenere(c.Cipher.Text, c.Cip
 func (c *Autokey) Decrypt() { c.Cipher.Text = decryptAutokey(c.Cipher.Text, c.Cipher.Key.Alphabet, c.Cipher.Key.Primer) }
 func (c *Autokey) Verify() bool { return true }
 
-func decryptAutokey(s []rune, alphabet []rune, primer []rune) []rune {
-	result := make([]rune, len(s))
-	key := make([]rune, 0, len(s) + len(primer))
+func decryptAutokey(text []rune, alphabet []rune, primer []rune) []rune {
+	result := make([]rune, len(text))
+	key := make([]rune, 0, len(text) + len(primer))
 	key = append(key, primer...)
 	amap := buildIndexMap(alphabet)
 	
-	for i, r := range s {
+	for i, r := range text {
 		result[i] = alphabet[(amap[r] - amap[key[i]] + len(alphabet)) % len(alphabet)]
 		key = append(key, result[i])
 	}
@@ -205,22 +205,22 @@ func (c *Playfair) Encrypt() { c.Cipher.Text = cryptPlayfair(c.Cipher.Text, c.Ci
 func (c *Playfair) Decrypt() { c.Cipher.Text = cryptPlayfair(c.Cipher.Text, c.Cipher.Key.Alphabet, c.Cipher.Key.Null, false) }
 func (c *Playfair) Verify() bool { return true }
 
-func cryptPlayfair(s []rune, alphabet []rune, null rune, encrypt bool) []rune {
-	result := make([]rune, len(s), len(s) + 1)
+func cryptPlayfair(text []rune, alphabet []rune, null rune, encrypt bool) []rune {
+	result := make([]rune, len(text), len(text) + 1)
 	width := int(math.Sqrt(float64(len(alphabet))))
 	amap := buildIndexMap(alphabet)
 	inc, _ := utils.ReverseIf(-1, 1, encrypt)
 
-	if len(s) % 2 != 0 {
+	if len(text) % 2 != 0 {
 		result = append(result, null)
 	}
 
-	for i := 0; i < len(s); i += 2 {
-		i1 := amap[s[i]]
+	for i := 0; i < len(text); i += 2 {
+		i1 := amap[text[i]]
 		i2 := amap[null]
 		
-		if i != len(s) - 1 && i1 != amap[s[i + 1]] { // NEED TO MAKE IT APPEND INSTEAD OF REPLACING
-			i2 = amap[s[i + 1]]
+		if i != len(text) - 1 && i1 != amap[text[i + 1]] { // NEED TO MAKE IT APPEND INSTEAD OF REPLACING
+			i2 = amap[text[i + 1]]
 		} else if null == 0 {
 			i2 = amap[alphabet[rand.Intn(len(alphabet))]]
 		}
