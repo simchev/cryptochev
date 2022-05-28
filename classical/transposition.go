@@ -9,6 +9,10 @@ func NewReverse(text []rune, key *KeyReverse) *Reverse {
 	return &Reverse{Cipher: &CipherClassical[KeyReverse]{Text: text, Key: key}}
 }
 
+func NewKeyReverse() *KeyReverse {
+	return &KeyReverse{}
+}
+
 type KeyReverse struct {}
 type Reverse struct { Cipher *CipherClassical[KeyReverse] }
 func (c *Reverse) GetText() []rune { return c.Cipher.Text }
@@ -27,6 +31,10 @@ func reverse(s []rune) []rune {
 
 func NewZigzag(text []rune, key *KeyZigzag) *Zigzag {
 	return &Zigzag{Cipher: &CipherClassical[KeyZigzag]{Text: text, Key: key}}
+}
+
+func NewKeyZigzag(lines int) *KeyZigzag {
+	return &KeyZigzag{Lines: lines}
 }
 
 type KeyZigzag struct { Lines int }
@@ -77,6 +85,10 @@ func NewScytale(text []rune, key *KeyScytale) *Scytale {
 	return &Scytale{Cipher: &CipherClassical[KeyScytale]{Text: text, Key: key}}
 }
 
+func NewKeyScytale(lines int) *KeyScytale {
+	return &KeyScytale{Lines: lines}
+}
+
 type KeyScytale struct { Lines int }
 type Scytale struct { Cipher *CipherClassical[KeyScytale] }
 func (c *Scytale) GetText() []rune { return c.Cipher.Text }
@@ -109,6 +121,10 @@ func cryptScytale(s []rune, lines int, encrypt bool) []rune {
 
 func NewRouteSpiral(text []rune, key *KeyRoute) *RouteSpiral {
 	return &RouteSpiral{Cipher: &CipherClassical[KeyRoute]{Text: text, Key: key}}
+}
+
+func NewKeyRoute(width int, r route) *KeyRoute {
+	return &KeyRoute{Width: width, Route: r}
 }
 
 type KeyRoute struct { 
@@ -259,6 +275,10 @@ func NewMagnet(text []rune, key *KeyMagnet) *Magnet {
 	return &Magnet{Cipher: &CipherClassical[KeyMagnet]{Text: text, Key: key}}
 }
 
+func NewKeyMagnet() *KeyMagnet {
+	return &KeyMagnet{}
+}
+
 type KeyMagnet struct {}
 type Magnet struct { Cipher *CipherClassical[KeyMagnet] }
 func (c *Magnet) GetText() []rune { return c.Cipher.Text }
@@ -290,6 +310,10 @@ func cryptMagnet(s []rune, encrypt bool) []rune {
 
 func NewElastic(text []rune, key *KeyElastic) *Elastic {
 	return &Elastic{Cipher: &CipherClassical[KeyElastic]{Text: text, Key: key}}
+}
+
+func NewKeyElastic() *KeyElastic {
+	return &KeyElastic{}
 }
 
 type KeyElastic struct {}

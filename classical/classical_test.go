@@ -63,8 +63,8 @@ func TestSubstitute(t *testing.T) {
 
 	for i, test := range tests {
 		key := KeySubstitute{Alphabet: []rune(alphabets[i]), SAlphabet: []rune(salphabets[i])}
-		c := Substitute{Cipher: &CipherClassical[KeySubstitute]{Text: []rune(test), Key: &key}}
-		testCipher(t, &c, expects[i], test)
+		c := NewSubstitute([]rune(test), &key)
+		testCipher(t, c, expects[i], test)
 	}
 }
 

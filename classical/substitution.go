@@ -11,6 +11,10 @@ func NewSubstitute(text []rune, key *KeySubstitute) *Substitute {
 	return &Substitute{Cipher: &CipherClassical[KeySubstitute]{Text: text, Key: key}}
 }
 
+func NewKeySubstitute(alphabet []rune, salphabet []rune) *KeySubstitute {
+	return &KeySubstitute{Alphabet: alphabet, SAlphabet: salphabet}
+}
+
 type KeySubstitute struct {
 	Alphabet []rune
 	SAlphabet []rune
@@ -38,6 +42,10 @@ func NewShift(text []rune, key *KeyShift) *Shift {
 	return &Shift{Cipher: &CipherClassical[KeyShift]{Text: text, Key: key}}
 }
 
+func NewKeyShift(shift int) *KeyShift {
+	return &KeyShift{Shift: shift}
+}
+
 type KeyShift struct { Shift int }
 type Shift struct { Cipher *CipherClassical[KeyShift] }
 func (c *Shift) GetText() []rune { return c.Cipher.Text }
@@ -58,6 +66,10 @@ func shift(s []rune, shift int) []rune {
 
 func NewCaesar(text []rune, key *KeyCaesar) *Caesar {
 	return &Caesar{Cipher: &CipherClassical[KeyCaesar]{Text: text, Key: key}}
+}
+
+func NewKeyCaesar(shift int) *KeyCaesar {
+	return &KeyCaesar{Shift: shift}
 }
 
 type KeyCaesar struct { Shift int }
@@ -89,6 +101,10 @@ func NewROT13(text []rune, key *KeyROT13) *ROT13 {
 	return &ROT13{Cipher: &CipherClassical[KeyROT13]{Text: text, Key: key}}
 }
 
+func NewKeyROT13() *KeyROT13 {
+	return &KeyROT13{}
+}
+
 type KeyROT13 struct {}
 type ROT13 struct { Cipher *CipherClassical[KeyROT13] }
 func (c *ROT13) GetText() []rune { return c.Cipher.Text }
@@ -99,6 +115,10 @@ func (c *ROT13) Verify() bool { return true }
 
 func NewVigenere(text []rune, key *KeyVigenere) *Vigenere {
 	return &Vigenere{Cipher: &CipherClassical[KeyVigenere]{Text: text, Key: key}}
+}
+
+func NewKeyVigenere(alphabet []rune, key []rune) *KeyVigenere {
+	return &KeyVigenere{Alphabet: alphabet, Key: key}
 }
 
 type KeyVigenere struct {
@@ -170,6 +190,10 @@ func NewAutokey(text []rune, key *KeyAutokey) *Autokey {
 	return &Autokey{Cipher: &CipherClassical[KeyAutokey]{Text: text, Key: key}}
 }
 
+func NewKeyAutokey(alphabet []rune, primer []rune) *KeyAutokey {
+	return &KeyAutokey{Alphabet: alphabet, Primer: primer}
+}
+
 type KeyAutokey struct {
 	Alphabet []rune
 	Primer []rune
@@ -198,6 +222,10 @@ func decryptAutokey(s []rune, alphabet []rune, primer []rune) []rune {
 
 func NewPlayfair(text []rune, key *KeyPlayfair) *Playfair {
 	return &Playfair{Cipher: &CipherClassical[KeyPlayfair]{Text: text, Key: key}}
+}
+
+func NewKeyPlayfair(alphabet []rune, null rune) *KeyPlayfair {
+	return &KeyPlayfair{Alphabet: alphabet, Null: null}
 }
 
 type KeyPlayfair struct {
