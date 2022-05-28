@@ -36,7 +36,10 @@ func substitute(s []rune, alphabet []rune, salphabet []rune) []rune {
 func NewKeyShift(shift int) *KeyShift { return &KeyShift{Shift: shift} }
 func NewShift(text []rune, key *KeyShift) *Shift { return &Shift{Cipher: &CipherClassical[KeyShift]{Text: text, Key: key}} }
 
-type KeyShift struct { Shift int }
+type KeyShift struct { 
+	Shift int 
+}
+
 type Shift struct { Cipher *CipherClassical[KeyShift] }
 func (c *Shift) GetText() []rune { return c.Cipher.Text }
 func (c *Shift) GetErrors() []error { return c.Cipher.Errors }
@@ -57,7 +60,10 @@ func shift(s []rune, shift int) []rune {
 func NewKeyCaesar(shift int) *KeyCaesar { return &KeyCaesar{Shift: shift} }
 func NewCaesar(text []rune, key *KeyCaesar) *Caesar { return &Caesar{Cipher: &CipherClassical[KeyCaesar]{Text: text, Key: key}} }
 
-type KeyCaesar struct { Shift int }
+type KeyCaesar struct { 
+	Shift int 
+}
+
 type Caesar struct { Cipher *CipherClassical[KeyCaesar] }
 func (c *Caesar) GetText() []rune { return c.Cipher.Text }
 func (c *Caesar) GetErrors() []error { return c.Cipher.Errors }
@@ -82,11 +88,9 @@ func shiftAlphabet(s []rune, shift int) []rune {
 	return s
 }
 
-func NewKeyROT13() *KeyROT13 { return &KeyROT13{} }
-func NewROT13(text []rune, key *KeyROT13) *ROT13 { return &ROT13{Cipher: &CipherClassical[KeyROT13]{Text: text, Key: key}} }
+func NewROT13(text []rune) *ROT13 { return &ROT13{Cipher: &CipherClassical[KeyNone]{Text: text, Key: &KeyNone{}}} }
 
-type KeyROT13 struct {}
-type ROT13 struct { Cipher *CipherClassical[KeyROT13] }
+type ROT13 struct { Cipher *CipherClassical[KeyNone] }
 func (c *ROT13) GetText() []rune { return c.Cipher.Text }
 func (c *ROT13) GetErrors() []error { return c.Cipher.Errors }
 func (c *ROT13) Encrypt() { c.Cipher.Text = shiftAlphabet(c.Cipher.Text, 13) }

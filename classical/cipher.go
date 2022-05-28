@@ -14,21 +14,20 @@ type ICipherClassical interface {
 	Verify() bool
 }
 
+type KeyNone struct{}
+
 type CipherClassicalKey interface {
-	KeyADFGVX |
+	KeyNone |
+		KeyADFGVX |
 		KeyADFGX |
 		KeyColumn |
 		KeyPolybius |
 		KeyRoute |
 		KeyShift |
-		KeyROT13 |
 		KeyZigzag |
 		KeyScytale |
 		KeyMyszkowski |
 		KeyCaesar |
-		KeyMagnet |
-		KeyElastic |
-		KeyReverse |
 		KeyColumnDCount |
 		KeyColumnDLine |
 		KeyVigenere |

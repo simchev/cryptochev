@@ -91,7 +91,7 @@ func TestROT13(t *testing.T) {
 	expects := [...]string{"JRNERQVFPBIRERQSYRRNGBAPR", "JRNGGNPXNG1200NZ", "LBHPNAGFRRZR", "JRYBIRCNXVFGNAVQRFGEBLVAQVN", "WBHOYVRENVWNZNVFPRGRGR"}
 
 	for i, test := range tests {
-		c := NewROT13([]rune(test), NewKeyROT13())
+		c := NewROT13([]rune(test))
 		testCipher(t, c, expects[i], test)
 	}
 }
@@ -133,7 +133,7 @@ func TestReverse(t *testing.T) {
 	expects := [...]string{"ECNOTAEELFDEREVOCSIDERAEW", "MA0021TAKCATTAEW", "EMEESTNACUOY", "AIDNIYORTSEDINATSIKAPEVOLEW", "ETETECSIAMAJIAREILBUOJ"}
 
 	for i, test := range tests {
-		c := NewReverse([]rune(test), NewKeyReverse())
+		c := NewReverse([]rune(test))
 		testCipher(t, c, expects[i], test)
 	}
 }
@@ -258,7 +258,7 @@ func TestMagnet(t *testing.T) {
 	expects := [...]string{"WEECANROETDAIESECLOFVDEER", "WMEAA0T0T2A1CTKA", "YEOMUECEASNT", "WAEILDONVIEYPOARKTISSETDAIN", "JEOTUEBTLEICESRIAAIMJA"}
 
 	for i, test := range tests {
-		c := NewMagnet([]rune(test), NewKeyMagnet())
+		c := NewMagnet([]rune(test))
 		testCipher(t, c, expects[i], test)
 	}
 }
@@ -267,7 +267,7 @@ func TestElastic(t *testing.T) {
 	expects := [...]string{"REEVDOFCLSEIEDAETROANECWE", "KACTA1T2T0A0EAWM", "NTASCEUEOMYE", "NAITDSEISKTARPOEYVIONLDEIWA", "JAIMAARIESICLEBTUEOTJE"}
 
 	for i, test := range tests {
-		c := NewElastic([]rune(test), NewKeyElastic())
+		c := NewElastic([]rune(test))
 		testCipher(t, c, expects[i], test)
 	}
 }
