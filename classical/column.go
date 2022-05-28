@@ -6,13 +6,14 @@ import (
 	"sort"
 )
 
-type KeyColumn struct {
-	Key []rune
+func NewColumn(text []rune, key *KeyColumn) *Column {
+	return &Column{Cipher: &CipherClassical[KeyColumn]{Text: text, Key: key}}
 }
 
+type KeyColumn struct { Key []rune }
 type Column struct { Cipher *CipherClassical[KeyColumn] }
-func (c *Column) GetErrors() []error { return c.Cipher.Errors }
 func (c *Column) GetText() []rune { return c.Cipher.Text }
+func (c *Column) GetErrors() []error { return c.Cipher.Errors }
 func (c *Column) Encrypt() { c.Cipher.Text = cryptColumn(c.Cipher.Text, c.Cipher.Key.Key, true) }
 func (c *Column) Decrypt() { c.Cipher.Text = cryptColumn(c.Cipher.Text, c.Cipher.Key.Key, false) }
 func (c *Column) Verify() bool { return true }
@@ -50,13 +51,14 @@ func cryptColumn(s []rune, key []rune, encrypt bool) []rune {
 	return result
 }
 
-type KeyMyszkowski struct {
-	Key []rune
+func NewMyszkowski(text []rune, key *KeyMyszkowski) *Myszkowski {
+	return &Myszkowski{Cipher: &CipherClassical[KeyMyszkowski]{Text: text, Key: key}}
 }
 
+type KeyMyszkowski struct { Key []rune }
 type Myszkowski struct { Cipher *CipherClassical[KeyMyszkowski] }
-func (c *Myszkowski) GetErrors() []error { return c.Cipher.Errors }
 func (c *Myszkowski) GetText() []rune { return c.Cipher.Text }
+func (c *Myszkowski) GetErrors() []error { return c.Cipher.Errors }
 func (c *Myszkowski) Encrypt() { c.Cipher.Text = cryptMyszkowski(c.Cipher.Text, c.Cipher.Key.Key, true) }
 func (c *Myszkowski) Decrypt() { c.Cipher.Text = cryptMyszkowski(c.Cipher.Text, c.Cipher.Key.Key, false) }
 func (c *Myszkowski) Verify() bool { return true }
@@ -117,14 +119,18 @@ func getSortedKeyPositions(key []rune) []int {
 	return rKeyPositions
 }
 
+func NewColumnDCount(text []rune, key *KeyColumnDCount) *ColumnDCount {
+	return &ColumnDCount{Cipher: &CipherClassical[KeyColumnDCount]{Text: text, Key: key}}
+}
+
 type KeyColumnDCount struct {
 	Key []rune
 	DKey []rune
 }
 
 type ColumnDCount struct { Cipher *CipherClassical[KeyColumnDCount] }
-func (c *ColumnDCount) GetErrors() []error { return c.Cipher.Errors }
 func (c *ColumnDCount) GetText() []rune { return c.Cipher.Text }
+func (c *ColumnDCount) GetErrors() []error { return c.Cipher.Errors }
 func (c *ColumnDCount) Encrypt() { c.Cipher.Text = encryptColumnDCount(c.Cipher.Text, c.Cipher.Key.Key, c.Cipher.Key.DKey) }
 func (c *ColumnDCount) Decrypt() { c.Cipher.Text = decryptColumnDCount(c.Cipher.Text, c.Cipher.Key.Key, c.Cipher.Key.DKey) }
 func (c *ColumnDCount) Verify() bool { return true }
@@ -243,14 +249,18 @@ func decryptColumnDCount(s []rune, key []rune, dkey []rune) []rune {
 	return result
 }
 
+func NewColumnDLine(text []rune, key *KeyColumnDLine) *ColumnDLine {
+	return &ColumnDLine{Cipher: &CipherClassical[KeyColumnDLine]{Text: text, Key: key}}
+}
+
 type KeyColumnDLine struct {
 	Key []rune
 	Fill bool
 }
 
 type ColumnDLine struct { Cipher *CipherClassical[KeyColumnDLine] }
-func (c *ColumnDLine) GetErrors() []error { return c.Cipher.Errors }
 func (c *ColumnDLine) GetText() []rune { return c.Cipher.Text }
+func (c *ColumnDLine) GetErrors() []error { return c.Cipher.Errors }
 func (c *ColumnDLine) Encrypt() { c.Cipher.Text = encryptColumnDLine(c.Cipher.Text, c.Cipher.Key.Key, c.Cipher.Key.Fill) }
 func (c *ColumnDLine) Decrypt() { c.Cipher.Text = decryptColumnDLine(c.Cipher.Text, c.Cipher.Key.Key, c.Cipher.Key.Fill) }
 func (c *ColumnDLine) Verify() bool { return true }

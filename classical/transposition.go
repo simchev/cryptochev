@@ -5,6 +5,10 @@ import (
 	"math"
 )
 
+func NewReverse(text []rune, key *KeyReverse) *Reverse {
+	return &Reverse{Cipher: &CipherClassical[KeyReverse]{Text: text, Key: key}}
+}
+
 type KeyReverse struct {}
 type Reverse struct { Cipher *CipherClassical[KeyReverse] }
 func (c *Reverse) GetText() []rune { return c.Cipher.Text }
@@ -19,6 +23,10 @@ func reverse(s []rune) []rune {
 	}
 
 	return s
+}
+
+func NewZigzag(text []rune, key *KeyZigzag) *Zigzag {
+	return &Zigzag{Cipher: &CipherClassical[KeyZigzag]{Text: text, Key: key}}
 }
 
 type KeyZigzag struct { Lines int }
@@ -65,6 +73,10 @@ func cryptZigzag(s []rune, lines int, encrypt bool) []rune {
 	return result
 }
 
+func NewScytale(text []rune, key *KeyScytale) *Scytale {
+	return &Scytale{Cipher: &CipherClassical[KeyScytale]{Text: text, Key: key}}
+}
+
 type KeyScytale struct { Lines int }
 type Scytale struct { Cipher *CipherClassical[KeyScytale] }
 func (c *Scytale) GetText() []rune { return c.Cipher.Text }
@@ -95,6 +107,10 @@ func cryptScytale(s []rune, lines int, encrypt bool) []rune {
 	return result
 }
 
+func NewRouteSpiral(text []rune, key *KeyRoute) *RouteSpiral {
+	return &RouteSpiral{Cipher: &CipherClassical[KeyRoute]{Text: text, Key: key}}
+}
+
 type KeyRoute struct { 
 	Width int 
 	Route route
@@ -106,6 +122,10 @@ func (c *RouteSpiral) GetErrors() []error { return c.Cipher.Errors }
 func (c *RouteSpiral) Encrypt() { c.Cipher.Text = cryptRoute(c.Cipher.Text, c.Cipher.Key.Width, c.Cipher.Key.Route, routeTypeSpiral, true); }
 func (c *RouteSpiral) Decrypt() { c.Cipher.Text = cryptRoute(c.Cipher.Text, c.Cipher.Key.Width, c.Cipher.Key.Route, routeTypeSpiral, false); }
 func (c *RouteSpiral) Verify() bool { return true }
+
+func NewRouteSerpent(text []rune, key *KeyRoute) *RouteSerpent {
+	return &RouteSerpent{Cipher: &CipherClassical[KeyRoute]{Text: text, Key: key}}
+}
 
 type RouteSerpent struct { Cipher *CipherClassical[KeyRoute] }
 func (c *RouteSerpent) GetText() []rune { return c.Cipher.Text }
@@ -235,6 +255,10 @@ func cryptRoute(s []rune, width int, r route, rt routeType, encrypt bool) []rune
 	return result
 }
 
+func NewMagnet(text []rune, key *KeyMagnet) *Magnet {
+	return &Magnet{Cipher: &CipherClassical[KeyMagnet]{Text: text, Key: key}}
+}
+
 type KeyMagnet struct {}
 type Magnet struct { Cipher *CipherClassical[KeyMagnet] }
 func (c *Magnet) GetText() []rune { return c.Cipher.Text }
@@ -262,6 +286,10 @@ func cryptMagnet(s []rune, encrypt bool) []rune {
 	}
 
 	return result
+}
+
+func NewElastic(text []rune, key *KeyElastic) *Elastic {
+	return &Elastic{Cipher: &CipherClassical[KeyElastic]{Text: text, Key: key}}
 }
 
 type KeyElastic struct {}

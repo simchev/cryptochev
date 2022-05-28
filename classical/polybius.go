@@ -1,5 +1,9 @@
 package classical
 
+func NewPolybius(text []rune, key *KeyPolybius) *Polybius {
+	return &Polybius{Cipher: &CipherClassical[KeyPolybius]{Text: text, Key: key}}
+}
+
 type KeyPolybius struct {
 	Alphabet []rune
 	Header   []rune
@@ -35,6 +39,10 @@ func decryptPolybius(s []rune, alphabet []rune, header []rune) []rune {
 	return result
 }
 
+func NewADFGX(text []rune, key *KeyADFGX) *ADFGX {
+	return &ADFGX{Cipher: &CipherClassical[KeyADFGX]{Text: text, Key: key}}
+}
+
 type KeyADFGX struct {
 	Alphabet []rune
 	Key      []rune
@@ -55,6 +63,10 @@ func encryptADFGX(s []rune, alphabet []rune, key []rune) []rune {
 func decryptADFGX(s []rune, alphabet []rune, key []rune) []rune {
 	result := cryptColumn(s, key, false)
 	return decryptPolybius(result, alphabet, []rune("ADFGX"))
+}
+
+func NewADFGVX(text []rune, key *KeyADFGVX) *ADFGVX {
+	return &ADFGVX{Cipher: &CipherClassical[KeyADFGVX]{Text: text, Key: key}}
 }
 
 type KeyADFGVX struct {
