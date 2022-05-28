@@ -206,23 +206,24 @@ func (c *Playfair) Decrypt() { c.Cipher.Text = cryptPlayfair(c.Cipher.Text, c.Ci
 func (c *Playfair) Verify() bool { return true }
 
 func cryptPlayfair(text []rune, alphabet []rune, null rune, encrypt bool) []rune {
-	result := make([]rune, len(text), len(text) + 1)
+	result := make([]rune, 0, len(text) + len(text) / 2 + 1)
 	width := int(math.Sqrt(float64(len(alphabet))))
 	amap := buildIndexMap(alphabet)
 	inc, _ := utils.ReverseIf(-1, 1, encrypt)
 
-	if len(text) % 2 != 0 {
-		result = append(result, null)
-	}
-
 	for i := 0; i < len(text); i += 2 {
 		i1 := amap[text[i]]
-		i2 := amap[null]
+		var i2 int
 		
-		if i != len(text) - 1 && i1 != amap[text[i + 1]] { // NEED TO MAKE IT APPEND INSTEAD OF REPLACING
+		if i != len(text) - 1 && i1 != amap[text[i + 1]] {
 			i2 = amap[text[i + 1]]
-		} else if null == 0 {
-			i2 = amap[alphabet[rand.Intn(len(alphabet))]]
+		} else {
+			i--
+			if null == 0 {
+				i2 = amap[alphabet[rand.Intn(len(alphabet))]]
+			} else {
+				i2 = amap[null]
+			}
 		}
 
 		row1 := i1 / width
@@ -231,14 +232,14 @@ func cryptPlayfair(text []rune, alphabet []rune, null rune, encrypt bool) []rune
 		col2 := i2 % width
 
 		if row1 == row2 {
-			result[i] = alphabet[(col1 + inc + width) % width + row1 * width]
-			result[i + 1] = alphabet[(col2 + inc + width) % width + row2 * width]
+			result = append(result, alphabet[(col1 + inc + width) % width + row1 * width])
+			result = append(result, alphabet[(col2 + inc + width) % width + row2 * width])
 		} else if col1 == col2 {
-			result[i] = alphabet[col1 + (row1 + inc + width) % width * width]
-			result[i + 1] = alphabet[col2 + (row2 + inc + width) % width * width]
+			result = append(result, alphabet[col1 + (row1 + inc + width) % width * width])
+			result = append(result, alphabet[col2 + (row2 + inc + width) % width * width])
 		} else {
-			result[i] = alphabet[col2 + row1 * width]
-			result[i + 1] = alphabet[col1 + row2 * width]
+			result = append(result, alphabet[col2 + row1 * width])
+			result = append(result, alphabet[col1 + row2 * width])
 		}
 	}
 

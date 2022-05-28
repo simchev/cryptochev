@@ -53,11 +53,19 @@ func RandomAlphabetKey(alphabet []rune, key []rune) []rune {
 	return append(ukey, utils.Shuffle(remains)...)
 }
 
-func RandomAlphabetL25Key(key []rune) []rune {
+func AlphabetKeyL25(key []rune) []rune {
+	return AlphabetKey([]rune(AlphabetL25), key)
+}
+
+func AlphabetKeyL36(key []rune) []rune {
+	return AlphabetKey([]rune(AlphabetL36), key)
+}
+
+func RandomAlphabetKeyL25(key []rune) []rune {
 	return RandomAlphabetKey([]rune(AlphabetL25), key)
 }
 
-func RandomAlphabetL36Key(key []rune) []rune {
+func RandomAlphabetKeyL36(key []rune) []rune {
 	return RandomAlphabetKey([]rune(AlphabetL36), key)
 }
 

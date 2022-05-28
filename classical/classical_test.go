@@ -1,6 +1,7 @@
 package classical
 
 import (
+	"cryptochev/utils"
 	"regexp"
 	"strings"
 	"testing"
@@ -13,7 +14,7 @@ func errorTest(t *testing.T, msg string, exp string, res string) {
 	t.Errorf("%s. Expected: %s\nActual: %s", msg, ToSpaced(exp, spaces), ToSpaced(res, spaces))
 }
 
-func testCipher(t *testing.T, c ICipherClassical, exp string, test string) {
+func testCipher(t *testing.T, c ICipherClassical, exp string, dexp string) {
 	c.Encrypt()
 	ciphertext := string(c.GetText())
 	if ciphertext != exp {
@@ -22,12 +23,12 @@ func testCipher(t *testing.T, c ICipherClassical, exp string, test string) {
 
 	c.Decrypt()
 	plaintext := string(c.GetText())
-	if plaintext != test {
-		errorTest(t, "Decrypt failed", test, plaintext)
+	if plaintext != dexp {
+		errorTest(t, "Decrypt failed", dexp, plaintext)
 	}
 }
 
-func testCipherRegex(t *testing.T, c ICipherClassical, regex string, test string) {
+func testCipherRegex(t *testing.T, c ICipherClassical, regex string, dregex string) {
 	c.Encrypt()
 	ciphertext := string(c.GetText())
 	matched, err := regexp.MatchString(regex, ciphertext)
@@ -39,12 +40,42 @@ func testCipherRegex(t *testing.T, c ICipherClassical, regex string, test string
 
 	c.Decrypt()
 	plaintext := string(c.GetText())
-	if plaintext != test {
-		errorTest(t, "Decrypt failed", test, plaintext)
+	matched, err = regexp.MatchString(dregex, plaintext)
+	if err != nil {
+		t.Errorf("Regex error: %s, Error: %s", regex, err)
+	} else if !matched {
+		errorTest(t, "Decrypt failed", dregex, plaintext)
 	}
 }
 
-func TestSubstitute(t *testing.T) {
+func TestClassical(t *testing.T) {
+	t.Logf("Using seed: %d\n", utils.SeedRand())
+	t.Run("TestSubstitute", testSubstitute)
+	t.Run("TestShift", testShift)
+	t.Run("TestCaesar", testCaesar)
+	t.Run("TestROT13", testROT13)
+	t.Run("TestVigenere", testVigenere)
+	t.Run("TestVigenereBeaufort", testVigenereBeaufort)
+	t.Run("TestVigenereGronsfeld", testVigenereGronsfeld)
+	t.Run("TestReverse", testReverse)
+	t.Run("TestColumn", testColumn)
+	t.Run("TestZigzag", testZigzag)
+	t.Run("TestScytale", testScytale)
+	t.Run("TestRouteSpiral", testRouteSpiral)
+	t.Run("TestRouteSerpent", testRouteSerpent)
+	t.Run("TestMyszkowski", testMyszkowski)
+	t.Run("TestMagnet", testMagnet)
+	t.Run("TestElastic", testElastic)
+	t.Run("TestColumnDCount", testColumnDCount)
+	t.Run("TestColumnDLine", testColumnDLine)
+	t.Run("TestPolybius", testPolybius)
+	t.Run("TestADFGX", testADFGX)
+	t.Run("TestADFGVX", testADFGVX)
+	t.Run("TestAutokey", testAutokey)
+	t.Run("TestPlayfair", testPlayfair)
+}
+
+func testSubstitute(t *testing.T) {
 	alphabets := [...]string{AlphabetL, AlphabetL36, AlphabetL, AlphabetL25, AlphabetL}
 	salphabets := [...]string{
 		"0123456789!\"/$%?&*()±@£¢¤²", 
@@ -67,7 +98,7 @@ func TestSubstitute(t *testing.T) {
 	}
 }
 
-func TestShift(t *testing.T) {
+func testShift(t *testing.T) {
 	shifts := [...]int{5, 10, -8, 3, 13}
 	expects := [...]string{"\\JFWJINXHT[JWJIKQJJFYTSHJ", "aOK^^KMUK^;<::KW", "QGM;9FLK==E=", "ZHORYHSDNLVWDQLGHVWUR\\LQGLD", "W\\bOYVR_NVWNZNV`PRaRaR"}
 
@@ -77,7 +108,7 @@ func TestShift(t *testing.T) {
 	}
 }
 
-func TestCaesar(t *testing.T) {
+func testCaesar(t *testing.T) {
 	shifts := [...]int{6, 2, -5, -11, 67}
 	expects := [...]string{"CKGXKJOYIUBKXKJLRKKGZUTIK", "YGCVVCEMCV1200CO", "TJPXVIONZZHZ", "LTADKTEPZXHIPCXSTHIGDNXCSXP", "YDJQAXTGPXYPBPXHRTITIT"}
 
@@ -87,7 +118,7 @@ func TestCaesar(t *testing.T) {
 	}
 }
 
-func TestROT13(t *testing.T) {
+func testROT13(t *testing.T) {
 	expects := [...]string{"JRNERQVFPBIRERQSYRRNGBAPR", "JRNGGNPXNG1200NZ", "LBHPNAGFRRZR", "JRYBIRCNXVFGNAVQRFGEBLVAQVN", "WBHOYVRENVWNZNVFPRGRGR"}
 
 	for i, test := range tests {
@@ -96,7 +127,7 @@ func TestROT13(t *testing.T) {
 	}
 }
 
-func TestVigenere(t *testing.T) {
+func testVigenere(t *testing.T) {
 	keys := [...]string{"", "LEMON", "MONSTEC", "CLEF", "SECRAT"}
 	alphabets := [...]string{AlphabetL, AlphabetL36, "ACEMNOSTUY", AlphabetL, AlphabetL36}
 	expects := [...]string{"WFCUIIOZKXFPDRRUBVWTNJJZC", "8IM87LGWO7B6LNNX", "EAETTSUYTSYY", "YPPTXPTFMTWYCYMIGDXWQJMSFTE", "2SWSL2WVCZJT5EK0CXBIVV"}
@@ -107,7 +138,7 @@ func TestVigenere(t *testing.T) {
 	}
 }
 
-func TestVigenereBeaufort(t *testing.T) {
+func testVigenereBeaufort(t *testing.T) {
 	keys := [...]string{"", "LEMON", "MONSTEC", "CLEF", "SECRAT"}
 	alphabets := [...]string{AlphabetL, AlphabetL36, "ACEMNOSTUY", AlphabetL, AlphabetL36}
 	expects := [...]string{"WDYOAYCLUFLTFRPQVNMHZTRFG", "LAYFGZ99WGPXXVXB", "SANOMESMTUTO", "UTHJTTLVIXOOYCEYCHPMMNEIBXW", "2KSULZWN92JR57GBCVBARX"}
@@ -118,7 +149,7 @@ func TestVigenereBeaufort(t *testing.T) {
 	}
 }
 
-func TestVigenereGronsfeld(t *testing.T) {
+func testVigenereGronsfeld(t *testing.T) {
 	keys := [...]string{"15642", "23578", "", "15240", "0123"}
 	alphabets := [...]string{AlphabetL, AlphabetL36, "ACEMNOSTUY", AlphabetL, AlphabetL36}
 	expects := [...]string{"XJGVGENYGQWJXIFGQKICUTTGG", "YHF12CFPH235EGIO", "YSANNYMMACMM", "XJNSVFUCOITYCRIEJUXRPDKRDJF", "JPWELJGUAJLDMBKVCFVHTF"}
@@ -129,7 +160,7 @@ func TestVigenereGronsfeld(t *testing.T) {
 	}
 }
 
-func TestReverse(t *testing.T) {
+func testReverse(t *testing.T) {
 	expects := [...]string{"ECNOTAEELFDEREVOCSIDERAEW", "MA0021TAKCATTAEW", "EMEESTNACUOY", "AIDNIYORTSEDINATSIKAPEVOLEW", "ETETECSIAMAJIAREILBUOJ"}
 
 	for i, test := range tests {
@@ -138,7 +169,7 @@ func TestReverse(t *testing.T) {
 	}
 }
 
-func TestColumn(t *testing.T) {
+func testColumn(t *testing.T) {
 	keys := [...]string{"CARGO", "ZEBRAS", "SPECIALUNITONE", "VERYBIGSECRET", "LEGRANDMANITOU"}
 	expects := [...]string{"EIELOWDVFTRCEECEODAEASREN", "T1AAAEK0TTMA2WC0", "NCUAETEEOYMS", "VSIIEIKYTDPRETLDSNAOAIWNAOE", "LTAETOSUCJJIREIEIMBEAA"}
 	expectsPad := [...]string{"^EIELOWDVFTRCEECEODAEASREN$", "^T1.AAAEK0TTMA2.WC0$", "^NCU.AETE.EOYMS$", "^VS.II.EI.KY.TD.PR.ET.LD.SN.AO.AI.WNAOE.$", "^LTA.ETOSUCJ.JIREIEI.M.BEA.A.$"}
@@ -153,7 +184,7 @@ func TestColumn(t *testing.T) {
 	}
 }
 
-func TestZigzag(t *testing.T) {
+func testZigzag(t *testing.T) {
 	keys := [...]int{5, 7, 3, 9, 1}
 	expects := [...]string{"WCLEESOFECAIVDENRDEEAOERT", "W0E20A1ATTMTAAKC", "YAEOCNSEEUTM", "WEEDSLITONRVAOETYPSIAAINIKD", "JOUBLIERAIJAMAISCETETE"}
 
@@ -163,7 +194,7 @@ func TestZigzag(t *testing.T) {
 	}
 }
 
-func TestScytale(t *testing.T) {
+func testScytale(t *testing.T) {
 	keys := [...]int{6, 2, 1, 11, 5}
 	expects := [...]string{"WIREEESEAACDTROFOEVLNDEEC", "WATCA10AETAKT20M", "YOUCANTSEEME", "WTIEANLNDOIIVDAEEPSATKRIOSY", "JIJSTOEACEURMEBAATLIIE"}
 
@@ -173,7 +204,7 @@ func TestScytale(t *testing.T) {
 	}
 }
 
-func TestRouteSpiral(t *testing.T) {
+func testRouteSpiral(t *testing.T) {
 	widths := [...]int{ 6, 7, 3, 9, 1 }
 	routes := [...]route{
 		ROUTE_TLR,
@@ -206,7 +237,7 @@ func TestRouteSpiral(t *testing.T) {
 	}
 }
 
-func TestRouteSerpent(t *testing.T) {
+func testRouteSerpent(t *testing.T) {
 	widths := [...]int{ 6, 7, 3, 9, 1 }
 	routes := [...]route{
 		ROUTE_TLR,
@@ -239,7 +270,7 @@ func TestRouteSerpent(t *testing.T) {
 	}
 }
 
-func TestMyszkowski(t *testing.T) {
+func testMyszkowski(t *testing.T) {
 	keys := [...]string{"COBRA", "GIRAFFE", "TETE", "GINGRAYOLVA", "SECRET"}
 	expects := [...]string{"EODAEASRENWDVFTEIELORCEEC", "T1C0TA20WKAEAMAT", "OCNSEEYUATEM", "ESEYWOTIIIEANKRLNDATVDAIOPS", "UAITOLRJACEBISEJEMTIAE"}
 	expectsPad := [...]string{"^EODAEASRENWDVFTEIELORCEEC$", "^T1.C0.TA20..WKAEAMAT.$", "^OCNSEEYUATEM$", "^ESEY..WOTIIIEANKR.LNDAT.VDAIO.PS.$", "^UAITOLRJACE.BISEJEMTIAE.$"}
@@ -254,7 +285,7 @@ func TestMyszkowski(t *testing.T) {
 	}
 }
 
-func TestMagnet(t *testing.T) {
+func testMagnet(t *testing.T) {
 	expects := [...]string{"WEECANROETDAIESECLOFVDEER", "WMEAA0T0T2A1CTKA", "YEOMUECEASNT", "WAEILDONVIEYPOARKTISSETDAIN", "JEOTUEBTLEICESRIAAIMJA"}
 
 	for i, test := range tests {
@@ -263,7 +294,7 @@ func TestMagnet(t *testing.T) {
 	}
 }
 
-func TestElastic(t *testing.T) {
+func testElastic(t *testing.T) {
 	expects := [...]string{"REEVDOFCLSEIEDAETROANECWE", "KACTA1T2T0A0EAWM", "NTASCEUEOMYE", "NAITDSEISKTARPOEYVIONLDEIWA", "JAIMAARIESICLEBTUEOTJE"}
 
 	for i, test := range tests {
@@ -272,7 +303,7 @@ func TestElastic(t *testing.T) {
 	}
 }
 
-func TestColumnDCount(t *testing.T) {
+func testColumnDCount(t *testing.T) {
 	keys := [...]string{"CRYPTO", "KATANA", "TOKYO", "BAMBOO", "FOREST"}
 	dkeys := [...]string{"SECRET", "DISTURB", "SHRINE", "GRASS", "MOUNTAIN"}
 	expects := [...]string{"WCEEOERETRIVFCEODNSELEADA", "A1MATA0WTTAK0EC2", "UONEASEYECTM", "VIEDWOKAONLSNTIEESYIPIRAATD", "URAEJIJSTOEACEMBATLIIE"}
@@ -283,7 +314,7 @@ func TestColumnDCount(t *testing.T) {
 	}
 }
 
-func TestColumnDLine(t *testing.T) {
+func testColumnDLine(t *testing.T) {
 	keys := [...]string{"BIRTHDAY", "MAX", "YEP", "GHOST", "PHILIPPE"}
 	expects := [...]string{"IWSCDAOEDEEREEOFTNAVLCREE", "ETK10WATCAT0AMA2", "OCSEAMYUNTEE", "WEOPSDETYILVATSRIAEKAONINDI", "ROIAIEUMSTLEBCEJAJATIE"}
 	expectsFill := [...]string{"IWSCDAOEDEEREEOFTNAVLCREE", "EKT10WATT20CAAMA", "OCSMTAEYUNEE", "WEOPSIADLVATEREKASOIINTYNDI", "ROIAIEUMSTLEBCEJAJATIE"}
@@ -296,7 +327,7 @@ func TestColumnDLine(t *testing.T) {
 	}
 }
 
-func TestPolybius(t *testing.T) {
+func testPolybius(t *testing.T) {
 	headers := [...]string{"POWERS", "123456", "HELPUS", "MIAWS", "01835"}
 	alphabets := [...]string{
 		"HJDI8PZA17E0LYBO23XWV6FQKCGTSRMN5U49",
@@ -322,7 +353,7 @@ func TestPolybius(t *testing.T) {
 	}
 }
 
-func TestADFGX(t *testing.T) {
+func testADFGX(t *testing.T) {
 	keys := [...]string{"CAT", "MEEPOPA", "DISPAS", "HEYTOI", "7273747"}
 	alphabets := [...]string{
 		"BZQXFVKSEMCYPLNDROHITAUWG",
@@ -349,7 +380,7 @@ func TestADFGX(t *testing.T) {
 	}
 }
 
-func TestADFGVX(t *testing.T) {
+func testADFGVX(t *testing.T) {
 	keys := [...]string{"ALLO", "SALUT", "BONJOUR", "COMMENT", "CAVA"}
 	alphabets := [...]string{
 		"92DF6VSMBG3I0HZQ17WYRLA5CETPKNX8J4UO",
@@ -372,7 +403,7 @@ func TestADFGVX(t *testing.T) {
 	}
 }
 
-func TestAutokey(t *testing.T) {
+func testAutokey(t *testing.T) {
 	primers := [...]string{"ALLO", "SALUT", "BONJOUR", "COMMENT", "CAVA"}
 	alphabets := [...]string{
 		"92DF6VSMBG3I0HZQ17WYRLA5CETPKNX8J4UO",
@@ -381,16 +412,31 @@ func TestAutokey(t *testing.T) {
 		"3U0NBY1PXLVRDWA89GT67F2OJQ5EIZS4KCMH",
 		"EO4QB7GFA3Y5HMCJ10P9KN2S8ZVRDW6LXTIU",
 	}
-	expects := [...]string{
-		"63MYMP4TH218BCMKVZPEICW3Q", 
-		"YKWF0UH9208R3Y2R", 
-		"7KWE0WJTTRFQ", 
-		"VAPFUSQEOUGIYV1X6J3Q5CBS1VQ", 
-		"W3ZHYUULQXJUNGMLRALS5E",
-	}
+	expects := [...]string{"63MYMP4TH218BCMKVZPEICW3Q", "YKWF0UH9208R3Y2R", "7KWE0WJTTRFQ", "VAPFUSQEOUGIYV1X6J3Q5CBS1VQ", "W3ZHYUULQXJUNGMLRALS5E"}
 
 	for i, test := range tests {
 		c := NewAutokey([]rune(test), NewKeyAutokey([]rune(alphabets[i]), []rune(primers[i])))
 		testCipher(t, c, expects[i], test)
+	}
+}
+
+func testPlayfair(t *testing.T) {
+	alphabets := [...][]rune{
+		AlphabetKeyL25([]rune("PLAYFAIR")),
+		AlphabetKeyL36([]rune("PLAYFAIREXAMPLE")),
+		AlphabetKeyL25([]rune("MANGO")),
+		AlphabetKeyL25([]rune("STARWARS")),
+		AlphabetKeyL25([]rune("BANJO")),
+	}
+	nulls := [...]rune{rune('X'), rune('Q'), rune('G'), 0, 0}
+	expects := [...]string{"^UHLBMICNRSUGIGMDPGHPNQSIKU$", "^ZRYSSYBNYS236V7IET$", "^ZGRFNGUTLEBGLE$", "^RFIQYCORLKTATOOIBRAWPXHOIO..$", "^MBQCMKKWBKKBKOLQAHRGRG$"}
+	expectsAfter := [...]string{"^WEAREDISCOVEREDFLEEATONCEX$", "^WEATTACKAT120Q0AMQ$", "^YOUCANTSEGEMEG$", "^WELOVEPAKISTANIDESTROYINDIA.$", "^IOUBLIERAIIAMAISCETETE$"}
+
+	for i, test := range tests {
+		if len(alphabets[i]) == 25 && strings.Contains(test, "J") {
+			test = ToJToI(test)
+		}
+		c := NewPlayfair([]rune(test), NewKeyPlayfair([]rune(alphabets[i]), nulls[i]))
+		testCipherRegex(t, c, expects[i], expectsAfter[i])
 	}
 }
