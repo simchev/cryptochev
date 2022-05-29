@@ -119,7 +119,7 @@ func cryptColumn(text []rune, key []rune, encrypt bool) []rune {
 		for j := 0; j < rows; j++ {
 			index := i + j * len(key)
 			if index < len(text) {
-				i1, i2 := utils.ReverseIf(index, sIndex, encrypt)
+				i1, i2 := utils.SwapIf(index, sIndex, encrypt)
 				result[i1] = text[i2]
 				sIndex++
 			}
@@ -163,7 +163,7 @@ func cryptMyszkowski(text []rune, key []rune, encrypt bool) []rune {
 			for k := 0; k < equivalent + 1; k++ {
 				index := keyIndices[i + k] + j * len(key)
 				if index < len(text) {
-					i1, i2 := utils.ReverseIf(index, sIndex, encrypt)
+					i1, i2 := utils.SwapIf(index, sIndex, encrypt)
 					result[i1] = text[i2]
 					sIndex++
 				}

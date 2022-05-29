@@ -90,14 +90,14 @@ func cryptZigzag(text []rune, lines int, encrypt bool) []rune {
 
 		for j < len(text) {
 			if d1 != 0 {
-				i1, i2 := utils.ReverseIf(j, sIndex, encrypt)
+				i1, i2 := utils.SwapIf(j, sIndex, encrypt)
 				result[i1] = text[i2]
 				j += d1
 				sIndex++
 			}
 
 			if d2 != 0 && j < len(text) {
-				i1, i2 := utils.ReverseIf(j, sIndex, encrypt)
+				i1, i2 := utils.SwapIf(j, sIndex, encrypt)
 				result[i1] = text[i2]
 				j += d2
 				sIndex++
@@ -137,7 +137,7 @@ func cryptScytale(text []rune, lines int, encrypt bool) []rune {
 		j := i
 
 		for j < len(text) {
-			i1, i2 := utils.ReverseIf(j, sIndex, encrypt)
+			i1, i2 := utils.SwapIf(j, sIndex, encrypt)
 			result[i1] = text[i2]
 			j += lines
 			sIndex++
@@ -190,7 +190,7 @@ func cryptRoute(text []rune, width int, r route, rt routeType, encrypt bool) []r
 				for r := 0; r < rows; r++ {
 					index := j + i * width
 					if index < len(text) {
-						i1, i2 := utils.ReverseIf(index, sIndex, encrypt)
+						i1, i2 := utils.SwapIf(index, sIndex, encrypt)
 						result[i1] = text[i2]
 						sIndex++
 					}
@@ -202,7 +202,7 @@ func cryptRoute(text []rune, width int, r route, rt routeType, encrypt bool) []r
 				for c := 0; c < cols; c++ {
 					index := j + i * width
 					if index < len(text) {
-						i1, i2 := utils.ReverseIf(index, sIndex, encrypt)
+						i1, i2 := utils.SwapIf(index, sIndex, encrypt)
 						result[i1] = text[i2]
 						sIndex++
 					}
@@ -222,7 +222,7 @@ func cryptRoute(text []rune, width int, r route, rt routeType, encrypt bool) []r
 				for r := 0; r < rows; r++ {
 					index := j + i * width
 					if index < len(text) {
-						i1, i2 := utils.ReverseIf(index, sIndex, encrypt)
+						i1, i2 := utils.SwapIf(index, sIndex, encrypt)
 						result[i1] = text[i2]
 						sIndex++
 					}
@@ -234,7 +234,7 @@ func cryptRoute(text []rune, width int, r route, rt routeType, encrypt bool) []r
 				for c := 0; c < cols; c++ {
 					index := j + i * width
 					if index < len(text) {
-						i1, i2 := utils.ReverseIf(index, sIndex, encrypt)
+						i1, i2 := utils.SwapIf(index, sIndex, encrypt)
 						result[i1] = text[i2]
 						sIndex++
 					}
@@ -270,15 +270,15 @@ func cryptMagnet(text []rune, encrypt bool) []rune {
 	sIndex := 0
 
 	for i := 0; i < mid; i++ {
-		i1, i2 := utils.ReverseIf(i, sIndex, encrypt)
+		i1, i2 := utils.SwapIf(i, sIndex, encrypt)
 		result[i1] = text[i2]
-		i1, i2 = utils.ReverseIf(len(text) - i - 1, sIndex + 1, encrypt)
+		i1, i2 = utils.SwapIf(len(text) - i - 1, sIndex + 1, encrypt)
 		result[i1] = text[i2]
 		sIndex += 2
 	}
 
 	if len(text) % 2 != 0 {
-		i1, i2 := utils.ReverseIf(mid, sIndex, encrypt)
+		i1, i2 := utils.SwapIf(mid, sIndex, encrypt)
 		result[i1] = text[i2]
 	}
 
@@ -301,16 +301,16 @@ func cryptElastic(text []rune, encrypt bool) []rune {
 	sIndex := 0
 
 	if len(text) % 2 != 0 {
-		i1, i2 := utils.ReverseIf(mid, sIndex, encrypt)
+		i1, i2 := utils.SwapIf(mid, sIndex, encrypt)
 		result[i1] = text[i2]
 		sIndex++
 		diff = 1
 	}
 
 	for i := 0; i < mid; i++ {
-		i1, i2 := utils.ReverseIf(mid - i - 1, sIndex, encrypt)
+		i1, i2 := utils.SwapIf(mid - i - 1, sIndex, encrypt)
 		result[i1] = text[i2]
-		i1, i2 = utils.ReverseIf(mid + i + diff, sIndex + 1, encrypt)
+		i1, i2 = utils.SwapIf(mid + i + diff, sIndex + 1, encrypt)
 		result[i1] = text[i2]
 		sIndex += 2
 	}

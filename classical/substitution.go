@@ -209,7 +209,7 @@ func cryptPlayfair(text []rune, alphabet []rune, null rune, encrypt bool) []rune
 	result := make([]rune, 0, len(text) + len(text) / 2 + 1)
 	width := int(math.Sqrt(float64(len(alphabet))))
 	amap := buildIndexMap(alphabet)
-	inc, _ := utils.ReverseIf(-1, 1, encrypt)
+	inc, _ := utils.SwapIf(-1, 1, encrypt)
 
 	for i := 0; i < len(text); i += 2 {
 		i1 := amap[text[i]]
