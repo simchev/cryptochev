@@ -42,59 +42,6 @@ func getSortedKeyPositions(key []rune) []int {
 	return rKeyPositions
 }
 
-func buildDLineGrid(text []rune, keyIndices []int, keySize int, fill bool) ([][]rune, int) {
-	block := 0
-	if fill {
-		block = keySize * keySize
-	} else {
-		block = utils.TriangleNumber(keySize)
-	}
-	blocks := int(math.Ceil(float64(len(text)) / float64(block)))
-	rows := blocks * keySize
-
-	grid := make([][]rune, rows)
-	for i := range grid {
-		grid[i] = make([]rune, keySize)
-	}
-	
-	sIndex := 0
-	blockIndex := 0
-	out: for sIndex < len(text) {
-		blockPos := blockIndex * keySize
-		for i, ki := range keyIndices {
-			for j := 0; j < keySize; j++ {
-				grid[i + blockPos][j] = text[sIndex]
-				sIndex++
-
-				if sIndex >= len(text) {
-					break out
-				} else if j == ki {
-					break
-				}
-			}
-		}
-
-		if fill {
-			for i := blockPos; i < keySize + blockPos; i++ {
-				for j := 0; j < keySize; j++ {
-					if grid[i][j] == 0 {
-						grid[i][j] = text[sIndex]
-						sIndex++
-
-						if sIndex >= len(text) {
-							break out
-						}
-					}
-				}
-			}
-		}
-
-		blockIndex++
-	}
-
-	return grid, rows
-}
-
 func NewKeyColumn(key []rune) *KeyColumn { return &KeyColumn{Key: key} }
 func NewColumn(text []rune, key *KeyColumn) *Column { return &Column{Cipher: &CipherClassical[KeyColumn]{Text: text, Key: key}} }
 
@@ -319,6 +266,59 @@ func (c *ColumnDLine) GetErrors() []error { return c.Cipher.Errors }
 func (c *ColumnDLine) Encrypt() { c.Cipher.Text = encryptColumnDLine(c.Cipher.Text, c.Cipher.Key.Key, c.Cipher.Key.Fill) }
 func (c *ColumnDLine) Decrypt() { c.Cipher.Text = decryptColumnDLine(c.Cipher.Text, c.Cipher.Key.Key, c.Cipher.Key.Fill) }
 func (c *ColumnDLine) Verify() bool { return true }
+
+func buildDLineGrid(text []rune, keyIndices []int, keySize int, fill bool) ([][]rune, int) {
+	block := 0
+	if fill {
+		block = keySize * keySize
+	} else {
+		block = utils.TriangleNumber(keySize)
+	}
+	blocks := int(math.Ceil(float64(len(text)) / float64(block)))
+	rows := blocks * keySize
+
+	grid := make([][]rune, rows)
+	for i := range grid {
+		grid[i] = make([]rune, keySize)
+	}
+	
+	sIndex := 0
+	blockIndex := 0
+	out: for sIndex < len(text) {
+		blockPos := blockIndex * keySize
+		for i, ki := range keyIndices {
+			for j := 0; j < keySize; j++ {
+				grid[i + blockPos][j] = text[sIndex]
+				sIndex++
+
+				if sIndex >= len(text) {
+					break out
+				} else if j == ki {
+					break
+				}
+			}
+		}
+
+		if fill {
+			for i := blockPos; i < keySize + blockPos; i++ {
+				for j := 0; j < keySize; j++ {
+					if grid[i][j] == 0 {
+						grid[i][j] = text[sIndex]
+						sIndex++
+
+						if sIndex >= len(text) {
+							break out
+						}
+					}
+				}
+			}
+		}
+
+		blockIndex++
+	}
+
+	return grid, rows
+}
 
 func encryptColumnDLine(text []rune, key []rune, fill bool) []rune {
 	if len(key) < 2 {

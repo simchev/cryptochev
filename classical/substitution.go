@@ -57,7 +57,7 @@ func shift(text []rune, shift int) []rune {
 	return text
 }
 
-func NewKeyCaesar(shift int) *KeyCaesar { return &KeyCaesar{Shift: shift} }
+func NewKeyCaesar(shift int) *KeyCaesar { return &KeyCaesar{Shift: shift % 26} }
 func NewCaesar(text []rune, key *KeyCaesar) *Caesar { return &Caesar{Cipher: &CipherClassical[KeyCaesar]{Text: text, Key: key}} }
 
 type KeyCaesar struct { 
@@ -72,7 +72,7 @@ func (c *Caesar) Decrypt() { c.Cipher.Text = shiftAlphabet(c.Cipher.Text, -c.Cip
 func (c *Caesar) Verify() bool { return true }
 
 func shiftAlphabet(text []rune, shift int) []rune {
-	rshift := rune(shift % 26)
+	rshift := rune(shift)
 	if rshift < 0 {
 		rshift += 26
 	}
@@ -243,5 +243,36 @@ func cryptPlayfair(text []rune, alphabet []rune, null rune, encrypt bool) []rune
 		}
 	}
 
+	return result
+}
+
+func NewKeyAffine(alphabet []rune, a int, b int) *KeyAffine { return &KeyAffine{Alphabet: alphabet, A: a % len(alphabet), B: b % len(alphabet)} }
+func NewAffine(text []rune, key *KeyAffine) *Affine { return &Affine{Cipher: &CipherClassical[KeyAffine]{Text: text, Key: key}} }
+
+type KeyAffine struct {
+	Alphabet []rune
+	A int
+	B int
+}
+
+type Affine struct { Cipher *CipherClassical[KeyAffine] }
+func (c *Affine) GetText() []rune { return c.Cipher.Text }
+func (c *Affine) GetErrors() []error { return c.Cipher.Errors }
+func (c *Affine) Encrypt() { c.Cipher.Text = cryptAffine(c.Cipher.Text, c.Cipher.Key.Alphabet, c.Cipher.Key.A, c.Cipher.Key.B, true) }
+func (c *Affine) Decrypt() { c.Cipher.Text = cryptAffine(c.Cipher.Text, c.Cipher.Key.Alphabet, c.Cipher.Key.A, c.Cipher.Key.B, false) }
+func (c *Affine) Verify() bool { return true }
+
+func cryptAffine(text []rune, alphabet []rune, a int, b int, encrypt bool) []rune {
+	result := make([]rune, len(text))
+	amap := buildIndexMap(alphabet)
+
+	for i, r := range text {
+		if encrypt {
+			result[i] = alphabet[(a * amap[r] + b) % len(alphabet)]
+		} else {
+			result[i] = alphabet[((len(alphabet) - a) * (amap[r] - b + len(alphabet))) % len(alphabet)]
+		}
+	}
+	
 	return result
 }

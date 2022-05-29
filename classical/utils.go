@@ -11,9 +11,6 @@ const AlphabetL = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 const AlphabetL25 = "ABCDEFGHIKLMNOPQRSTUVWXYZ"
 const AlphabetL36 = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
 
-var Alphabet26Coprimes = [...]int{1, 3, 5, 7, 9, 11, 15, 17, 19, 21, 23, 25}
-var Alphabet36Coprimes = [...]int{1, 5, 7, 11, 13, 17, 19, 23, 25, 29, 31, 35}
-
 func RandomAlphabetL() []rune {
 	return utils.Shuffle([]rune(AlphabetL))
 }
@@ -24,6 +21,14 @@ func RandomAlphabetL25() []rune {
 
 func RandomAlphabetL36() []rune {
 	return utils.Shuffle([]rune(AlphabetL36))
+}
+
+func Alphabet26Coprimes() []int {
+	return []int{1, 3, 5, 7, 9, 11, 15, 17, 19, 21, 23, 25}
+}
+
+func Alphabet36Coprimes() []int {
+	return []int{1, 5, 7, 11, 13, 17, 19, 23, 25, 29, 31, 35}
 }
 
 func buildAlphabetKey(alphabet []rune, key []rune) ([]rune, []rune) {

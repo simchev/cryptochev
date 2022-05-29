@@ -33,5 +33,6 @@ type CipherClassicalKey interface {
 		KeyVigenere |
 		KeySubstitute |
 		KeyAutokey |
-		KeyPlayfair
+		KeyPlayfair |
+		KeyAffine
 }
