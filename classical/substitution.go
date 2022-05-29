@@ -267,7 +267,7 @@ func cryptAffine(text []rune, alphabet []rune, a int, b int, encrypt bool) []run
 
 	for i, r := range text {
 		if encrypt {
-			result[i] = alphabet[(a * amap[r] + b) % len(alphabet)]
+			result[i] = alphabet[utils.Mod(a * amap[r] + b, len(alphabet))]
 		} else {
 			result[i] = alphabet[utils.Mod(utils.ModInverse(a, len(alphabet)) * (amap[r] - b), len(alphabet))]
 		}
@@ -275,3 +275,17 @@ func cryptAffine(text []rune, alphabet []rune, a int, b int, encrypt bool) []run
 	
 	return result
 }
+
+func NewKeyAtbash(alphabet []rune) *KeyAtbash { return &KeyAtbash{Alphabet: alphabet} }
+func NewAtbash(text []rune, key *KeyAtbash) *Atbash { return &Atbash{Cipher: &CipherClassical[KeyAtbash]{Text: text, Key: key}} }
+
+type KeyAtbash struct {
+	Alphabet []rune
+}
+
+type Atbash struct { Cipher *CipherClassical[KeyAtbash] }
+func (c *Atbash) GetText() []rune { return c.Cipher.Text }
+func (c *Atbash) GetErrors() []error { return c.Cipher.Errors }
+func (c *Atbash) Encrypt() { c.Cipher.Text = cryptAffine(c.Cipher.Text, c.Cipher.Key.Alphabet, -1, -1, true) }
+func (c *Atbash) Decrypt() { c.Cipher.Text = cryptAffine(c.Cipher.Text, c.Cipher.Key.Alphabet, -1, -1, true) }
+func (c *Atbash) Verify() bool { return true }

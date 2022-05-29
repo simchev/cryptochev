@@ -77,6 +77,7 @@ func TestClassical(t *testing.T) {
 	t.Run("TestAutokey", testAutokey)
 	t.Run("TestPlayfair", testPlayfair)
 	t.Run("TestAffine", testAffine)
+	t.Run("TestAtbash", testAtbash)
 }
 
 func testSubstitute(t *testing.T) {
@@ -453,6 +454,16 @@ func testAffine(t *testing.T) {
 
 	for i, test := range tests {
 		c := NewAffine([]rune(test), NewKeyAffine([]rune(alphabets[i]), a[i], b[i]))
+		testCipherRegex(t, c, expects[i], test)
+	}
+}
+
+func testAtbash(t *testing.T) {
+	alphabets := [...]string{AlphabetL, AlphabetL36, AlphabetL, AlphabetL, AlphabetL }
+	expects := [...]string{"DVZIVWRHXLEVIVWUOVVZGLMXV", "N60QQ08Z0QJIAA0X", "BLFXZMGHVVNV", "DVOLEVKZPRHGZMRWVHGILBRMWRZ", "QLFYORVIZRQZNZRHXVGVGV"}
+
+	for i, test := range tests {
+		c := NewAtbash([]rune(test), NewKeyAtbash([]rune(alphabets[i])))
 		testCipherRegex(t, c, expects[i], test)
 	}
 }
