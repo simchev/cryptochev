@@ -35,5 +35,6 @@ type CipherClassicalKey interface {
 		KeyAutokey |
 		KeyPlayfair |
 		KeyAffine |
-		KeyAtbash
+		KeyAtbash |
+		KeyBeaufort
 }

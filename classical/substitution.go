@@ -57,7 +57,7 @@ func shift(text []rune, shift int) []rune {
 	return text
 }
 
-func NewKeyCaesar(shift int) *KeyCaesar { return &KeyCaesar{Shift: shift % 26} }
+func NewKeyCaesar(shift int) *KeyCaesar { return &KeyCaesar{Shift: shift} }
 func NewCaesar(text []rune, key *KeyCaesar) *Caesar { return &Caesar{Cipher: &CipherClassical[KeyCaesar]{Text: text, Key: key}} }
 
 type KeyCaesar struct { 
@@ -72,10 +72,8 @@ func (c *Caesar) Decrypt() { c.Cipher.Text = shiftCaesar(c.Cipher.Text, -c.Ciphe
 func (c *Caesar) Verify() bool { return true }
 
 func shiftCaesar(text []rune, shift int) []rune {
-	if shift < 0 {
-		shift += 26
-	}
-	
+	shift = utils.Mod(shift, 26)
+
 	for i, r := range text {
 		if unicode.IsUpper(r) {
 			text[i] = (r + rune(shift) - 'A') % 26 + 'A'
@@ -289,3 +287,33 @@ func (c *Atbash) GetErrors() []error { return c.Cipher.Errors }
 func (c *Atbash) Encrypt() { c.Cipher.Text = cryptAffine(c.Cipher.Text, c.Cipher.Key.Alphabet, -1, -1, true) }
 func (c *Atbash) Decrypt() { c.Cipher.Text = cryptAffine(c.Cipher.Text, c.Cipher.Key.Alphabet, -1, -1, true) }
 func (c *Atbash) Verify() bool { return true }
+
+func NewKeyBeaufort(alphabet []rune, key []rune) *KeyBeaufort { return &KeyBeaufort{Alphabet: alphabet, Key: key} }
+func NewBeaufort(text []rune, key *KeyBeaufort) *Beaufort { return &Beaufort{Cipher: &CipherClassical[KeyBeaufort]{Text: text, Key: key}} }
+
+type KeyBeaufort struct {
+	Alphabet []rune
+	Key []rune
+}
+
+type Beaufort struct { Cipher *CipherClassical[KeyBeaufort] }
+func (c *Beaufort) GetText() []rune { return c.Cipher.Text }
+func (c *Beaufort) GetErrors() []error { return c.Cipher.Errors }
+func (c *Beaufort) Encrypt() { c.Cipher.Text = cryptBeaufort(c.Cipher.Text, c.Cipher.Key.Alphabet, c.Cipher.Key.Key) }
+func (c *Beaufort) Decrypt() { c.Cipher.Text = cryptBeaufort(c.Cipher.Text, c.Cipher.Key.Alphabet, c.Cipher.Key.Key) }
+func (c *Beaufort) Verify() bool { return true }
+
+func cryptBeaufort(text []rune, alphabet []rune, key []rune) []rune {
+	if len(key) == 0 {
+		key = alphabet
+	}
+
+	result := make([]rune, len(text))
+	amap := buildIndexMap(alphabet)
+	
+	for i, r := range text {
+		result[i] = alphabet[(amap[key[i % len(key)]] - amap[r] + len(alphabet)) % len(alphabet)]
+	}
+
+	return result
+}

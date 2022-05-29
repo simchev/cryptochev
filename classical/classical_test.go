@@ -1,7 +1,7 @@
 package classical
 
 import (
-	math_rand "math/rand"
+	"cryptochev/utils"
 	"regexp"
 	"strings"
 	"testing"
@@ -49,10 +49,10 @@ func testCipherRegex(t *testing.T, c ICipherClassical, regex string, dregex stri
 }
 
 func TestClassical(t *testing.T) {
-	seed := int64(-2095428873564531156)
+	/*seed := int64(-2095428873564531156)
 	math_rand.Seed(seed)
-	t.Logf("Using seed: %d\n", seed)
-	//t.Logf("Using seed: %d\n", utils.SeedRand())
+	t.Logf("Using seed: %d\n", seed)*/
+	t.Logf("Using seed: %d\n", utils.SeedRand())
 	t.Run("TestSubstitute", testSubstitute)
 	t.Run("TestShift", testShift)
 	t.Run("TestCaesar", testCaesar)
@@ -78,6 +78,7 @@ func TestClassical(t *testing.T) {
 	t.Run("TestPlayfair", testPlayfair)
 	t.Run("TestAffine", testAffine)
 	t.Run("TestAtbash", testAtbash)
+	t.Run("TestBeaufort", testBeaufort)
 }
 
 func testSubstitute(t *testing.T) {
@@ -465,5 +466,16 @@ func testAtbash(t *testing.T) {
 	for i, test := range tests {
 		c := NewAtbash([]rune(test), NewKeyAtbash([]rune(alphabets[i])))
 		testCipherRegex(t, c, expects[i], test)
+	}
+}
+
+func testBeaufort(t *testing.T) {
+	keys := [...]string{"", "LEMON", "MONSTEC", "CLEF", "SECRAT"}
+	alphabets := [...]string{AlphabetL, AlphabetL36, "ACEMNOSTUY", AlphabetL, AlphabetL36}
+	expects := [...]string{"EXCMACYPGVPHVJLKFNOTBHJVU", "ZAM65LCCO5VNNPN0", "NASOTUNTMEMO", "GHTRHHPFSDMMCYWCYTLOONWSZDE", "J1SQZLOXCJ2TGE509P0ATN"}
+
+	for i, test := range tests {
+		c := NewBeaufort([]rune(test), NewKeyBeaufort([]rune(alphabets[i]), []rune(keys[i])))
+		testCipher(t, c, expects[i], test)
 	}
 }
