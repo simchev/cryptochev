@@ -1,7 +1,7 @@
 package classical
 
 import (
-	"cryptochev/utils"
+	math_rand "math/rand"
 	"regexp"
 	"strings"
 	"testing"
@@ -49,7 +49,10 @@ func testCipherRegex(t *testing.T, c ICipherClassical, regex string, dregex stri
 }
 
 func TestClassical(t *testing.T) {
-	t.Logf("Using seed: %d\n", utils.SeedRand())
+	seed := int64(-2095428873564531156)
+	math_rand.Seed(seed)
+	t.Logf("Using seed: %d\n", seed)
+	//t.Logf("Using seed: %d\n", utils.SeedRand())
 	t.Run("TestSubstitute", testSubstitute)
 	t.Run("TestShift", testShift)
 	t.Run("TestCaesar", testCaesar)
@@ -73,6 +76,7 @@ func TestClassical(t *testing.T) {
 	t.Run("TestADFGVX", testADFGVX)
 	t.Run("TestAutokey", testAutokey)
 	t.Run("TestPlayfair", testPlayfair)
+	t.Run("TestAffine", testAffine)
 }
 
 func testSubstitute(t *testing.T) {
@@ -438,5 +442,17 @@ func testPlayfair(t *testing.T) {
 		}
 		c := NewPlayfair([]rune(test), NewKeyPlayfair([]rune(alphabets[i]), nulls[i]))
 		testCipherRegex(t, c, expects[i], expectsAfter[i])
+	}
+}
+
+func testAffine(t *testing.T) {
+	alphabets := [...]string{AlphabetL, AlphabetL36, AlphabetL, AlphabetL, AlphabetL }
+	a := [...]int{3, 5, 11, 15, 21}
+	b := [...]int{12, 6, 19, 2, 25}
+	expects := [...]string{"AYMLYVKOSCXYLYVBTYYMRCZSY", "I1G44GQUG438BBG5", "XRFPTGUJLLVL", "UKLEFKTCWSMBCPSVKMBXEYSPVSC", "GHDUWLFSZLGZRZLNPFIFIF"}
+
+	for i, test := range tests {
+		c := NewAffine([]rune(test), NewKeyAffine([]rune(alphabets[i]), a[i], b[i]))
+		testCipherRegex(t, c, expects[i], test)
 	}
 }

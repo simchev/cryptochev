@@ -8,6 +8,28 @@ func TriangleNumber(n int) int {
 	return n * (n + 1) >> 2
 }
 
+func Mod(n int, m int) int {
+	return (n % m + m) % m
+}
+
+// https://en.wikipedia.org/wiki/Extended_Euclidean_algorithm
+func ModInverse(a int, m int) int {
+	t := 0; newt := 1
+	r := m; newr := a
+
+	for newr != 0 {
+		q := r / newr
+		t, newt = newt, t - q * newt
+		r, newr = newr, r - q * newr
+	}
+
+	if t < 0 {
+		t += m
+	}
+
+	return t
+}
+
 // https://en.wikipedia.org/wiki/Binary_GCD_algorithm
 func BinaryGCD(a uint, b uint) uint {
 	if a == 0 {

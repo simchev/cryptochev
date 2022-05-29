@@ -67,21 +67,20 @@ type KeyCaesar struct {
 type Caesar struct { Cipher *CipherClassical[KeyCaesar] }
 func (c *Caesar) GetText() []rune { return c.Cipher.Text }
 func (c *Caesar) GetErrors() []error { return c.Cipher.Errors }
-func (c *Caesar) Encrypt() { c.Cipher.Text = shiftAlphabet(c.Cipher.Text, c.Cipher.Key.Shift) }
-func (c *Caesar) Decrypt() { c.Cipher.Text = shiftAlphabet(c.Cipher.Text, -c.Cipher.Key.Shift) }
+func (c *Caesar) Encrypt() { c.Cipher.Text = shiftCaesar(c.Cipher.Text, c.Cipher.Key.Shift) }
+func (c *Caesar) Decrypt() { c.Cipher.Text = shiftCaesar(c.Cipher.Text, -c.Cipher.Key.Shift) }
 func (c *Caesar) Verify() bool { return true }
 
-func shiftAlphabet(text []rune, shift int) []rune {
-	rshift := rune(shift)
-	if rshift < 0 {
-		rshift += 26
+func shiftCaesar(text []rune, shift int) []rune {
+	if shift < 0 {
+		shift += 26
 	}
-
+	
 	for i, r := range text {
 		if unicode.IsUpper(r) {
-			text[i] = (r + rshift - 'A') % 26 + 'A'
+			text[i] = (r + rune(shift) - 'A') % 26 + 'A'
 		} else if unicode.IsLower(r) {
-			text[i] = (r + rshift - 'a') % 26 + 'a'
+			text[i] = (r + rune(shift) - 'a') % 26 + 'a'
 		}
 	}
 
@@ -93,8 +92,8 @@ func NewROT13(text []rune) *ROT13 { return &ROT13{Cipher: &CipherClassical[KeyNo
 type ROT13 struct { Cipher *CipherClassical[KeyNone] }
 func (c *ROT13) GetText() []rune { return c.Cipher.Text }
 func (c *ROT13) GetErrors() []error { return c.Cipher.Errors }
-func (c *ROT13) Encrypt() { c.Cipher.Text = shiftAlphabet(c.Cipher.Text, 13) }
-func (c *ROT13) Decrypt() { c.Cipher.Text = shiftAlphabet(c.Cipher.Text, 13) }
+func (c *ROT13) Encrypt() { c.Cipher.Text = shiftCaesar(c.Cipher.Text, 13) }
+func (c *ROT13) Decrypt() { c.Cipher.Text = shiftCaesar(c.Cipher.Text, 13) }
 func (c *ROT13) Verify() bool { return true }
 
 func NewKeyVigenere(alphabet []rune, key []rune) *KeyVigenere { return &KeyVigenere{Alphabet: alphabet, Key: key} }
@@ -246,7 +245,7 @@ func cryptPlayfair(text []rune, alphabet []rune, null rune, encrypt bool) []rune
 	return result
 }
 
-func NewKeyAffine(alphabet []rune, a int, b int) *KeyAffine { return &KeyAffine{Alphabet: alphabet, A: a % len(alphabet), B: b % len(alphabet)} }
+func NewKeyAffine(alphabet []rune, a int, b int) *KeyAffine { return &KeyAffine{Alphabet: alphabet, A: a, B: b} }
 func NewAffine(text []rune, key *KeyAffine) *Affine { return &Affine{Cipher: &CipherClassical[KeyAffine]{Text: text, Key: key}} }
 
 type KeyAffine struct {
@@ -270,7 +269,7 @@ func cryptAffine(text []rune, alphabet []rune, a int, b int, encrypt bool) []run
 		if encrypt {
 			result[i] = alphabet[(a * amap[r] + b) % len(alphabet)]
 		} else {
-			result[i] = alphabet[((len(alphabet) - a) * (amap[r] - b + len(alphabet))) % len(alphabet)]
+			result[i] = alphabet[utils.Mod(utils.ModInverse(a, len(alphabet)) * (amap[r] - b), len(alphabet))]
 		}
 	}
 	
