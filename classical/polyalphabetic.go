@@ -2,7 +2,7 @@ package classical
 
 import "unicode"
 
-func NewKeyVigenere(alphabet []rune, key []rune) *KeyVigenere { return &KeyVigenere{Alphabet: alphabet, Key: key} }
+func NewKeyVigenere(alphabet, key []rune) *KeyVigenere { return &KeyVigenere{Alphabet: alphabet, Key: key} }
 func NewVigenere(text []rune, key *KeyVigenere) *Vigenere { return &Vigenere{Cipher: &CipherClassical[KeyVigenere]{Text: text, Key: key}} }
 
 type KeyVigenere struct {
@@ -17,7 +17,7 @@ func (c *Vigenere) Encrypt() { c.Cipher.Text = cryptVigenere(c.Cipher.Text, c.Ci
 func (c *Vigenere) Decrypt() { c.Cipher.Text = cryptVigenere(c.Cipher.Text, c.Cipher.Key.Alphabet, c.Cipher.Key.Key, false) }
 func (c *Vigenere) Verify() bool { return true }
 
-func cryptVigenere(text []rune, alphabet []rune, key []rune, encrypt bool) []rune {
+func cryptVigenere(text, alphabet, key []rune, encrypt bool) []rune {
 	if len(key) == 0 {
 		key = alphabet
 	}
@@ -45,7 +45,7 @@ func (c *VigenereBeaufort) Encrypt() { c.Cipher.Text = cryptVigenere(c.Cipher.Te
 func (c *VigenereBeaufort) Decrypt() { c.Cipher.Text = cryptVigenere(c.Cipher.Text, c.Cipher.Key.Alphabet, c.Cipher.Key.Key, true) }
 func (c *VigenereBeaufort) Verify() bool { return true }
 
-func gronsfeldToVigenereKey(alphabet []rune, key []rune) []rune {
+func gronsfeldToVigenereKey(alphabet, key []rune) []rune {
 	keyv := make([]rune, 0, len(key))
 
 	for _, r := range key {
@@ -66,7 +66,7 @@ func (c *VigenereGronsfeld) Encrypt() { c.Cipher.Text = cryptVigenere(c.Cipher.T
 func (c *VigenereGronsfeld) Decrypt() { c.Cipher.Text = cryptVigenere(c.Cipher.Text, c.Cipher.Key.Alphabet, gronsfeldToVigenereKey(c.Cipher.Key.Alphabet, c.Cipher.Key.Key), false) }
 func (c *VigenereGronsfeld) Verify() bool { return true }
 
-func NewKeyAutokey(alphabet []rune, primer []rune) *KeyAutokey { return &KeyAutokey{Alphabet: alphabet, Primer: primer} }
+func NewKeyAutokey(alphabet, primer []rune) *KeyAutokey { return &KeyAutokey{Alphabet: alphabet, Primer: primer} }
 func NewAutokey(text []rune, key *KeyAutokey) *Autokey { return &Autokey{Cipher: &CipherClassical[KeyAutokey]{Text: text, Key: key}} }
 
 type KeyAutokey struct {
@@ -81,7 +81,7 @@ func (c *Autokey) Encrypt() { c.Cipher.Text = cryptVigenere(c.Cipher.Text, c.Cip
 func (c *Autokey) Decrypt() { c.Cipher.Text = decryptAutokey(c.Cipher.Text, c.Cipher.Key.Alphabet, c.Cipher.Key.Primer) }
 func (c *Autokey) Verify() bool { return true }
 
-func decryptAutokey(text []rune, alphabet []rune, primer []rune) []rune {
+func decryptAutokey(text, alphabet, primer []rune) []rune {
 	result := make([]rune, len(text))
 	key := make([]rune, 0, len(text) + len(primer))
 	key = append(key, primer...)
@@ -95,7 +95,7 @@ func decryptAutokey(text []rune, alphabet []rune, primer []rune) []rune {
 	return result
 }
 
-func NewKeyBeaufort(alphabet []rune, key []rune) *KeyBeaufort { return &KeyBeaufort{Alphabet: alphabet, Key: key} }
+func NewKeyBeaufort(alphabet, key []rune) *KeyBeaufort { return &KeyBeaufort{Alphabet: alphabet, Key: key} }
 func NewBeaufort(text []rune, key *KeyBeaufort) *Beaufort { return &Beaufort{Cipher: &CipherClassical[KeyBeaufort]{Text: text, Key: key}} }
 
 type KeyBeaufort struct {
@@ -110,7 +110,7 @@ func (c *Beaufort) Encrypt() { c.Cipher.Text = cryptBeaufort(c.Cipher.Text, c.Ci
 func (c *Beaufort) Decrypt() { c.Cipher.Text = cryptBeaufort(c.Cipher.Text, c.Cipher.Key.Alphabet, c.Cipher.Key.Key) }
 func (c *Beaufort) Verify() bool { return true }
 
-func cryptBeaufort(text []rune, alphabet []rune, key []rune) []rune {
+func cryptBeaufort(text, alphabet, key []rune) []rune {
 	if len(key) == 0 {
 		key = alphabet
 	}

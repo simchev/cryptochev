@@ -56,7 +56,7 @@ func (c *Column) Encrypt() { c.Cipher.Text = cryptColumn(c.Cipher.Text, c.Cipher
 func (c *Column) Decrypt() { c.Cipher.Text = cryptColumn(c.Cipher.Text, c.Cipher.Key.Key, false) }
 func (c *Column) Verify() bool { return true }
 
-func cryptColumn(text []rune, key []rune, encrypt bool) []rune {
+func cryptColumn(text, key []rune, encrypt bool) []rune {
 	result := make([]rune, len(text))
 	rKeyIndices := getSortedKeyIndices(key)
 
@@ -90,7 +90,7 @@ func (c *Myszkowski) Encrypt() { c.Cipher.Text = cryptMyszkowski(c.Cipher.Text, 
 func (c *Myszkowski) Decrypt() { c.Cipher.Text = cryptMyszkowski(c.Cipher.Text, c.Cipher.Key.Key, false) }
 func (c *Myszkowski) Verify() bool { return true }
 
-func cryptMyszkowski(text []rune, key []rune, encrypt bool) []rune {
+func cryptMyszkowski(text, key []rune, encrypt bool) []rune {
 	result := make([]rune, len(text))
 	keyIndices := getSortedKeyIndices(key)
 
@@ -123,7 +123,7 @@ func cryptMyszkowski(text []rune, key []rune, encrypt bool) []rune {
 	return result
 }
 
-func NewKeyColumnDCount(key []rune, dkey []rune) *KeyColumnDCount { return &KeyColumnDCount{Key: key, DKey: dkey} }
+func NewKeyColumnDCount(key, dkey []rune) *KeyColumnDCount { return &KeyColumnDCount{Key: key, DKey: dkey} }
 func NewColumnDCount(text []rune, key *KeyColumnDCount) *ColumnDCount { return &ColumnDCount{Cipher: &CipherClassical[KeyColumnDCount]{Text: text, Key: key}} }
 
 type KeyColumnDCount struct {
@@ -138,7 +138,7 @@ func (c *ColumnDCount) Encrypt() { c.Cipher.Text = encryptColumnDCount(c.Cipher.
 func (c *ColumnDCount) Decrypt() { c.Cipher.Text = decryptColumnDCount(c.Cipher.Text, c.Cipher.Key.Key, c.Cipher.Key.DKey) }
 func (c *ColumnDCount) Verify() bool { return true }
 
-func encryptColumnDCount(text []rune, key []rune, dkey []rune) []rune {
+func encryptColumnDCount(text, key, dkey []rune) []rune {
 	if len(dkey) < 2 {
 		return text
 	}
@@ -199,7 +199,7 @@ func encryptColumnDCount(text []rune, key []rune, dkey []rune) []rune {
 	return result
 }
 
-func decryptColumnDCount(text []rune, key []rune, dkey []rune) []rune {
+func decryptColumnDCount(text, key, dkey []rune) []rune {
 	if len(dkey) < 2 {
 		return text
 	}
@@ -320,7 +320,7 @@ func buildDLineGrid(text []rune, keyIndices []int, keySize int, fill bool) ([][]
 	return grid, rows
 }
 
-func encryptColumnDLine(text []rune, key []rune, fill bool) []rune {
+func encryptColumnDLine(text, key []rune, fill bool) []rune {
 	if len(key) < 2 {
 		return text
 	}
@@ -340,7 +340,7 @@ func encryptColumnDLine(text []rune, key []rune, fill bool) []rune {
 	return result
 }
 
-func decryptColumnDLine(text []rune, key []rune, fill bool) []rune {
+func decryptColumnDLine(text, key []rune, fill bool) []rune {
 	if len(key) < 2 {
 		return text
 	}

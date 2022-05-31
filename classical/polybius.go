@@ -1,6 +1,6 @@
 package classical
 
-func NewKeyPolybius(alphabet []rune, header []rune) *KeyPolybius { return &KeyPolybius{Alphabet: alphabet, Header: header} }
+func NewKeyPolybius(alphabet, header []rune) *KeyPolybius { return &KeyPolybius{Alphabet: alphabet, Header: header} }
 func NewPolybius(text []rune, key *KeyPolybius) *Polybius { return &Polybius{Cipher: &CipherClassical[KeyPolybius]{Text: text, Key: key}} }
 
 type KeyPolybius struct {
@@ -15,7 +15,7 @@ func (c *Polybius) Encrypt() { c.Cipher.Text = encryptPolybius(c.Cipher.Text, c.
 func (c *Polybius) Decrypt() { c.Cipher.Text = decryptPolybius(c.Cipher.Text, c.Cipher.Key.Alphabet, c.Cipher.Key.Header) }
 func (c *Polybius) Verify() bool { return true }
 
-func encryptPolybius(text []rune, alphabet []rune, header []rune) []rune {
+func encryptPolybius(text, alphabet, header []rune) []rune {
 	amap := buildIndexMap(alphabet)
 	result := make([]rune, len(text)*2)
 
@@ -27,7 +27,7 @@ func encryptPolybius(text []rune, alphabet []rune, header []rune) []rune {
 	return result
 }
 
-func decryptPolybius(text []rune, alphabet []rune, header []rune) []rune {
+func decryptPolybius(text, alphabet, header []rune) []rune {
 	hmap := buildIndexMap(header)
 	result := make([]rune, len(text)/2)
 
@@ -38,7 +38,7 @@ func decryptPolybius(text []rune, alphabet []rune, header []rune) []rune {
 	return result
 }
 
-func NewKeyADFGX(alphabet []rune, key []rune) *KeyADFGX { return &KeyADFGX{Alphabet: alphabet, Key: key} }
+func NewKeyADFGX(alphabet, key []rune) *KeyADFGX { return &KeyADFGX{Alphabet: alphabet, Key: key} }
 func NewADFGX(text []rune, key *KeyADFGX) *ADFGX { return &ADFGX{Cipher: &CipherClassical[KeyADFGX]{Text: text, Key: key}} }
 
 type KeyADFGX struct {
@@ -53,17 +53,17 @@ func (c *ADFGX) Encrypt() { c.Cipher.Text = encryptADFGX(c.Cipher.Text, c.Cipher
 func (c *ADFGX) Decrypt() { c.Cipher.Text = decryptADFGX(c.Cipher.Text, c.Cipher.Key.Alphabet, c.Cipher.Key.Key) }
 func (c *ADFGX) Verify() bool { return true }
 
-func encryptADFGX(text []rune, alphabet []rune, key []rune) []rune {
+func encryptADFGX(text, alphabet, key []rune) []rune {
 	result := encryptPolybius(text, alphabet, []rune("ADFGX"))
 	return cryptColumn(result, key, true)
 }
 
-func decryptADFGX(text []rune, alphabet []rune, key []rune) []rune {
+func decryptADFGX(text, alphabet, key []rune) []rune {
 	result := cryptColumn(text, key, false)
 	return decryptPolybius(result, alphabet, []rune("ADFGX"))
 }
 
-func NewKeyADFGVX(alphabet []rune, key []rune) *KeyADFGVX { return &KeyADFGVX{Alphabet: alphabet, Key: key} }
+func NewKeyADFGVX(alphabet, key []rune) *KeyADFGVX { return &KeyADFGVX{Alphabet: alphabet, Key: key} }
 func NewADFGVX(text []rune, key *KeyADFGVX) *ADFGVX { return &ADFGVX{Cipher: &CipherClassical[KeyADFGVX]{Text: text, Key: key}} }
 
 type KeyADFGVX struct {
@@ -78,12 +78,12 @@ func (c *ADFGVX) Encrypt() {  c.Cipher.Text = encryptADFGVX(c.Cipher.Text, c.Cip
 func (c *ADFGVX) Decrypt() { c.Cipher.Text = decryptADFGVX(c.Cipher.Text, c.Cipher.Key.Alphabet, c.Cipher.Key.Key) }
 func (c *ADFGVX) Verify() bool { return true }
 
-func encryptADFGVX(text []rune, alphabet []rune, key []rune) []rune {
+func encryptADFGVX(text, alphabet, key []rune) []rune {
 	result := encryptPolybius(text, alphabet, []rune("ADFGVX"))
 	return cryptColumn(result, key, true)
 }
 
-func decryptADFGVX(text []rune, alphabet []rune, key []rune) []rune {
+func decryptADFGVX(text, alphabet, key []rune) []rune {
 	result := cryptColumn(text, key, false)
 	return decryptPolybius(result, alphabet, []rune("ADFGVX"))
 }

@@ -11,12 +11,12 @@ func TriangleNumber(n int) int {
 	return n * (n + 1) >> 2
 }
 
-func Mod(n int, m int) int {
+func Mod(n, m int) int {
 	return (n % m + m) % m
 }
 
 // https://en.wikipedia.org/wiki/Extended_Euclidean_algorithm
-func ModInverse(a int, m int) int {
+func ModInverse(a, m int) int {
 	t := 0; newt := 1
 	r := m; newr := a
 
@@ -34,7 +34,7 @@ func ModInverse(a int, m int) int {
 }
 
 // https://en.wikipedia.org/wiki/Binary_GCD_algorithm
-func BinaryGCD(a uint, b uint) uint {
+func BinaryGCD(a, b uint) uint {
 	if a == 0 {
 		return b
 	} else if b == 0 {
@@ -57,7 +57,7 @@ func BinaryGCD(a uint, b uint) uint {
 	}
 }
 
-func IsCoprime(a uint, b uint) bool {
+func IsCoprime(a, b uint) bool {
 	if a < 2 || b < 2 {
 		return a == 1 || b == 1
 	}

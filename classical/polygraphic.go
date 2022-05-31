@@ -23,7 +23,7 @@ func (c *Playfair) Encrypt() { c.Cipher.Text = cryptPlayfair(c.Cipher.Text, c.Ci
 func (c *Playfair) Decrypt() { c.Cipher.Text = cryptPlayfair(c.Cipher.Text, c.Cipher.Key.Alphabet, c.Cipher.Key.Null, false) }
 func (c *Playfair) Verify() bool { return true }
 
-func cryptPlayfair(text []rune, alphabet []rune, null rune, encrypt bool) []rune {
+func cryptPlayfair(text, alphabet []rune, null rune, encrypt bool) []rune {
 	result := make([]rune, 0, len(text) + len(text) / 2 + 1)
 	width := int(math.Sqrt(float64(len(alphabet))))
 	amap := buildIndexMap(alphabet)

@@ -5,7 +5,7 @@ import (
 	"unicode"
 )
 
-func NewKeySubstitute(alphabet []rune, salphabet []rune) *KeySubstitute { return &KeySubstitute{Alphabet: alphabet, SAlphabet: salphabet} }
+func NewKeySubstitute(alphabet, salphabet []rune) *KeySubstitute { return &KeySubstitute{Alphabet: alphabet, SAlphabet: salphabet} }
 func NewSubstitute(text []rune, key *KeySubstitute) *Substitute { return &Substitute{Cipher: &CipherClassical[KeySubstitute]{Text: text, Key: key}} }
 
 type KeySubstitute struct {
@@ -20,7 +20,7 @@ func (c *Substitute) Encrypt() { c.Cipher.Text = substitute(c.Cipher.Text, c.Cip
 func (c *Substitute) Decrypt() { c.Cipher.Text = substitute(c.Cipher.Text, c.Cipher.Key.SAlphabet, c.Cipher.Key.Alphabet) }
 func (c *Substitute) Verify() bool { return true }
 
-func substitute(text []rune, alphabet []rune, salphabet []rune) []rune {
+func substitute(text, alphabet, salphabet []rune) []rune {
 	result := make([]rune, len(text))
 	amap := buildIndexMap(alphabet)
 
@@ -70,7 +70,7 @@ func (c *ShiftAlphabet) Encrypt() { c.Cipher.Text = shiftAlphabet(c.Cipher.Text,
 func (c *ShiftAlphabet) Decrypt() { c.Cipher.Text = shiftAlphabet(c.Cipher.Text, c.Cipher.Key.Alphabet, -c.Cipher.Key.Shift) }
 func (c *ShiftAlphabet) Verify() bool { return true }
 
-func shiftAlphabet(text []rune, alphabet []rune, shift int) []rune {
+func shiftAlphabet(text, alphabet []rune, shift int) []rune {
 	result := make([]rune, len(text))
 	amap := buildIndexMap(alphabet)
 
@@ -118,7 +118,7 @@ func (c *ROT13) Encrypt() { c.Cipher.Text = shiftCaesar(c.Cipher.Text, 13) }
 func (c *ROT13) Decrypt() { c.Cipher.Text = shiftCaesar(c.Cipher.Text, 13) }
 func (c *ROT13) Verify() bool { return true }
 
-func NewKeyAffine(alphabet []rune, a int, b int) *KeyAffine { return &KeyAffine{Alphabet: alphabet, A: a, B: b} }
+func NewKeyAffine(alphabet []rune, a, b int) *KeyAffine { return &KeyAffine{Alphabet: alphabet, A: a, B: b} }
 func NewAffine(text []rune, key *KeyAffine) *Affine { return &Affine{Cipher: &CipherClassical[KeyAffine]{Text: text, Key: key}} }
 
 type KeyAffine struct {
@@ -134,7 +134,7 @@ func (c *Affine) Encrypt() { c.Cipher.Text = cryptAffine(c.Cipher.Text, c.Cipher
 func (c *Affine) Decrypt() { c.Cipher.Text = cryptAffine(c.Cipher.Text, c.Cipher.Key.Alphabet, c.Cipher.Key.A, c.Cipher.Key.B, false) }
 func (c *Affine) Verify() bool { return true }
 
-func cryptAffine(text []rune, alphabet []rune, a int, b int, encrypt bool) []rune {
+func cryptAffine(text, alphabet []rune, a, b int, encrypt bool) []rune {
 	result := make([]rune, len(text))
 	amap := buildIndexMap(alphabet)
 
@@ -163,7 +163,7 @@ func (c *Atbash) Encrypt() { c.Cipher.Text = cryptAffine(c.Cipher.Text, c.Cipher
 func (c *Atbash) Decrypt() { c.Cipher.Text = cryptAffine(c.Cipher.Text, c.Cipher.Key.Alphabet, -1, -1, true) }
 func (c *Atbash) Verify() bool { return true }
 
-func NewKeyChaocipher(left []rune, right []rune) *KeyChaocipher { return &KeyChaocipher{Left: left, Right: right} }
+func NewKeyChaocipher(left, right []rune) *KeyChaocipher { return &KeyChaocipher{Left: left, Right: right} }
 func NewChaocipher(text []rune, key *KeyChaocipher) *Chaocipher { return &Chaocipher{Cipher: &CipherClassical[KeyChaocipher]{Text: text, Key: key}} }
 
 type KeyChaocipher struct { 
@@ -178,7 +178,7 @@ func (c *Chaocipher) Encrypt() { c.Cipher.Text = cryptChaocipher(c.Cipher.Text, 
 func (c *Chaocipher) Decrypt() { c.Cipher.Text = cryptChaocipher(c.Cipher.Text, c.Cipher.Key.Left, c.Cipher.Key.Right, false) }
 func (c *Chaocipher) Verify() bool { return true }
 
-func cryptChaocipher(text []rune, left []rune, right []rune, encrypt bool) []rune {
+func cryptChaocipher(text, left, right []rune, encrypt bool) []rune {
 	result := make([]rune, len(text))
 	nadir := len(left) / 2
 	var temp rune

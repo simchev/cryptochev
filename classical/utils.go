@@ -31,7 +31,7 @@ func Alphabet36Coprimes() []int {
 	return []int{1, 5, 7, 11, 13, 17, 19, 23, 25, 29, 31, 35}
 }
 
-func buildAlphabetKey(alphabet []rune, key []rune) ([]rune, []rune) {
+func buildAlphabetKey(alphabet, key []rune) ([]rune, []rune) {
 	amap := buildIndexMap(alphabet)
 	ukey := make([]rune, 0, len(key))
 	for _, r := range key {
@@ -51,12 +51,12 @@ func buildAlphabetKey(alphabet []rune, key []rune) ([]rune, []rune) {
 	return ukey, remains
 }
 
-func AlphabetKey(alphabet []rune, key []rune) []rune {
+func AlphabetKey(alphabet, key []rune) []rune {
 	ukey, remains := buildAlphabetKey(alphabet, key)
 	return append(ukey, remains...)
 }
 
-func RandomAlphabetKey(alphabet []rune, key []rune) []rune {
+func RandomAlphabetKey(alphabet, key []rune) []rune {
 	ukey, remains := buildAlphabetKey(alphabet, key)
 	return append(ukey, utils.Shuffle(remains)...)
 }
