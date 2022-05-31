@@ -85,8 +85,7 @@ func RandomRuneFrom(r []rune) rune {
 	return r[rand.Intn(len(r))]
 }
 
-func ToPadded(s string, width int) string {
-	rs := []rune(s)
+func ToPadded(rs []rune, width int) []rune {
 	rpad := make([]rune, 0, width)
 
 	if len(rs) % width != 0 {
@@ -98,7 +97,7 @@ func ToPadded(s string, width int) string {
 		}
 	}
 
-	return string(append(rs, rpad...))
+	return append(rs, rpad...)
 }
 
 func ToUnpadded(s string, width int) string {

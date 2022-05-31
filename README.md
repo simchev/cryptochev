@@ -7,5 +7,4 @@ TODO:
 - Restructure project?
 
 Unimplemented ciphers:
-- Running key: use Vigenere.
-- Direct substitutions (ex: Pigpen): use Substitute.
+- Running key, Pigpen, Great

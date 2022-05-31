@@ -1,7 +1,10 @@
 package utils
 
 import (
+	"math"
 	"math/bits"
+
+	"gonum.org/v1/gonum/mat"
 )
 
 func TriangleNumber(n int) int {
@@ -88,4 +91,13 @@ func Coprimes(n int) []int {
 	}
 
 	return sn
+}
+
+func ModInverseMatrix(ma *mat.Dense, m int) {
+	det := math.Round(mat.Det(ma))
+	idet := ModInverse(Mod(int(det), m), m)
+	ma.Inverse(ma)
+	ma.Apply(func(i, j int, v float64) float64 {
+		return float64(Mod(idet * int(math.Round(v * det)), m))
+	}, ma)
 }

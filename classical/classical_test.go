@@ -5,6 +5,8 @@ import (
 	"regexp"
 	"strings"
 	"testing"
+
+	"gonum.org/v1/gonum/mat"
 )
 
 var spaces = 5
@@ -81,6 +83,7 @@ func TestClassical(t *testing.T) {
 	t.Run("TestBeaufort", testBeaufort)
 	t.Run("TestShiftAlphabet", testShiftAlphabet)
 	t.Run("TestChaocipher", testChaocipher)
+	t.Run("TestHill", testHill)
 }
 
 func testSubstitute(t *testing.T) {
@@ -197,9 +200,9 @@ func testColumn(t *testing.T) {
 		key := NewKeyColumn([]rune(keys[i]))
 		c := NewColumn([]rune(test), key)
 		testCipher(t, c, expects[i], test)
-		test2 := ToPadded(test, len([]rune(keys[i])))
-		c2 := NewColumn([]rune(test2), key)
-		testCipherRegex(t, c2, expectsPad[i], test2)
+		test2 := ToPadded([]rune(test), len([]rune(keys[i])))
+		c2 := NewColumn(test2, key)
+		testCipherRegex(t, c2, expectsPad[i], string(test2))
 	}
 }
 
@@ -298,9 +301,9 @@ func testMyszkowski(t *testing.T) {
 		key := NewKeyMyszkowski([]rune(keys[i]))
 		c := NewMyszkowski([]rune(test), key)
 		testCipher(t, c, expects[i], test)
-		test2 := ToPadded(test, len([]rune(keys[i])))
-		c2 := NewMyszkowski([]rune(test2), key)
-		testCipherRegex(t, c2, expectsPad[i], test2)
+		test2 := ToPadded([]rune(test), len([]rune(keys[i])))
+		c2 := NewMyszkowski(test2, key)
+		testCipherRegex(t, c2, expectsPad[i], string(test2))
 	}
 }
 
@@ -468,7 +471,7 @@ func testAffine(t *testing.T) {
 
 	for i, test := range tests {
 		c := NewAffine([]rune(test), NewKeyAffine([]rune(alphabets[i]), a[i], b[i]))
-		testCipherRegex(t, c, expects[i], test)
+		testCipher(t, c, expects[i], test)
 	}
 }
 
@@ -478,7 +481,7 @@ func testAtbash(t *testing.T) {
 
 	for i, test := range tests {
 		c := NewAtbash([]rune(test), NewKeyAtbash([]rune(alphabets[i])))
-		testCipherRegex(t, c, expects[i], test)
+		testCipher(t, c, expects[i], test)
 	}
 }
 
@@ -514,5 +517,23 @@ func testChaocipher(t *testing.T) {
 	for i, test := range tests {
 		c := NewChaocipher([]rune(test), NewKeyChaocipher([]rune(lefts[i]), []rune(rights[i])))
 		testCipher(t, c, expects[i], test)
+	}
+}
+
+func testHill(t *testing.T) {
+	alphabets := [...]string{AlphabetL, AlphabetL36, AlphabetL, AlphabetL, AlphabetL}
+	mats := [...]*mat.Dense{
+		mat.NewDense(2, 2, []float64{3, 3, 2, 5}),
+		mat.NewDense(2, 2, []float64{1, 3, 2, 5}),
+		mat.NewDense(3, 3, []float64{17, 17, 5, 21, 18, 21, 2, 2, 19}),
+		mat.NewDense(2, 2, []float64{3, 3, 2, 5}),
+		mat.NewDense(2, 2, []float64{3, 3, 2, 5}),
+	}
+	expects := [...]string{"^AMZHVXACWWXKLCYFTQMIVETK..$", "^93VXTC7SVX0H74AY$", "^SGOVDRZBUGUE$", "^AMXOXKTECIHBNNHFOUETKSLDHU..$", "^RKLTFKLPYOBSKYACSYRGRG$"}
+	expectsAfter := [...]string{"^WEAREDISCOVEREDFLEEATONCE.$", "^WEATTACKAT1200AM$", "^YOUCANTSEEME$", "^WELOVEPAKISTANIDESTROYINDIA.$", "^JOUBLIERAIJAMAISCETETE$"}
+
+	for i, test := range tests {
+		c := NewHill([]rune(test), NewKeyHill([]rune(alphabets[i]), mats[i]))
+		testCipherRegex(t, c, expects[i], expectsAfter[i])
 	}
 }

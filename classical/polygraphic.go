@@ -4,6 +4,8 @@ import (
 	"cryptochev/utils"
 	"math"
 	"math/rand"
+
+	"gonum.org/v1/gonum/mat"
 )
 
 func NewKeyPlayfair(alphabet []rune, null rune) *KeyPlayfair { return &KeyPlayfair{Alphabet: alphabet, Null: null} }
@@ -59,6 +61,47 @@ func cryptPlayfair(text []rune, alphabet []rune, null rune, encrypt bool) []rune
 		} else {
 			result = append(result, alphabet[col2 + row1 * width])
 			result = append(result, alphabet[col1 + row2 * width])
+		}
+	}
+
+	return result
+}
+
+func NewKeyHill(alphabet []rune, m *mat.Dense) *KeyHill { return &KeyHill{Alphabet: alphabet, Matrix: m} }
+func NewHill(text []rune, key *KeyHill) *Hill { return &Hill{Cipher: &CipherClassical[KeyHill]{Text: text, Key: key}} }
+
+type KeyHill struct {
+	Alphabet []rune
+	Matrix *mat.Dense
+}
+
+type Hill struct { Cipher *CipherClassical[KeyHill] }
+func (c *Hill) GetText() []rune { return c.Cipher.Text }
+func (c *Hill) GetErrors() []error { return c.Cipher.Errors }
+func (c *Hill) Encrypt() { c.Cipher.Text = cryptHill(c.Cipher.Text, c.Cipher.Key.Alphabet, c.Cipher.Key.Matrix, true) }
+func (c *Hill) Decrypt() { c.Cipher.Text = cryptHill(c.Cipher.Text, c.Cipher.Key.Alphabet, c.Cipher.Key.Matrix, false) }
+func (c *Hill) Verify() bool { return true }
+
+func cryptHill(text, alphabet []rune, m *mat.Dense, encrypt bool) []rune {
+	r, _ := m.Dims()
+	text = ToPadded(text, r)
+	result := make([]rune, len(text))
+	amap := buildIndexMap(alphabet)
+	col := make([]float64, r)
+
+	if !encrypt {
+		utils.ModInverseMatrix(m, len(alphabet))
+	}
+
+	for i := 0; i < len(text); i += r {
+		for j := range col {
+			col[j] = float64(amap[text[i + j]])
+		}
+
+		var mres mat.Dense
+		mres.Mul(m, mat.NewDense(r, 1, col))
+		for j := range col {
+			result[i + j] = alphabet[utils.Mod(int(mres.At(j, 0)), len(alphabet))]
 		}
 	}
 

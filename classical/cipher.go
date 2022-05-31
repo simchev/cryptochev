@@ -38,5 +38,6 @@ type CipherClassicalKey interface {
 		KeyAtbash |
 		KeyBeaufort |
 		KeyShiftAlphabet |
-		KeyChaocipher
+		KeyChaocipher |
+		KeyHill
 }
