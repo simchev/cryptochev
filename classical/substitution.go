@@ -2,8 +2,6 @@ package classical
 
 import (
 	"cryptochev/utils"
-	"math"
-	"math/rand"
 	"unicode"
 )
 
@@ -165,60 +163,50 @@ func (c *Atbash) Encrypt() { c.Cipher.Text = cryptAffine(c.Cipher.Text, c.Cipher
 func (c *Atbash) Decrypt() { c.Cipher.Text = cryptAffine(c.Cipher.Text, c.Cipher.Key.Alphabet, -1, -1, true) }
 func (c *Atbash) Verify() bool { return true }
 
-func NewKeyPlayfair(alphabet []rune, null rune) *KeyPlayfair { return &KeyPlayfair{Alphabet: alphabet, Null: null} }
-func NewPlayfair(text []rune, key *KeyPlayfair) *Playfair { return &Playfair{Cipher: &CipherClassical[KeyPlayfair]{Text: text, Key: key}} }
+func NewKeyChaocipher(left []rune, right []rune) *KeyChaocipher { return &KeyChaocipher{Left: left, Right: right} }
+func NewChaocipher(text []rune, key *KeyChaocipher) *Chaocipher { return &Chaocipher{Cipher: &CipherClassical[KeyChaocipher]{Text: text, Key: key}} }
 
-type KeyPlayfair struct {
-	Alphabet []rune
-	Null rune
+type KeyChaocipher struct { 
+	Left []rune
+	Right []rune
 }
 
-type Playfair struct { Cipher *CipherClassical[KeyPlayfair] }
-func (c *Playfair) GetText() []rune { return c.Cipher.Text }
-func (c *Playfair) GetErrors() []error { return c.Cipher.Errors }
-func (c *Playfair) Encrypt() { c.Cipher.Text = cryptPlayfair(c.Cipher.Text, c.Cipher.Key.Alphabet, c.Cipher.Key.Null, true) }
-func (c *Playfair) Decrypt() { c.Cipher.Text = cryptPlayfair(c.Cipher.Text, c.Cipher.Key.Alphabet, c.Cipher.Key.Null, false) }
-func (c *Playfair) Verify() bool { return true }
+type Chaocipher struct { Cipher *CipherClassical[KeyChaocipher] }
+func (c *Chaocipher) GetText() []rune { return c.Cipher.Text }
+func (c *Chaocipher) GetErrors() []error { return c.Cipher.Errors }
+func (c *Chaocipher) Encrypt() { c.Cipher.Text = cryptChaocipher(c.Cipher.Text, c.Cipher.Key.Left, c.Cipher.Key.Right, true) }
+func (c *Chaocipher) Decrypt() { c.Cipher.Text = cryptChaocipher(c.Cipher.Text, c.Cipher.Key.Left, c.Cipher.Key.Right, false) }
+func (c *Chaocipher) Verify() bool { return true }
 
-func cryptPlayfair(text []rune, alphabet []rune, null rune, encrypt bool) []rune {
-	result := make([]rune, 0, len(text) + len(text) / 2 + 1)
-	width := int(math.Sqrt(float64(len(alphabet))))
-	amap := buildIndexMap(alphabet)
-	inc, _ := utils.SwapIf(-1, 1, encrypt)
+func cryptChaocipher(text []rune, left []rune, right []rune, encrypt bool) []rune {
+	result := make([]rune, len(text))
+	nadir := len(left) / 2
+	var temp rune
 
-	for i := 0; i < len(text); i += 2 {
-		i1 := amap[text[i]]
-		var i2 int
-		
-		if i != len(text) - 1 && i1 != amap[text[i + 1]] {
-			i2 = amap[text[i + 1]]
+	for i, r := range text {
+		var index int
+
+		if encrypt {
+			index = utils.IndexOf(right, r)
+			result[i] = left[index]
 		} else {
-			if i < len(text) - 2 {
-				i--
-			}
-			
-			if null == 0 {
-				i2 = amap[alphabet[rand.Intn(len(alphabet))]]
-			} else {
-				i2 = amap[null]
-			}
+			index = utils.IndexOf(left, r)
+			result[i] = right[index]
 		}
 
-		row1 := i1 / width
-		col1 := i1 % width
-		row2 := i2 / width
-		col2 := i2 % width
-
-		if row1 == row2 {
-			result = append(result, alphabet[(col1 + inc + width) % width + row1 * width])
-			result = append(result, alphabet[(col2 + inc + width) % width + row2 * width])
-		} else if col1 == col2 {
-			result = append(result, alphabet[col1 + (row1 + inc + width) % width * width])
-			result = append(result, alphabet[col2 + (row2 + inc + width) % width * width])
-		} else {
-			result = append(result, alphabet[col2 + row1 * width])
-			result = append(result, alphabet[col1 + row2 * width])
+		left = shiftAlphabet(left, left, index)
+		temp = left[1]
+		for j := 2; j <= nadir; j++ {
+			left[j - 1] = left[j]
 		}
+		left[nadir] = temp
+
+		right = shiftAlphabet(right, right, index + 1)
+		temp = right[2]
+		for j := 3; j <= nadir; j++ {
+			right[j - 1] = right[j]
+		}
+		right[nadir] = temp
 	}
 
 	return result

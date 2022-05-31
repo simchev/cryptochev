@@ -80,6 +80,7 @@ func TestClassical(t *testing.T) {
 	t.Run("TestAtbash", testAtbash)
 	t.Run("TestBeaufort", testBeaufort)
 	t.Run("TestShiftAlphabet", testShiftAlphabet)
+	t.Run("TestChaocipher", testChaocipher)
 }
 
 func testSubstitute(t *testing.T) {
@@ -488,6 +489,30 @@ func testBeaufort(t *testing.T) {
 
 	for i, test := range tests {
 		c := NewBeaufort([]rune(test), NewKeyBeaufort([]rune(alphabets[i]), []rune(keys[i])))
+		testCipher(t, c, expects[i], test)
+	}
+}
+
+func testChaocipher(t *testing.T) {
+	lefts := [...]string{
+		"3U0NBY1PXLVRDWA89GT67F2OJQ5EIZS4KCMH",
+		"REBSNFZU8DP46CH9XMW1VY32GAKOJL750ITQ",
+		"LIGQPV5WFYU913OX8MADBE62ZHSCK7JR0N4T",
+		"EO4QB7GFA3Y5HMCJ10P9KN2S8ZVRDW6LXTIU",
+		"92DF6VSMBG3I0HZQ17WYRLA5CETPKNX8J4UO",
+	}
+	rights := [...]string{
+		"EO4QB7GFA3Y5HMCJ10P9KN2S8ZVRDW6LXTIU",
+		"92DF6VSMBG3I0HZQ17WYRLA5CETPKNX8J4UO",
+		"LIGQPV5WFYU913OX8MADBE62ZHSCK7JR0N4T",
+		"3U0NBY1PXLVRDWA89GT67F2OJQ5EIZS4KCMH",
+		"REBSNFZU8DP46CH9XMW1VY32GAKOJL750ITQ",
+		
+	}
+	expects := [...]string{"ZH1JKOE3XV3P9L8PU8C8MHYEH", "WGV23XWMC1ZKSVZU", "Y3FZ37ODW5ZP", "MVFKF2NR8POVKGHJ3LNLQK7HE4Q", "KTVOEKXKWA615Z7BQFX9NQ"}
+
+	for i, test := range tests {
+		c := NewChaocipher([]rune(test), NewKeyChaocipher([]rune(lefts[i]), []rune(rights[i])))
 		testCipher(t, c, expects[i], test)
 	}
 }
