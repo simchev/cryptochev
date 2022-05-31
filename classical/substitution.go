@@ -57,6 +57,32 @@ func shift(text []rune, shift int) []rune {
 	return text
 }
 
+func NewKeyShiftAlphabet(alphabet []rune, shift int) *KeyShiftAlphabet { return &KeyShiftAlphabet{Alphabet: alphabet, Shift: shift} }
+func NewShiftAlphabet(text []rune, key *KeyShiftAlphabet) *ShiftAlphabet { return &ShiftAlphabet{Cipher: &CipherClassical[KeyShiftAlphabet]{Text: text, Key: key}} }
+
+type KeyShiftAlphabet struct { 
+	Alphabet []rune
+	Shift int 
+}
+
+type ShiftAlphabet struct { Cipher *CipherClassical[KeyShiftAlphabet] }
+func (c *ShiftAlphabet) GetText() []rune { return c.Cipher.Text }
+func (c *ShiftAlphabet) GetErrors() []error { return c.Cipher.Errors }
+func (c *ShiftAlphabet) Encrypt() { c.Cipher.Text = shiftAlphabet(c.Cipher.Text, c.Cipher.Key.Alphabet, c.Cipher.Key.Shift) }
+func (c *ShiftAlphabet) Decrypt() { c.Cipher.Text = shiftAlphabet(c.Cipher.Text, c.Cipher.Key.Alphabet, -c.Cipher.Key.Shift) }
+func (c *ShiftAlphabet) Verify() bool { return true }
+
+func shiftAlphabet(text []rune, alphabet []rune, shift int) []rune {
+	result := make([]rune, len(text))
+	amap := buildIndexMap(alphabet)
+
+	for i, r := range text {
+		result[i] = alphabet[utils.Mod(amap[r] + shift, len(alphabet))]
+	}
+
+	return result
+}
+
 func NewKeyCaesar(shift int) *KeyCaesar { return &KeyCaesar{Shift: shift} }
 func NewCaesar(text []rune, key *KeyCaesar) *Caesar { return &Caesar{Cipher: &CipherClassical[KeyCaesar]{Text: text, Key: key}} }
 

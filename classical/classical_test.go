@@ -79,6 +79,7 @@ func TestClassical(t *testing.T) {
 	t.Run("TestAffine", testAffine)
 	t.Run("TestAtbash", testAtbash)
 	t.Run("TestBeaufort", testBeaufort)
+	t.Run("TestShiftAlphabet", testShiftAlphabet)
 }
 
 func testSubstitute(t *testing.T) {
@@ -110,6 +111,17 @@ func testShift(t *testing.T) {
 
 	for i, test := range tests {
 		c := NewShift([]rune(test), NewKeyShift(shifts[i]))
+		testCipher(t, c, expects[i], test)
+	}
+}
+
+func testShiftAlphabet(t *testing.T) {
+	shifts := [...]int{5, 10, -8, 3, 13}
+	alphabets := [...]string{AlphabetL, AlphabetL36, AlphabetL, "WELOVPAKISTNDRY", AlphabetL}
+	expects := [...]string{"BJFWJINXHTAJWJIKQJJFYTSHJ", "7OK44KMUK4ABJJKW", "QGMUSFLKWWEW", "OVPAKVISTNDRSYNWVDREALNYWNS", "WBHOYVRENVWNZNVFPRGRGR"}
+
+	for i, test := range tests {
+		c := NewShiftAlphabet([]rune(test), NewKeyShiftAlphabet([]rune(alphabets[i]), shifts[i]))
 		testCipher(t, c, expects[i], test)
 	}
 }
