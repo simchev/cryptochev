@@ -7,4 +7,4 @@ TODO:
 - Restructure project?
 
 Unimplemented ciphers:
-- Running key, Pigpen, Great
+- Running key, Pigpen, Great, Talker, Book, Poem

@@ -39,5 +39,8 @@ type CipherClassicalKey interface {
 		KeyBeaufort |
 		KeyShiftAlphabet |
 		KeyChaocipher |
-		KeyHill
+		KeyHill |
+		KeyTwoSquareV |
+		KeyTwoSquareH |
+		KeyFourSquare
 }

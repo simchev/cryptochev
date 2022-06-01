@@ -84,6 +84,9 @@ func TestClassical(t *testing.T) {
 	t.Run("TestShiftAlphabet", testShiftAlphabet)
 	t.Run("TestChaocipher", testChaocipher)
 	t.Run("TestHill", testHill)
+	t.Run("TestTwoSquareV", testTwoSquareV)
+	t.Run("TestTwoSquareH", testTwoSquareH)
+	t.Run("TestFourSquare", testFourSquare)
 }
 
 func testSubstitute(t *testing.T) {
@@ -510,7 +513,6 @@ func testChaocipher(t *testing.T) {
 		"LIGQPV5WFYU913OX8MADBE62ZHSCK7JR0N4T",
 		"3U0NBY1PXLVRDWA89GT67F2OJQ5EIZS4KCMH",
 		"REBSNFZU8DP46CH9XMW1VY32GAKOJL750ITQ",
-		
 	}
 	expects := [...]string{"ZH1JKOE3XV3P9L8PU8C8MHYEH", "WGV23XWMC1ZKSVZU", "Y3FZ37ODW5ZP", "MVFKF2NR8POVKGHJ3LNLQK7HE4Q", "KTVOEKXKWA615Z7BQFX9NQ"}
 
@@ -535,5 +537,97 @@ func testHill(t *testing.T) {
 	for i, test := range tests {
 		c := NewHill([]rune(test), NewKeyHill([]rune(alphabets[i]), mats[i]))
 		testCipherRegex(t, c, expects[i], expectsAfter[i])
+	}
+}
+
+func testTwoSquareV(t *testing.T) {
+	a1 := [...]string{
+		"3U0NBY1PXLVRDWA89GT67F2OJQ5EIZS4KCMH",
+		"REBSNFZU8DP46CH9XMW1VY32GAKOJL750ITQ",
+		"LIGQPV5WFYU913OX8MADBE62ZHSCK7JR0N4T",
+		"EO4QB7GFA3Y5HMCJ10P9KN2S8ZVRDW6LXTIU",
+		"92DF6VSMBG3I0HZQ17WYRLA5CETPKNX8J4UO",
+	}
+	a2 := [...]string{
+		"EO4QB7GFA3Y5HMCJ10P9KN2S8ZVRDW6LXTIU",
+		"92DF6VSMBG3I0HZQ17WYRLA5CETPKNX8J4UO",
+		"LIGQPV5WFYU913OX8MADBE62ZHSCK7JR0N4T",
+		"3U0NBY1PXLVRDWA89GT67F2OJQ5EIZS4KCMH",
+		"REBSNFZU8DP46CH9XMW1VY32GAKOJL750ITQ",
+	}
+	expects := [...]string{"^DO8VIRZ24Q1B17WG1Q536E0J..$", "^1CKENKXEKEAM7Z5H$", "^FXYKEJ07CCX2$", "^RZU6R5KD25PO3069G3UL7UTBIM..$", "^4KJNPSCELT8KH5GFEREBEB$"}
+	expectsTransparent := [...]string{"^DO8VIRZ24Q1B17WG1Q536E0J..$", "^1CKETAXEKE127ZAM$", "^FXYKEJ07EEX2$", "^RZU6R5KD25PO3069ESUL7UTBDI..$", "^4KJNLICELT8KMAGFEREBEB$"}
+
+	for i, test := range tests {
+		ptest := ToPadded([]rune(test), 2)
+		c := NewTwoSquareV(ptest, NewKeyTwoSquareV([]rune(a1[i]), []rune(a2[i]), false))
+		testCipherRegex(t, c, expects[i], string(ptest))
+		c2 := NewTwoSquareV(ptest, NewKeyTwoSquareV([]rune(a1[i]), []rune(a2[i]), true))
+		testCipherRegex(t, c2, expectsTransparent[i], string(ptest))
+	}
+}
+
+func testTwoSquareH(t *testing.T) {
+	a1 := [...]string{
+		"3U0NBY1PXLVRDWA89GT67F2OJQ5EIZS4KCMH",
+		"REBSNFZU8DP46CH9XMW1VY32GAKOJL750ITQ",
+		"LIGQPV5WFYU913OX8MADBE62ZHSCK7JR0N4T",
+		"EO4QB7GFA3Y5HMCJ10P9KN2S8ZVRDW6LXTIU",
+		"92DF6VSMBG3I0HZQ17WYRLA5CETPKNX8J4UO",
+	}
+	a2 := [...]string{
+		"EO4QB7GFA3Y5HMCJ10P9KN2S8ZVRDW6LXTIU",
+		"92DF6VSMBG3I0HZQ17WYRLA5CETPKNX8J4UO",
+		"LIGQPV5WFYU913OX8MADBE62ZHSCK7JR0N4T",
+		"3U0NBY1PXLVRDWA89GT67F2OJQ5EIZS4KCMH",
+		"REBSNFZU8DP46CH9XMW1VY32GAKOJL750ITQ",
+	}
+	expects := [...]string{"^HUJ5WIW2LNGBGYM1GNVL9348..$", "^YGPKU31APKYEXHEU$", "^FXYKEJ0766X2$", "^I8H9IR7H2V6PL4S136H334CBZW..$", "^IT06Y4G2YU5TUEDVA9ADAD$"}
+	expectsTransparent := [...]string{"^HUJ5DEW2LNGBGYM1GNVL9348..$", "^YGTAU31ATAYEXHEU$", "^FXYKEJ07EEX2$", "^EWH9EV7H2VTSL4S136H3YOCBID..$", "^IT06Y4G2YU5TUEDVA9ADAD$"}
+
+	for i, test := range tests {
+		ptest := ToPadded([]rune(test), 2)
+		c := NewTwoSquareH(ptest, NewKeyTwoSquareH([]rune(a1[i]), []rune(a2[i]), false))
+		testCipherRegex(t, c, expects[i], string(ptest))
+		c2 := NewTwoSquareH(ptest, NewKeyTwoSquareH([]rune(a1[i]), []rune(a2[i]), true))
+		testCipherRegex(t, c2, expectsTransparent[i], string(ptest))
+	}
+}
+
+func testFourSquare(t *testing.T) {
+	a1 := [...]string{
+		"3U0NBY1PXLVRDWA89GT67F2OJQ5EIZS4KCMH",
+		"REBSNFZU8DP46CH9XMW1VY32GAKOJL750ITQ",
+		"LIGQPV5WFYU913OX8MADBE62ZHSCK7JR0N4T",
+		"EO4QB7GFA3Y5HMCJ10P9KN2S8ZVRDW6LXTIU",
+		"92DF6VSMBG3I0HZQ17WYRLA5CETPKNX8J4UO",
+	}
+	a2 := [...]string{
+		"REBSNFZU8DP46CH9XMW1VY32GAKOJL750ITQ",
+		"LIGQPV5WFYU913OX8MADBE62ZHSCK7JR0N4T",
+		"EO4QB7GFA3Y5HMCJ10P9KN2S8ZVRDW6LXTIU",
+		"92DF6VSMBG3I0HZQ17WYRLA5CETPKNX8J4UO",
+		"3U0NBY1PXLVRDWA89GT67F2OJQ5EIZS4KCMH",
+	}
+	a3 := [...]string{
+		"LIGQPV5WFYU913OX8MADBE62ZHSCK7JR0N4T",
+		"EO4QB7GFA3Y5HMCJ10P9KN2S8ZVRDW6LXTIU",
+		"92DF6VSMBG3I0HZQ17WYRLA5CETPKNX8J4UO",
+		"3U0NBY1PXLVRDWA89GT67F2OJQ5EIZS4KCMH",
+		"REBSNFZU8DP46CH9XMW1VY32GAKOJL750ITQ",
+	}
+	a4 := [...]string{
+		"EO4QB7GFA3Y5HMCJ10P9KN2S8ZVRDW6LXTIU",
+		"92DF6VSMBG3I0HZQ17WYRLA5CETPKNX8J4UO",
+		"3U0NBY1PXLVRDWA89GT67F2OJQ5EIZS4KCMH",
+		"REBSNFZU8DP46CH9XMW1VY32GAKOJL750ITQ",
+		"LIGQPV5WFYU913OX8MADBE62ZHSCK7JR0N4T",
+	}
+	expects := [...]string{"^6I9SJCL65QZPZVC5ZQKY1LBX..$", "^D8SZ428ZSZDOJCHF$", "^5L3UN96ONPJN$", "^EY4QE0YJLKAH304VF3XNF6UBPM..$", "^KHK36SQ56NSV11XLEWEVEV$"}
+
+	for i, test := range tests {
+		ptest := ToPadded([]rune(test), 2)
+		c := NewFourSquare(ptest, NewKeyFourSquare([]rune(a1[i]), []rune(a2[i]), []rune(a3[i]), []rune(a4[i])))
+		testCipherRegex(t, c, expects[i], string(ptest))
 	}
 }
