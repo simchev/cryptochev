@@ -1,7 +1,3 @@
 # Cryptochev
 
-Cryptographic module in Go.
-
-TODO:
-- Implement errors
-- Restructure project?
+Cryptographic module in Go. For now there's only classical ciphers.
